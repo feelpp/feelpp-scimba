@@ -1,0 +1,110 @@
+= Coupling ScimBa and Feel++
+
+[[project-overview]]
+== Project Overview
+
+This project attempts the integration of https://sciml.gitlabpages.inria.fr/scimba/[ScimBa] and https://docs.feelpp.org/user/latest/index.html[Feelpp].
+Our goal is to streamline data exchange and empower users to leverage the combined strengths of ScimBa and Feel++ effectively.
+
+
+== Table of Contents 
+
+. <<project-overview, Project Overview>>
+. <<technologies, Technologies>>
+. <<launch, Launch>>
+. <<project-status,Project Status>>
+. <<contact, Contact>>
+
+
+[[technologies]]
+== Technologies
+
+This project utilizes the following technologies:
+
+* `ScimBa` : A Python library emphasizing machine learning. ScimBa is used in this project to apply machine learning techniques.
+* `Feelpp` : A library known for its Galerkin methods in PDE solving. Feel++ is used to solve PDEs in this project.
+* `Docker`: A platform used to containerize the application. Docker is used to build a reproducible environment for the project.
+* `Python` : The primary programming language used in this project.
+* `Git` : Version control system used for source code management.
+
+Each of these technologies plays a crucial role in the development and operation of the project.
+
+[[launch]]
+== Launch
+
+Follow these steps to get the project up and running on your local machine:
+
+Open the project in Visual Studio Code:
+
+[source,python]
+----
+# Clone the repository
+git clone https://github.com/master-csmi/2024-m1-scimba-feelpp.git
+
+# Change branch
+git checkout feelpp-solver
+
+# To build a Docker image:
+docker buildx build  -t feelpp_scimba:latest .
+
+
+# Run the Docker container
+
+docker run -it feelpp_scimba:latest
+
+
+#VS Code will detect the .devcontainer configuration and prompt you to reopen the folder in a container.
+----
+
+=== Example
+[source,python]
+----
+import os
+import sys
+import feelpp
+import feelpp.toolboxes.core as tb
+from tools.Poisson import Poisson
+
+# mandatory things
+sys.argv = ["feelpp_app"]
+e = feelpp.Environment(sys.argv,
+                       opts=tb.toolboxes_options("coefficient-form-pdes", "cfpdes"),
+                       config=feelpp.localRepository('feelpp_cfpde'))
+
+# ------------------------------------------------------------------------- #
+# Poisson problem
+# - div (diff * grad (u)) = f    in Omega
+#                     u   = g    in Gamma_D
+# Omega = domain, either cube or ball
+# Approx = lagrange Pk of order order
+# mesh of size h
+
+# Example usage of the Poisson class
+# Create an instance of the Poisson class for a 2-dimensional problem
+P = Poisson_feel(dim=2)
+
+# Solve the Poisson problem with the specified parameters
+
+P(  h=0.05,                                                                           # mesh size 
+    order=1,                                                                          # polynomial order 
+    name='u',                                                                         # name of the variable u
+    rhs='8*pi*pi*sin(2*pi*x)*sin(2*pi*y)',                                            # right hand side
+    diff='{1,0,0,1}',                                                                 # diffusion matrix
+    g='0',                                                                            # boundary conditions
+    shape='Rectangle',                                                                # domain shape (Rectangle, Disk)    
+    geofile=None,                                                                     # geometry file, generates own mesh if None
+    plot=1,                                                                           # plot the solution
+    solver='feelpp',                                                                  # solver to use ('feelpp', 'scimba')
+    u_exact='sin(2 * pi * x) * sin(2 * pi * y)',                                      # exact solution for comparison
+    grad_u_exact = '{2*pi*cos(2*pi*x)*sin(2*pi*y),2*pi*sin(2*pi*x)*cos(2*pi*y)}'      # gradient of the exact solution for error computation               
+        
+):
+----
+
+
+[[contact]]
+== Contact
+
+link:https://github.com/rtlili[Rayen Tlili]
+
+link:https://github.com/master-csmi[Organization:Master CSMI]

@@ -1,0 +1,13 @@
+{
+	"name": "ScimBa-Feel++ 22.04",
+	"image": "feelpp_scimba:latest",
+	// Add the IDs of extensions you want installed when the container is created in the array below.
+	"extensions": [
+		"ms-vscode.cpptools",
+		"ms-vscode.cmake-tools",
+		"josetr.cmake-language-support-vscode",
+		"asciidoctor.asciidoctor-vscode",
+		"ms-python.python",
+		"ms-toolsai.jupyter"
+	]
+}
