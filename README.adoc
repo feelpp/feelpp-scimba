@@ -92,7 +92,6 @@ P(  h=0.05,                                                                     
     diff='{1,0,0,1}',                                                                 # diffusion matrix
     g='0',                                                                            # boundary conditions
     shape='Rectangle',                                                                # domain shape (Rectangle, Disk)    
-    geofile=None,                                                                     # geometry file, generates own mesh if None
     plot=1,                                                                           # plot the solution
     solver='feelpp',                                                                  # solver to use ('feelpp', 'scimba')
     u_exact='sin(2 * pi * x) * sin(2 * pi * y)',                                      # exact solution for comparison
