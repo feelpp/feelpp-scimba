@@ -207,7 +207,7 @@ class Poisson:
           {
             "fields":["all"],
             "expr":{
-              #"u_scimba": f"{name}:x:y" if self.dim == 2 else f"{name}:x:y:z",
+              #"u_scimba": f"{u_scimba}:x:y" if self.dim == 2 else f"{name}:x:y:z",
               "rhs": f"{rhs}:x:y" if self.dim == 2 else f"{rhs}:x:y:z",
               "u_exact" : f"{u_exact}:x:y" if self.dim==2 else f"{u_exact}:x:y:z",
               "grad_u_exact" : f"{grad_u_exact}:x:y" if self.dim==2 else f"{grad_u_exact}:x:y:z"
@@ -256,15 +256,13 @@ class Poisson:
   # Solving
 
     poisson_json = lambda order,dim=2,name="u": self.model
-    if solver == 'feelpp':
-      self.measures = self.feel_solver(filename=fn, h=h, json=poisson_json(order=self.order,dim=self.dim), verbose=True)
+    self.measures = self.feel_solver(filename=fn, h=h, json=poisson_json(order=self.order,dim=self.dim), verbose=True)
         
-    elif solver == 'scimba':
+    if solver == 'scimba':
       import pyvista as pv
       import torch
-      
+
       u_scimba = self.scimba_solver(shape=shape, h=h, dim=self.dim, verbose=True)
-      self.measures = self.feel_solver(filename=fn, h=h, json=poisson_json(order=self.order,dim=self.dim), verbose=False)
       
       # File path to the .case file
       file_path = 'cfpdes-2d-p1.exports/Export.case'
@@ -275,49 +273,63 @@ class Poisson:
       # Iterate over each block in the dataset to find coordinates
       coordinates = None
       for i, block in enumerate(data):
-          if block is None:
-              continue
+        if block is None:
+          continue
+        print(f"Block {i}:")
+        print(block)
+        # Extract the mesh points (coordinates)
+        coordinates = block.points
+        print(f"Bloc {i}:")
+        print(block)
 
-          print(f"Block {i}:")
-          print(block)
-          
-          # Extract the mesh points (coordinates)
-          coordinates = block.points
+        print("Champs de points disponibles:", block.point_data.keys())
+        print("Champs de cellules disponibles:", block.cell_data.keys())
 
-      # Ensure coordinates are found
-      if coordinates is None:
-          raise ValueError("No coordinates found in the mesh blocks.")
+        solution = 'cfpdes.poisson.u'
+        solution_expression = block.point_data[solution]
 
-      # Print the first few coordinates to understand their structure
-      print("First few coordinates:")
-      print(coordinates[:5])
+        df = pd.DataFrame(block.point_data)
+        print(df.head())
 
-      # Determine the number of features
+      print(f"Number of points: {len(coordinates)}")          
+      print("\nNodes:"  , coordinates)
+      feel_solution = block.point_data['cfpdes.poisson.u']
+      print("\nFeel++ solution 'cfpdes.poisson.u':")
+      print(feel_solution) 
+      
+      # Considering only 2d problems:
       num_features = coordinates.shape[1]
       print(f"Number of features in coordinates: {num_features}")
-
-      # If there are more features than expected, strip the extra ones
       if num_features > 2:
-          coordinates = coordinates[:, :2]  # Keep only the first two features (x, y)
-
-      # Convert coordinates to a PyTorch tensor
-      input_tensor = torch.tensor(coordinates, dtype=torch.double)
-      print(f"Shape of input tensor (coordinates): {input_tensor.shape}")
-
+        coordinates = coordinates[:, :2]
+      
+      # Convert coordinates to tensor
+      coordinates_tensor = torch.tensor(coordinates, dtype=torch.double)
+      print(f"Shape of input tensor (coordinates): {coordinates_tensor.shape}")
+      
       # Create the mu tensor with correct shape
-      mu_value = 1  # Example value for mu
-      mu = torch.full((input_tensor.size(0), 1), mu_value, dtype=torch.double)
-      print(f"Shape of mu tensor: {mu.shape}")
+      mu_value = 1
+      mu = torch.full((coordinates_tensor.size(0), 1), mu_value, dtype=torch.double)
 
-      # Pass input tensor and mu tensor separately to the network
-      solution_tensor = u_scimba(input_tensor, mu)
+      solution_tensor = u_scimba(coordinates_tensor, mu)
+      solution_array = solution_tensor.detach().numpy().flatten()
+      
+      # Feel++ solution values for mean and std
+      feel_mean = np.mean(feel_solution)
+      feel_std = np.std(feel_solution)
 
-      # Convert the tensor to a NumPy array
-      solution_array = solution_tensor.detach().numpy()
+      # Calculate mean and std of ScimBa solution
+      scimba_mean = np.mean(solution_array)
+      scimba_std = np.std(solution_array)
 
-      # Print solution array
-      print("Solution array:")
-      print(solution_array)
+      # Scale ScimBa solution to match Feel++ mean and std
+      scaled_solution = (solution_array - scimba_mean) * (feel_std / scimba_std) + feel_mean
+      solution_array = scaled_solution
+
+
+      print(f"ScimBa solution: {solution_array}")
+      print("\n Difference : ", solution_array - feel_solution)
+
 ##________________________   
     # Plots
 
@@ -347,7 +359,7 @@ class Poisson:
         pl.subplot(0,2)
         pl.add_title('u_scimba ' , font_size=10)
         pl.add_mesh(mesh[0], scalars = solution_array, cmap=custom_cmap)
-        
+
       pl.subplot(0,0)
       pl.add_title(f'Solution P{order}', font_size=10)
       pl.add_mesh(mesh[0].copy(), scalars = f"cfpdes.poisson.{name}", cmap=custom_cmap)
@@ -366,7 +378,7 @@ class Poisson:
 
 #______________________________________________________________________________________________
 
-def runLaplacianPk(P, df, model, measures, fn = 'omega-2.geo', verbose=False):
+def runLaplacianPk(P, df, model, measures, verbose=False):
   """Generate the Pk case"""
   meas = dict()
   dim, order, json = model    
@@ -382,21 +394,21 @@ def runLaplacianPk(P, df, model, measures, fn = 'omega-2.geo', verbose=False):
 
   return df
 
-def runConvergenceAnalysis(P, json, measures, dim=2,hs=[0.1, 0.05, 0.025, 0.0125],orders=[1,2],verbose=False):
+def runConvergenceAnalysis(P, json, measures, dim=2,hs=[0.1, 0.05, 0.025, 0.0125],orders=[1],verbose=False):
   df=pd.DataFrame({'h':hs})
   for order in orders:
     df=runLaplacianPk(P, df=df,model=[dim,order,json(dim=dim,order=order)], measures = measures,verbose=verbose)
   print('df = ', df.to_markdown())
   return df
 
-def plot_convergence(P, df,dim,orders=[1,2]):
+def plot_convergence(P, df,dim,orders=[1]):
   fig=px.line(df, x="h", y=[f'P{order}-Norm_poisson_{norm}-error' for order,norm in list(itertools.product(orders,['L2','H1']))])
   fig.update_xaxes(title_text="h",type="log")
   fig.update_yaxes(title_text="Error",type="log")
   for order,norm in list(itertools.product(orders,['L2','H1'])):
     fig.update_traces(name=f'P{order} - {norm} error - {df[f"P{order}-poisson_{norm}-convergence-rate"].iloc[-1]:.2f}', selector=dict(name=f'P{order}-Norm_poisson_{norm}-error'))
   fig.update_layout(
-          title=f"Convergence rate for the {dim}D Laplacian problem",
+          title=f"Convergence rate for the {dim}D Poisson problem",
           autosize=False,
           width=900,
           height=900,

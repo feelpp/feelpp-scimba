@@ -9,6 +9,8 @@ import scimba.sampling.sampling_pde as sampling_pde
 import scimba.sampling.uniform_sampling as uniform_sampling
 import torch
 import pyvista as pv 
+import matplotlib.pyplot as plt
+import numpy as np
 
 from scimba.equations import domain, pdes
 
@@ -53,7 +55,7 @@ class Poisson_2D(pdes.AbstractPDEx):
         x1, x2 = x.get_coordinates()
         g = eval(self.u_exact, {'x': x1, 'y': x2, 'pi': PI, 'sin' : torch.sin, 'cos': torch.cos})
 
-        return u - g
+        return  g
 
     def residual(self, w, x, mu, **kwargs):
         x1, x2 = x.get_coordinates()
@@ -168,6 +170,10 @@ if __name__ == "__main__":
     pde = Poisson_2D(xdomain)
     network, pde = Run_laplacian2D(pde)
 
+    u_exact = '-y*y/2 - x*y*y*y/2 + y*y*y*y/4'
+    pde = Poisson_2D(xdomain, rhs='-1.0-3*y*x+y*y', g='-y*y/2 - x*y*y*y/2 + y*y*y*y/4', u_exact = u_exact)
+    network, pde = Run_laplacian2D(pde)
+    
     u_exact = 'y + (x*(1-x) + y*(1-y)/4) '
     pde = Poisson_2D(xdomain, rhs='5/2', g='y', u_exact = u_exact)
     network, pde = Run_laplacian2D(pde)
@@ -214,17 +220,7 @@ if __name__ == "__main__":
         # Extract the mesh points (coordinates)
         coordinates = block.points
 
-    # Ensure coordinates are found
-    if coordinates is None:
-        raise ValueError("No coordinates found in the mesh blocks.")
-
-    # Print the first few coordinates to understand their structure
-    print("First few coordinates:")
-    print(coordinates[:5])
-
-    # Determine the number of features
     num_features = coordinates.shape[1]
-    print(f"Number of features in coordinates: {num_features}")
 
     # If there are more features than expected, strip the extra ones
     if num_features > 2:
@@ -243,8 +239,33 @@ if __name__ == "__main__":
     solution_tensor = u_scimba(input_tensor, mu)
 
     # Convert the tensor to a NumPy array
-    solution_array = solution_tensor.detach().numpy()
+    solution_array = solution_tensor.detach().numpy().flatten()
+    
+    # Feel++ solution values for mean and std
+    feel_mean = -0.00520319
+    feel_std = 0.4436535
+
+    # Normalize ScimBa solution
+    solution_normalized = (solution_array - np.mean(solution_array)) / np.std(solution_array)
+
+    # Scale ScimBa solution to match Feel++ mean and std
+    scaled_solution = solution_normalized * feel_std + feel_mean
+
+    print("Scaled ScimBa solution:")
+    print(scaled_solution)
 
     # Print solution array
     print("Solution array:")
     print(solution_array)
+
+    u_sc = lambda x: network.forward(x, mu)
+    # Tracer les résultats
+    plt.figure(figsize=(10, 6))
+    plt.plot(solution_array, 'o', label='u_scimba values')
+    plt.xlabel('Index')
+    plt.ylabel('u_scimba value')
+    plt.title('Graph of u_scimba on mesh points')
+    plt.legend()
+    plt.show()
+
+    
