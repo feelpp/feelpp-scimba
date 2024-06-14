@@ -39,10 +39,8 @@ Open the project in Visual Studio Code:
 [source,python]
 ----
 # Clone the repository
-git clone https://github.com/master-csmi/2024-m1-scimba-feelpp.git
+git clone https://github.com/master-csmi/2024-stage-feelpp-scimba
 
-# Change branch
-git checkout feelpp-solver
 
 # To build a Docker image:
 docker buildx build  -t feelpp_scimba:latest .
@@ -53,7 +51,7 @@ docker buildx build  -t feelpp_scimba:latest .
 docker run -it feelpp_scimba:latest
 
 
-#VS Code will detect the .devcontainer configuration and prompt you to reopen the folder in a container.
+#VS Code will detect the .devcontainer configuration and prompt you to reopen the folder in the container.
 ----
 
 === Example
@@ -80,11 +78,11 @@ e = feelpp.Environment(sys.argv,
 # mesh of size h
 
 # Example usage of the Poisson class
+
 # Create an instance of the Poisson class for a 2-dimensional problem
 P = Poisson(dim=2)
 
 # Solve the Poisson problem with the specified parameters
-
 P(  h=0.05,                                                                           # mesh size 
     order=1,                                                                          # polynomial order 
     name='u',                                                                         # name of the variable u
