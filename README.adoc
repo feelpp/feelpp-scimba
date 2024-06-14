@@ -81,7 +81,7 @@ e = feelpp.Environment(sys.argv,
 
 # Example usage of the Poisson class
 # Create an instance of the Poisson class for a 2-dimensional problem
-P = Poisson_feel(dim=2)
+P = Poisson(dim=2)
 
 # Solve the Poisson problem with the specified parameters
 
