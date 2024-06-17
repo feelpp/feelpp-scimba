@@ -261,6 +261,7 @@ class Poisson:
     if solver == 'scimba':
       import pyvista as pv
       import torch
+      from tools.GmeshRead import mesh2d
 
       u_scimba = self.scimba_solver(shape=shape, h=h, dim=self.dim, verbose=True)
       
@@ -275,35 +276,37 @@ class Poisson:
       for i, block in enumerate(data):
         if block is None:
           continue
-        print(f"Block {i}:")
-        print(block)
         # Extract the mesh points (coordinates)
         coordinates = block.points
-        print(f"Bloc {i}:")
-        print(block)
-
-        print("Champs de points disponibles:", block.point_data.keys())
-        print("Champs de cellules disponibles:", block.cell_data.keys())
-
         solution = 'cfpdes.poisson.u'
         solution_expression = block.point_data[solution]
 
         df = pd.DataFrame(block.point_data)
         print(df.head())
 
-      print(f"Number of points: {len(coordinates)}")          
-      print("\nNodes:"  , coordinates)
-      feel_solution = block.point_data['cfpdes.poisson.u']
-      print("\nFeel++ solution 'cfpdes.poisson.u':")
-      print(feel_solution) 
-      
+
       # Considering only 2d problems:
       num_features = coordinates.shape[1]
       print(f"Number of features in coordinates: {num_features}")
       if num_features > 2:
         coordinates = coordinates[:, :2]
-      
+
+      print(f"Number of points: {len(coordinates)}")          
+      print("\nNodes:"  , coordinates)
+      feel_solution = block.point_data['cfpdes.poisson.u']
+      print("\nFeel++ solution 'cfpdes.poisson.u':")
+      print(feel_solution) 
+
+
+      mesh = "omega-2.msh"
+      my_mesh = mesh2d(mesh)
+      my_mesh.read_mesh()
+      print("Number of nodes:", my_mesh.Nnodes)
+      print("Nodes coordinates:", my_mesh.Nodes)
+      print('difference = ', coordinates - my_mesh.Nodes)
+
       # Convert coordinates to tensor
+      #coordinates = my_mesh.Nodes
       coordinates_tensor = torch.tensor(coordinates, dtype=torch.double)
       print(f"Shape of input tensor (coordinates): {coordinates_tensor.shape}")
       
@@ -313,19 +316,7 @@ class Poisson:
 
       solution_tensor = u_scimba(coordinates_tensor, mu)
       solution_array = solution_tensor.detach().numpy().flatten()
-      
-      # Feel++ solution values for mean and std
-      feel_mean = np.mean(feel_solution)
-      feel_std = np.std(feel_solution)
-
-      # Calculate mean and std of ScimBa solution
-      scimba_mean = np.mean(solution_array)
-      scimba_std = np.std(solution_array)
-
-      # Scale ScimBa solution to match Feel++ mean and std
-      scaled_solution = (solution_array - scimba_mean) * (feel_std / scimba_std) + feel_mean
-      solution_array = scaled_solution
-
+     
 
       print(f"ScimBa solution: {solution_array}")
       print("\n Difference : ", solution_array - feel_solution)

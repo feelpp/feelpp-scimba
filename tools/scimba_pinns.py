@@ -28,10 +28,11 @@ ELLIPSOID_B = 1 / ELLIPSOID_A
 
 class Poisson_2D(pdes.AbstractPDEx):
     def __init__(self, space_domain, 
-                 rhs='-2 * (-6 + x * (2 - 6 * y) + 3 * y - 8 * y*y + 2 * y*y*y + x*x * (-2 + 6 * y))',
+                 rhs = '8*pi*pi*sin(2*pi*x) * sin(2*pi*y)',
                  diff='(1,0,0,1)', 
-                 g ='y*y*y * (1 - y) - 2 * y*y * ((y - 1) * x * (1 - x)) + 6 * y * (1 - y)',
-                 u_exact = 'y*y*y * (1 - y) - 2 * y*y * ((y - 1) * x * (1 - x)) + 6 * y * (1 - y)'):
+                 g ='0',
+                 u_exact = 'sin(2*pi*x) * sin(2*pi*y)'):
+        
         super().__init__(
             nb_unknowns=1,
             space_domain=space_domain,
@@ -170,6 +171,12 @@ if __name__ == "__main__":
     pde = Poisson_2D(xdomain)
     network, pde = Run_laplacian2D(pde)
 
+    pde = Poisson_2D(xdomain,
+                 rhs='-2 * (-6 + x * (2 - 6 * y) + 3 * y - 8 * y*y + 2 * y*y*y + x*x * (-2 + 6 * y))',
+                 diff='(1,0,0,1)', 
+                 g ='y*y*y * (1 - y) - 2 * y*y * ((y - 1) * x * (1 - x)) + 6 * y * (1 - y)',
+                 u_exact = 'y*y*y * (1 - y) - 2 * y*y * ((y - 1) * x * (1 - x)) + 6 * y * (1 - y)')
+    
     u_exact = '-y*y/2 - x*y*y*y/2 + y*y*y*y/4'
     pde = Poisson_2D(xdomain, rhs='-1.0-3*y*x+y*y', g='-y*y/2 - x*y*y*y/2 + y*y*y*y/4', u_exact = u_exact)
     network, pde = Run_laplacian2D(pde)
@@ -177,7 +184,7 @@ if __name__ == "__main__":
     u_exact = 'y + (x*(1-x) + y*(1-y)/4) '
     pde = Poisson_2D(xdomain, rhs='5/2', g='y', u_exact = u_exact)
     network, pde = Run_laplacian2D(pde)
-    """
+    
     u_exact = 'sin(2*pi*x) * sin(2*pi*y)'
     rhs = '8*pi*pi*sin(2*pi*x) * sin(2*pi*y)'
     pde = Poisson_2D(xdomain, rhs=rhs, g='0', u_exact = u_exact)
@@ -198,7 +205,7 @@ if __name__ == "__main__":
     rhs = '4*pi*sin(pi*(x*x + y*y)) - 4*pi*pi*(x*x + y*y)*cos(pi*(x*x + y*y))'
     pde_disk = Poisson_2D(xdomain,  rhs= rhs, g= '0', u_exact=u_exact)
     network, pde = Run_laplacian2D(pde_disk)
-    """
+    
 
     u_scimba = network.forward
 
