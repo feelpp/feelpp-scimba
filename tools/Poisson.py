@@ -77,7 +77,7 @@ class Poisson:
     with open(filename, 'w') as f:
       f.write(geo)
 
-  def getMesh(self, filename,h=0.05, shape = 'Rectangle',verbose=False):
+  def getMesh(self, filename, h=0.05, shape = 'Rectangle',verbose=False):
     """create mesh"""
     import os
     for ext in [".msh",".geo"]:
@@ -92,11 +92,11 @@ class Poisson:
   
 ##______________________________________________________________________________________________
 
-  def feel_solver(self, filename, h, json,verbose=False):
+  def feel_solver(self, filename, json, h = 0.05, shape = 'Rectangle',verbose=False):
     if verbose:
       print(f"Solving the laplacian problem for h = {h}...")
     poisson = self.pb
-    poisson.setMesh(self.getMesh(f"omega-{self.dim}.geo",h=h,verbose=verbose))
+    poisson.setMesh(self.getMesh(f"omega-{self.dim}.geo", h=h, shape =shape, verbose=verbose))
     poisson.setModelProperties(json)
     poisson.init(buildModelAlgebraicFactory=True)
     poisson.printAndSaveInfo()
@@ -113,7 +113,7 @@ class Poisson:
     
     diff = self.diff.replace('{', '(').replace('}', ')')
     
-    if shape == 'disk':
+    if shape == 'Disk':
       xdomain = domain.SpaceDomain(2, domain.DiskBasedDomain(2, center=[0.0, 0.0], radius=1.0))
   
     elif shape == 'Rectangle':
@@ -130,7 +130,7 @@ class Poisson:
 ##______________________________________________________________________________________________
   
   def __call__(self,
-               h=0.05,                                      # mesh size 
+               h=0.1,                                       # mesh size 
                order=1,                                     # polynomial order 
                name='u',                                    # name of the variable u
                rhs='8*pi*pi*sin(2*pi*x)*sin(2*pi*y)',       # right hand side
@@ -256,15 +256,66 @@ class Poisson:
   # Solving
 
     poisson_json = lambda order,dim=2,name="u": self.model
-    self.measures = self.feel_solver(filename=fn, h=h, json=poisson_json(order=self.order,dim=self.dim), verbose=True)
-        
+    self.measures = self.feel_solver(filename=fn, h=h, shape =shape, json=poisson_json(order=self.order,dim=self.dim), verbose=True)
+
+##________________________   
+    # Plots
+
+    from xvfbwrapper import Xvfb
+    import pyvista as pv 
+    import matplotlib.pyplot as plt
+
+
+    vdisplay = Xvfb()
+    vdisplay.start()
+    pv.set_jupyter_backend('static') 
+    #pv.start_xvfb()
+
+    def pv_get_mesh(mesh_path):
+      reader = pv.get_reader(mesh_path)
+      mesh = reader.read()
+      return mesh
+
+    def pv_plot(mesh, field, clim=None, cmap=custom_cmap, cpos='xy', show_scalar_bar=True, show_edges=True):
+      mesh.plot(scalars=field, clim=clim, cmap=cmap, cpos=cpos, show_scalar_bar=show_scalar_bar, show_edges=show_edges)
+
+    def myplots(dim=2, field=f"cfpdes.poisson.{name}", factor=1, cmap=custom_cmap):
+      mesh = pv_get_mesh((f"cfpdes-{self.dim}d-p{self.order}.exports/Export.case"))
+      #pv_plot(mesh, field)
+      pl = pv.Plotter(shape=(1,2))
+      """
+      if solver == 'scimba':
+        pl = pv.Plotter(shape=(1,2))
+        pl.subplot(0,2)
+        pl.add_title('u_scimba', font_size=10)
+        pl.add_mesh(mesh[0].copy(), scalars = scimba_solution, cmap=custom_cmap)
+      """
+      pl.subplot(0,0)
+      pl.add_title(f'Solution P{order}', font_size=10)
+      pl.add_mesh(mesh[0].copy(), scalars = f"cfpdes.poisson.{name}", cmap=custom_cmap)
+
+      pl.subplot(0,1)
+      pl.add_title('u_exact', font_size=10)
+      pl.add_mesh(mesh[0].copy(), scalars = 'cfpdes.expr.u_exact', cmap=custom_cmap)      
+
+      pl.link_views()
+      pl.view_xy()    
+      if plot == 1:
+        pl.show()
+        pl.screenshot(plot)
+      
+      
+
+    myplots(dim=2,factor=1)
+
+    # Comparing solutions
     if solver == 'scimba':
       import pyvista as pv
       import torch
       from tools.GmeshRead import mesh2d
 
       u_scimba = self.scimba_solver(shape=shape, h=h, dim=self.dim, verbose=True)
-      
+
       # File path to the .case file
       file_path = 'cfpdes-2d-p1.exports/Export.case'
 
@@ -284,7 +335,6 @@ class Poisson:
         df = pd.DataFrame(block.point_data)
         print(df.head())
 
-
       # Considering only 2d problems:
       num_features = coordinates.shape[1]
       print(f"Number of features in coordinates: {num_features}")
@@ -292,20 +342,20 @@ class Poisson:
         coordinates = coordinates[:, :2]
 
       print(f"Number of points: {len(coordinates)}")          
-      print("\nNodes:"  , coordinates)
+      print("\nNodes from export.case:", coordinates)
       feel_solution = block.point_data['cfpdes.poisson.u']
       print("\nFeel++ solution 'cfpdes.poisson.u':")
       print(feel_solution) 
-
 
       mesh = "omega-2.msh"
       my_mesh = mesh2d(mesh)
       my_mesh.read_mesh()
       print("Number of nodes:", my_mesh.Nnodes)
-      print("Nodes coordinates:", my_mesh.Nodes)
-      print('difference = ', coordinates - my_mesh.Nodes)
+      print("Nodes coordinates from mesh2d:", my_mesh.Nodes)
+      print('difference between  = ', coordinates - my_mesh.Nodes)
 
       # Convert coordinates to tensor
+
       #coordinates = my_mesh.Nodes
       coordinates_tensor = torch.tensor(coordinates, dtype=torch.double)
       print(f"Shape of input tensor (coordinates): {coordinates_tensor.shape}")
@@ -315,59 +365,30 @@ class Poisson:
       mu = torch.full((coordinates_tensor.size(0), 1), mu_value, dtype=torch.double)
 
       solution_tensor = u_scimba(coordinates_tensor, mu)
-      solution_array = solution_tensor.detach().numpy().flatten()
-     
+      scimba_solution = solution_tensor.detach().numpy().flatten()
+      
 
-      print(f"ScimBa solution: {solution_array}")
-      print("\n Difference : ", solution_array - feel_solution)
+      print(f"ScimBa solution: {scimba_solution}")
+      print("\n Difference : ", scimba_solution - feel_solution)
 
-##________________________   
-    # Plots
-
-    from xvfbwrapper import Xvfb
-    import pyvista as pv 
-    import matplotlib.pyplot as plt
-
-
-    vdisplay = Xvfb()
-    vdisplay.start()
-    pv.set_jupyter_backend('static') 
-    #pv.start_xvfb()
-    def pv_get_mesh(mesh_path):
-      reader = pv.get_reader(mesh_path)
-      mesh = reader.read()
-      return mesh
-
-    def pv_plot(mesh, field, clim=None, cmap=custom_cmap, cpos='xy', show_scalar_bar=True, show_edges=True):
-      mesh.plot(scalars=field, clim=clim, cmap=cmap, cpos=cpos, show_scalar_bar=show_scalar_bar, show_edges=show_edges)
-
-    def myplots(dim=2, field=f"cfpdes.poisson.{name}", factor=1, cmap=custom_cmap):
       mesh = pv_get_mesh((f"cfpdes-{self.dim}d-p{self.order}.exports/Export.case"))
       #pv_plot(mesh, field)
-      pl = pv.Plotter(shape=(1,2))
-      if solver == 'scimba':
-        pl = pv.Plotter(shape=(1,3))
-        pl.subplot(0,2)
-        pl.add_title('u_scimba ' , font_size=10)
-        pl.add_mesh(mesh[0], scalars = solution_array, cmap=custom_cmap)
-
+      pl = pv.Plotter(shape=(1,1))
       pl.subplot(0,0)
-      pl.add_title(f'Solution P{order}', font_size=10)
-      pl.add_mesh(mesh[0].copy(), scalars = f"cfpdes.poisson.{name}", cmap=custom_cmap)
-
-      pl.subplot(0,1)
-      pl.add_title('u_exact', font_size=10)
-      pl.add_mesh(mesh[0].copy(), scalars = 'cfpdes.expr.u_exact', cmap=custom_cmap)      
-
+      pl.add_title('u_scimba', font_size=10)
+      pl.add_mesh(mesh[0].copy(), scalars = scimba_solution, cmap=custom_cmap)
       pl.link_views()
       pl.view_xy()    
-      if plot != None:
-        pl.show()
-        pl.screenshot(plot)
+      pl.show()
+      pl.screenshot(plot)
+      
 
-    myplots(dim=2,factor=0.5)
+
 
 #______________________________________________________________________________________________
+
+
+
 
 def runLaplacianPk(P, df, model, measures, verbose=False):
   """Generate the Pk case"""

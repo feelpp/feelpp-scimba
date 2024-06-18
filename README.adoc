@@ -95,7 +95,7 @@ P(  h=0.05,                                                                     
     u_exact='sin(2 * pi * x) * sin(2 * pi * y)',                                      # exact solution for comparison
     grad_u_exact = '{2*pi*cos(2*pi*x)*sin(2*pi*y),2*pi*sin(2*pi*x)*cos(2*pi*y)}'      # gradient of the exact solution for error computation               
         
-):
+)
 ----
 [[project-status]]
 == Project Status

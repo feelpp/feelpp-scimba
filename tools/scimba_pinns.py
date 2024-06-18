@@ -115,7 +115,7 @@ class PoissonDisk2D(pdes.AbstractPDEx):
 
 
 
-def Run_laplacian2D(pde, epoch = 100, bc_loss_bool=True, w_bc=10, w_res=10):
+def Run_laplacian2D(pde, epoch = 100, bc_loss_bool=True, w_bc=100, w_res=100):
     x_sampler = sampling_pde.XSampler(pde=pde)
     mu_sampler = sampling_parameters.MuSampler(
         sampler=uniform_sampling.UniformSampling, model=pde
@@ -166,16 +166,19 @@ def Run_laplacian2D(pde, epoch = 100, bc_loss_bool=True, w_bc=10, w_res=10):
 
 if __name__ == "__main__":
     # Laplacien strong Bc on Square with nn
+    
     xdomain = domain.SpaceDomain(2, domain.SquareDomain(2, [[0.0, 1.0], [0.0, 1.0]]))
     print(xdomain)
-    pde = Poisson_2D(xdomain)
+    u_exact = '-0.00153604383914189*x*y - 9.61385117366688e-5*x*y*y + 0.0055240396274225*x + 0.000397708847979788*x*x*y - 0.00510744202291213*x*x + 0.000769546345009569*x*x*x + 0.00608382001283016*y - 0.00451126329062151*y*y - 0.000928987597003269*y*y*y + 0.999559366857506'
+    pde = Poisson_2D(xdomain, g =u_exact, u_exact = u_exact)
     network, pde = Run_laplacian2D(pde)
 
+    """
     pde = Poisson_2D(xdomain,
-                 rhs='-2 * (-6 + x * (2 - 6 * y) + 3 * y - 8 * y*y + 2 * y*y*y + x*x * (-2 + 6 * y))',
+                 rhs='(-2 * (-6 + x * (2 - 6 * y) + 3 * y - 8 * y*y + 2 * y*y*y + x*x * (-2 + 6 * y))',
                  diff='(1,0,0,1)', 
                  g ='y*y*y * (1 - y) - 2 * y*y * ((y - 1) * x * (1 - x)) + 6 * y * (1 - y)',
-                 u_exact = 'y*y*y * (1 - y) - 2 * y*y * ((y - 1) * x * (1 - x)) + 6 * y * (1 - y)')
+                 u_exact ='y*y*y * (1 - y) - 2 * y*y * ((y - 1) * x * (1 - x)) + 6 * y * (1 - y)')
     
     u_exact = '-y*y/2 - x*y*y*y/2 + y*y*y*y/4'
     pde = Poisson_2D(xdomain, rhs='-1.0-3*y*x+y*y', g='-y*y/2 - x*y*y*y/2 + y*y*y*y/4', u_exact = u_exact)
@@ -266,13 +269,5 @@ if __name__ == "__main__":
     print(solution_array)
 
     u_sc = lambda x: network.forward(x, mu)
-    # Tracer les résultats
-    plt.figure(figsize=(10, 6))
-    plt.plot(solution_array, 'o', label='u_scimba values')
-    plt.xlabel('Index')
-    plt.ylabel('u_scimba value')
-    plt.title('Graph of u_scimba on mesh points')
-    plt.legend()
-    plt.show()
-
-    
+   
+    """
