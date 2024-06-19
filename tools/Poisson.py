@@ -155,7 +155,7 @@ class Poisson:
     self.u_exact = u_exact
     self.diff = diff
     self.pb    = cfpdes(dim=self.dim, keyword=f"cfpdes-{self.dim}d-p{self.order}")
-    self.model = {
+    self.model = lambda order,dim=2,name="u": {
       "Name": "Poisson",
       "ShortName": "Poisson",
       "Models":
@@ -255,7 +255,7 @@ class Poisson:
 
   # Solving
 
-    poisson_json = lambda order,dim=2,name="u": self.model
+    poisson_json = self.model
     self.measures = self.feel_solver(filename=fn, h=h, shape =shape, json=poisson_json(order=self.order,dim=self.dim), verbose=True)
 
 ##________________________   
