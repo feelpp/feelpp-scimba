@@ -135,7 +135,8 @@ class Poisson:
                name='u',                                    # name of the variable u
                rhs='8*pi*pi*sin(2*pi*x)*sin(2*pi*y)',       # right hand side
                diff='{1,0,0,1}',                            # diffusion matrix
-               g='0',                                       # boundary conditions
+               g='0',                                       # Dirichlet boundary conditions
+               gN='0',                                      # Neumann boundary conditions
                shape='Rectangle',                           # domain shape (Rectangle, Disk)    
                geofile=None,                                # geometry file
                plot=1,                                      # plot the solution
@@ -152,6 +153,7 @@ class Poisson:
     self.measures = dict()
     self.rhs = rhs
     self.g = g
+    self.gN = gN
     self.u_exact = u_exact
     self.diff = diff
     self.pb    = cfpdes(dim=self.dim, keyword=f"cfpdes-{self.dim}d-p{self.order}")
@@ -195,6 +197,14 @@ class Poisson:
             {
               "markers":["Gamma_D"],
               "expr":f"{g}:x:y"
+            }
+          },
+          "Neumann": 
+          { 
+            "gN": 
+            {
+              "markers":["Gamma_D"],
+              "expr":f"{gN}:x:y:nx:ny"
             }
           }
         }
