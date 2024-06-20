@@ -168,7 +168,7 @@ def Run_laplacian2D(pde, epoch=100, bc_loss_bool=True, w_bc=10, w_res=10):
     n_visu = 20000
     reference_solution = True
     trainer.plot(n_visu, reference_solution=True)
-    u = trainer.network.setup_w_dict
+    u = pinn.get_w
 
     return u
 
@@ -182,12 +182,14 @@ if __name__ == "__main__":
     print(u)
     # Example points to evaluate u
     points = [[0.1, 0.2], [0.5, 0.7], [1.0, 1.0]]
-    points = torch.tensor(points, dtype=torch.float32)
+    points = torch.tensor(points, dtype=torch.float64)
     labels = torch.zeros(len(points))  # Assuming all points have label 0    
     data = domain.SpaceTensor(points, labels, boundary=True)
     points = points.to(torch.float32)
-    mu = torch.ones((len(points), 1), dtype=torch.float32)
+    mu = torch.ones((len(points), 1), dtype=torch.float64)
 
     u_values = u(data, mu)
     for point, u_value in zip(points, u_values):
-        print(f"Point: {point}, u value: {u_value}")
+        print(f"u( {point[0:]} ) = {u_value[0]}")
+
+    

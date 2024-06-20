@@ -120,10 +120,7 @@ class Poisson:
       xdomain = domain.SpaceDomain(2, domain.SquareDomain(2, [[0.0, 1.0], [0.0, 1.0]]))
     
     pde = Poisson_2D(xdomain, rhs=self.rhs, diff=diff, g=self.g, u_exact=self.u_exact)
-    network, pde = Run_laplacian2D(pde)
-
-    # Extract solution function u
-    u = network.forward
+    u = Run_laplacian2D(pde)
 
     return u
 
@@ -357,36 +354,47 @@ class Poisson:
       print("\nFeel++ solution 'cfpdes.poisson.u':")
       print(feel_solution) 
 
-      mesh = "omega-2.msh"
-      my_mesh = mesh2d(mesh)
-      my_mesh.read_mesh()
-      print("Number of nodes:", my_mesh.Nnodes)
-      print("Nodes coordinates from mesh2d:", my_mesh.Nodes)
-      print('difference between  = ', coordinates - my_mesh.Nodes)
-
-      # Convert coordinates to tensor
-
-      #coordinates = my_mesh.Nodes
-      coordinates_tensor = torch.tensor(coordinates, dtype=torch.double)
+      coordinates_tensor = torch.tensor(coordinates, dtype=torch.float64)
       print(f"Shape of input tensor (coordinates): {coordinates_tensor.shape}")
-      
-      # Create the mu tensor with correct shape
-      mu_value = 1
-      mu = torch.full((coordinates_tensor.size(0), 1), mu_value, dtype=torch.double)
+     
+      points = coordinates_tensor
+      labels = torch.zeros(len(points))  # Assuming all points have label 0    
+      data = domain.SpaceTensor(points, labels, boundary=True)
+      mu = torch.ones((len(points), 1), dtype=torch.float64)
+      scimba_solution = []
+      u_values = u_scimba(data, mu)
 
-      solution_tensor = u_scimba(coordinates_tensor, mu)
-      scimba_solution = solution_tensor.detach().numpy().flatten()
+      for point, u_value in zip(points, u_values):
+        print(f"u( {point[0:]} ) = {u_value[0]}")
+        u_value_np = u_value.detach().numpy()
+
+        scimba_solution = np.append(scimba_solution, u_value_np[0]) 
       
+      #scimba_solution = scimba_solution.tensor.detach().numpy()
 
       print(f"ScimBa solution: {scimba_solution}")
       print("\n Difference : ", scimba_solution - feel_solution)
 
       mesh = pv_get_mesh((f"cfpdes-{self.dim}d-p{self.order}.exports/Export.case"))
       #pv_plot(mesh, field)
-      pl = pv.Plotter(shape=(1,1))
+      pl = pv.Plotter(shape=(1,4))
       pl.subplot(0,0)
       pl.add_title('u_scimba', font_size=10)
       pl.add_mesh(mesh[0].copy(), scalars = scimba_solution, cmap=custom_cmap)
+
+      pl.subplot(0,1)
+      pl.add_title(f'u_feel', font_size=10)
+      pl.add_mesh(mesh[0].copy(), scalars = f"cfpdes.poisson.{name}", cmap=custom_cmap)
+
+      pl.subplot(0,2)
+      pl.add_title('u_exact', font_size=10)
+      pl.add_mesh(mesh[0].copy(), scalars = 'cfpdes.expr.u_exact', cmap=custom_cmap)      
+      
+      
+      pl.subplot(0,3)
+      pl.add_title('erreur u_scimba - u_feel', font_size=10)
+      pl.add_mesh(mesh[0].copy(), scalars = scimba_solution - feel_solution, cmap=custom_cmap)   
+
       pl.link_views()
       pl.view_xy()    
       pl.show()
