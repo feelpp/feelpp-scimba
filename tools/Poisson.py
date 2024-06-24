@@ -127,7 +127,7 @@ class Poisson:
 ##______________________________________________________________________________________________
   
   def __call__(self,
-               h=0.1,                                       # mesh size 
+               h=0.05,                                      # mesh size 
                order=1,                                     # polynomial order 
                name='u',                                    # name of the variable u
                rhs='8*pi*pi*sin(2*pi*x)*sin(2*pi*y)',       # right hand side
@@ -147,6 +147,7 @@ class Poisson:
     - order the polynomial order
     - rhs is the expression of the right-hand side f(x,y)
     """
+    self.h = h
     self.measures = dict()
     self.rhs = rhs
     self.g = g
@@ -214,7 +215,6 @@ class Poisson:
           {
             "fields":["all"],
             "expr":{
-              #"u_scimba": f"{u_scimba}:x:y" if self.dim == 2 else f"{name}:x:y:z",
               "rhs": f"{rhs}:x:y" if self.dim == 2 else f"{rhs}:x:y:z",
               "u_exact" : f"{u_exact}:x:y" if self.dim==2 else f"{u_exact}:x:y:z",
               "grad_u_exact" : f"{grad_u_exact}:x:y" if self.dim==2 else f"{grad_u_exact}:x:y:z"
@@ -255,7 +255,7 @@ class Poisson:
     fn = None
     if geofile is None:
       fn = f'omega-{self.dim}.geo'
-      self.genGeometry(fn, h, shape=shape)
+      self.genGeometry(fn, self.h, shape=shape)
     else:
       fn = geofile    
 ##________________________
@@ -263,7 +263,7 @@ class Poisson:
   # Solving
 
     poisson_json = self.model
-    self.measures = self.feel_solver(filename=fn, h=h, shape =shape, json=poisson_json(order=self.order,dim=self.dim), verbose=True)
+    self.measures = self.feel_solver(filename=fn, h=self.h, shape =shape, json=poisson_json(order=self.order,dim=self.dim), verbose=True)
 
 ##________________________   
     # Plots
@@ -290,13 +290,7 @@ class Poisson:
       mesh = pv_get_mesh((f"cfpdes-{self.dim}d-p{self.order}.exports/Export.case"))
       #pv_plot(mesh, field)
       pl = pv.Plotter(shape=(1,2))
-      """
-      if solver == 'scimba':
-        pl = pv.Plotter(shape=(1,2))
-        pl.subplot(0,2)
-        pl.add_title('u_scimba', font_size=10)
-        pl.add_mesh(mesh[0].copy(), scalars = scimba_solution, cmap=custom_cmap)
-      """
+
       pl.subplot(0,0)
       pl.add_title(f'Solution P{order}', font_size=10)
       pl.add_mesh(mesh[0].copy(), scalars = f"cfpdes.poisson.{name}", cmap=custom_cmap)
@@ -350,7 +344,10 @@ class Poisson:
 
       print(f"Number of points: {len(coordinates)}")          
       print("\nNodes from export.case:", coordinates)
+
       feel_solution = block.point_data['cfpdes.poisson.u']
+      u_ex = block.point_data['cfpdes.expr.u_exact']
+      
       print("\nFeel++ solution 'cfpdes.poisson.u':")
       print(feel_solution) 
 
@@ -377,34 +374,55 @@ class Poisson:
 
       mesh = pv_get_mesh((f"cfpdes-{self.dim}d-p{self.order}.exports/Export.case"))
       #pv_plot(mesh, field)
-      pl = pv.Plotter(shape=(1,4))
-      pl.subplot(0,0)
-      pl.add_title('u_scimba', font_size=10)
-      pl.add_mesh(mesh[0].copy(), scalars = scimba_solution, cmap=custom_cmap)
+      pl = pv.Plotter(shape=(3,2))
 
-      pl.subplot(0,1)
-      pl.add_title(f'u_feel', font_size=10)
-      pl.add_mesh(mesh[0].copy(), scalars = f"cfpdes.poisson.{name}", cmap=custom_cmap)
-
-      pl.subplot(0,2)
-      pl.add_title('u_exact', font_size=10)
+      pl.subplot(1,0)
+      pl.add_title('u_exact', font_size=8)
       pl.add_mesh(mesh[0].copy(), scalars = 'cfpdes.expr.u_exact', cmap=custom_cmap)      
+
+
+      pl.subplot(1,1)
+      pl.add_title('u_scimba - u_feel', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars = scimba_solution - feel_solution, cmap=custom_cmap)  
+      print('norm sup = ', np.linalg.norm(scimba_solution - feel_solution, np.inf))   
+      
+      pl.subplot(0,1)
+      pl.add_title('u_scimba', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars = scimba_solution, cmap=custom_cmap)
+      pl.add_scalar_bar(title='u_scimba')
       
       
-      pl.subplot(0,3)
-      pl.add_title('erreur u_scimba - u_feel', font_size=10)
-      pl.add_mesh(mesh[0].copy(), scalars = scimba_solution - feel_solution, cmap=custom_cmap)   
+      pl.subplot(0,0)
+      pl.add_title(f'u_feel', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars = 'cfpdes.poisson.u', cmap=custom_cmap)
+     
+
+      pl.subplot(2,1)
+      pl.add_title('u_exact - u_feel', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars = u_ex - feel_solution, cmap=custom_cmap)   
+      pl.add_scalar_bar(title='u_exact - u_feel')
+     
+      pl.subplot(2,0)
+      pl.add_title('u_exact - u_scimba', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars = u_ex - scimba_solution, cmap=custom_cmap)   
+      pl.add_scalar_bar(title='u_exact - u_scimba ')
+     
 
       pl.link_views()
       pl.view_xy()    
-      pl.show()
-      pl.screenshot(plot)
+      if plot == 1:
+        pl.show()
+        pl.screenshot(plot)
+
+
+
       
 
 
+      
+
 
 #______________________________________________________________________________________________
-
 
 
 

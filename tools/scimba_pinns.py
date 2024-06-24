@@ -56,7 +56,7 @@ class Poisson_2D(pdes.AbstractPDEx):
     def bc_residual(self, w, x, mu, **kwargs):
         u = self.get_variables(w)
         x1, x2 = x.get_coordinates()
-        g = eval(self.u_exact, {'x': x1, 'y': x2, 'pi': PI, 'sin' : torch.sin, 'cos': torch.cos})
+        g = eval(self.u_exact, {'x': x1, 'y': x2, 'pi': PI, 'sin' : torch.sin, 'cos': torch.cos, 'exp': torch.exp})
 
         return  g
 
@@ -65,20 +65,20 @@ class Poisson_2D(pdes.AbstractPDEx):
         u_xx = self.get_variables(w, "w_xx")
         u_yy = self.get_variables(w, "w_yy")
 
-        diff = eval(self.diff, {'x': x1, 'y': x2, 'pi': PI, 'sin' : torch.sin, 'cos': torch.cos})
-        f = eval(self.rhs, {'x': x1, 'y': x2, 'pi': PI, 'sin': torch.sin, 'cos': torch.cos})
+        diff = eval(self.diff, {'x': x1, 'y': x2, 'pi': PI, 'sin' : torch.sin, 'cos': torch.cos, 'exp': torch.exp})
+        f = eval(self.rhs, {'x': x1, 'y': x2, 'pi': PI, 'sin': torch.sin, 'cos': torch.cos, 'exp': torch.exp})
         
         return u_xx* diff[0] + u_yy* diff[3] + f
     
     def post_processing(self, x, mu, w):
         x1, x2 = x.get_coordinates()
-        g = eval(self.u_exact, {'x': x1, 'y': x2, 'pi': PI, 'sin' : torch.sin, 'cos': torch.cos})
+        g = eval(self.u_exact, {'x': x1, 'y': x2, 'pi': PI, 'sin' : torch.sin, 'cos': torch.cos, 'exp': torch.exp})
         return g * w
   
     def reference_solution(self, x, mu):
         x1, x2 = x.get_coordinates()
         alpha = self.get_parameters(mu)
-        return alpha*eval(self.u_exact, {'x': x1, 'y': x2, 'pi': PI, 'sin': torch.sin, 'cos': torch.cos})
+        return alpha*eval(self.u_exact, {'x': x1, 'y': x2, 'pi': PI, 'sin': torch.sin, 'cos': torch.cos, 'exp': torch.exp})
 
 #___________________________________________________________________________________________________________
 
