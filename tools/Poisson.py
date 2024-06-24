@@ -120,22 +120,20 @@ class Poisson:
       xdomain = domain.SpaceDomain(2, domain.SquareDomain(2, [[0.0, 1.0], [0.0, 1.0]]))
     
     pde = Poisson_2D(xdomain, rhs=self.rhs, diff=diff, g=self.g, u_exact=self.u_exact)
-    network, pde = Run_laplacian2D(pde)
-
-    # Extract solution function u
-    u = network.forward
+    u = Run_laplacian2D(pde)
 
     return u
 
 ##______________________________________________________________________________________________
   
   def __call__(self,
-               h=0.1,                                       # mesh size 
+               h=0.05,                                      # mesh size 
                order=1,                                     # polynomial order 
                name='u',                                    # name of the variable u
                rhs='8*pi*pi*sin(2*pi*x)*sin(2*pi*y)',       # right hand side
                diff='{1,0,0,1}',                            # diffusion matrix
-               g='0',                                       # boundary conditions
+               g='0',                                       # Dirichlet boundary conditions
+               gN='0',                                      # Neumann boundary conditions
                shape='Rectangle',                           # domain shape (Rectangle, Disk)    
                geofile=None,                                # geometry file
                plot=1,                                      # plot the solution
@@ -149,13 +147,15 @@ class Poisson:
     - order the polynomial order
     - rhs is the expression of the right-hand side f(x,y)
     """
+    self.h = h
     self.measures = dict()
     self.rhs = rhs
     self.g = g
+    self.gN = gN
     self.u_exact = u_exact
     self.diff = diff
     self.pb    = cfpdes(dim=self.dim, keyword=f"cfpdes-{self.dim}d-p{self.order}")
-    self.model = {
+    self.model = lambda order,dim=2,name="u": {
       "Name": "Poisson",
       "ShortName": "Poisson",
       "Models":
@@ -196,6 +196,14 @@ class Poisson:
               "markers":["Gamma_D"],
               "expr":f"{g}:x:y"
             }
+          },
+          "Neumann": 
+          { 
+            "gN": 
+            {
+              "markers":["Gamma_D"],
+              "expr":f"{gN}:x:y:nx:ny"
+            }
           }
         }
       },
@@ -207,7 +215,6 @@ class Poisson:
           {
             "fields":["all"],
             "expr":{
-              #"u_scimba": f"{u_scimba}:x:y" if self.dim == 2 else f"{name}:x:y:z",
               "rhs": f"{rhs}:x:y" if self.dim == 2 else f"{rhs}:x:y:z",
               "u_exact" : f"{u_exact}:x:y" if self.dim==2 else f"{u_exact}:x:y:z",
               "grad_u_exact" : f"{grad_u_exact}:x:y" if self.dim==2 else f"{grad_u_exact}:x:y:z"
@@ -248,15 +255,15 @@ class Poisson:
     fn = None
     if geofile is None:
       fn = f'omega-{self.dim}.geo'
-      self.genGeometry(fn, h, shape=shape)
+      self.genGeometry(fn, self.h, shape=shape)
     else:
       fn = geofile    
 ##________________________
 
   # Solving
 
-    poisson_json = lambda order,dim=2,name="u": self.model
-    self.measures = self.feel_solver(filename=fn, h=h, shape =shape, json=poisson_json(order=self.order,dim=self.dim), verbose=True)
+    poisson_json = self.model
+    self.measures = self.feel_solver(filename=fn, h=self.h, shape =shape, json=poisson_json(order=self.order,dim=self.dim), verbose=True)
 
 ##________________________   
     # Plots
@@ -283,13 +290,7 @@ class Poisson:
       mesh = pv_get_mesh((f"cfpdes-{self.dim}d-p{self.order}.exports/Export.case"))
       #pv_plot(mesh, field)
       pl = pv.Plotter(shape=(1,2))
-      """
-      if solver == 'scimba':
-        pl = pv.Plotter(shape=(1,2))
-        pl.subplot(0,2)
-        pl.add_title('u_scimba', font_size=10)
-        pl.add_mesh(mesh[0].copy(), scalars = scimba_solution, cmap=custom_cmap)
-      """
+
       pl.subplot(0,0)
       pl.add_title(f'Solution P{order}', font_size=10)
       pl.add_mesh(mesh[0].copy(), scalars = f"cfpdes.poisson.{name}", cmap=custom_cmap)
@@ -343,50 +344,85 @@ class Poisson:
 
       print(f"Number of points: {len(coordinates)}")          
       print("\nNodes from export.case:", coordinates)
+
       feel_solution = block.point_data['cfpdes.poisson.u']
+      u_ex = block.point_data['cfpdes.expr.u_exact']
+      
       print("\nFeel++ solution 'cfpdes.poisson.u':")
       print(feel_solution) 
 
-      mesh = "omega-2.msh"
-      my_mesh = mesh2d(mesh)
-      my_mesh.read_mesh()
-      print("Number of nodes:", my_mesh.Nnodes)
-      print("Nodes coordinates from mesh2d:", my_mesh.Nodes)
-      print('difference between  = ', coordinates - my_mesh.Nodes)
-
-      # Convert coordinates to tensor
-
-      #coordinates = my_mesh.Nodes
-      coordinates_tensor = torch.tensor(coordinates, dtype=torch.double)
+      coordinates_tensor = torch.tensor(coordinates, dtype=torch.float64)
       print(f"Shape of input tensor (coordinates): {coordinates_tensor.shape}")
-      
-      # Create the mu tensor with correct shape
-      mu_value = 1
-      mu = torch.full((coordinates_tensor.size(0), 1), mu_value, dtype=torch.double)
+     
+      points = coordinates_tensor
+      labels = torch.zeros(len(points))  # Assuming all points have label 0    
+      data = domain.SpaceTensor(points, labels, boundary=True)
+      mu = torch.ones((len(points), 1), dtype=torch.float64)
+      scimba_solution = []
+      u_values = u_scimba(data, mu)
 
-      solution_tensor = u_scimba(coordinates_tensor, mu)
-      scimba_solution = solution_tensor.detach().numpy().flatten()
+      for point, u_value in zip(points, u_values):
+        print(f"u( {point[0:]} ) = {u_value[0]}")
+        u_value_np = u_value.detach().numpy()
+
+        scimba_solution = np.append(scimba_solution, u_value_np[0]) 
       
+      #scimba_solution = scimba_solution.tensor.detach().numpy()
 
       print(f"ScimBa solution: {scimba_solution}")
       print("\n Difference : ", scimba_solution - feel_solution)
 
       mesh = pv_get_mesh((f"cfpdes-{self.dim}d-p{self.order}.exports/Export.case"))
       #pv_plot(mesh, field)
-      pl = pv.Plotter(shape=(1,1))
-      pl.subplot(0,0)
-      pl.add_title('u_scimba', font_size=10)
+      pl = pv.Plotter(shape=(3,2))
+
+      pl.subplot(1,0)
+      pl.add_title('u_exact', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars = 'cfpdes.expr.u_exact', cmap=custom_cmap)      
+
+
+      pl.subplot(1,1)
+      pl.add_title('u_scimba - u_feel', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars = scimba_solution - feel_solution, cmap=custom_cmap)  
+      print('norm sup = ', np.linalg.norm(scimba_solution - feel_solution, np.inf))   
+      
+      pl.subplot(0,1)
+      pl.add_title('u_scimba', font_size=8)
       pl.add_mesh(mesh[0].copy(), scalars = scimba_solution, cmap=custom_cmap)
+      pl.add_scalar_bar(title='u_scimba')
+      
+      
+      pl.subplot(0,0)
+      pl.add_title(f'u_feel', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars = 'cfpdes.poisson.u', cmap=custom_cmap)
+     
+
+      pl.subplot(2,1)
+      pl.add_title('u_exact - u_feel', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars = u_ex - feel_solution, cmap=custom_cmap)   
+      pl.add_scalar_bar(title='u_exact - u_feel')
+     
+      pl.subplot(2,0)
+      pl.add_title('u_exact - u_scimba', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars = u_ex - scimba_solution, cmap=custom_cmap)   
+      pl.add_scalar_bar(title='u_exact - u_scimba ')
+     
+
       pl.link_views()
       pl.view_xy()    
-      pl.show()
-      pl.screenshot(plot)
+      if plot == 1:
+        pl.show()
+        pl.screenshot(plot)
+
+
+
       
 
 
+      
+
 
 #______________________________________________________________________________________________
-
 
 
 
