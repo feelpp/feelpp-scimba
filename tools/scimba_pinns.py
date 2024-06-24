@@ -33,7 +33,8 @@ class Poisson_2D(pdes.AbstractPDEx):
                  rhs = '8*pi*pi*sin(2*pi*x) * sin(2*pi*y)',
                  diff='(1,0,0,1)', 
                  g ='0',
-                 u_exact = 'sin(2*pi*x) * sin(2*pi*y)'):
+                 u_exact = 'sin(2*pi*x) * sin(2*pi*y)', 
+                 grad_u_exact = '(2*pi*cos(2*pi*x) * sin(2*pi*y), 2*pi*sin(2*pi*x) * cos(2*pi*y))'):
         
         super().__init__(
             nb_unknowns=1,
@@ -62,13 +63,19 @@ class Poisson_2D(pdes.AbstractPDEx):
 
     def residual(self, w, x, mu, **kwargs):
         x1, x2 = x.get_coordinates()
-        u_xx = self.get_variables(w, "w_xx")
-        u_yy = self.get_variables(w, "w_yy")
+        u_x = self.get_variables(w, "w_x")
+        u_y = self.get_variables(w, "w_y")
 
         diff = eval(self.diff, {'x': x1, 'y': x2, 'pi': PI, 'sin' : torch.sin, 'cos': torch.cos, 'exp': torch.exp})
         f = eval(self.rhs, {'x': x1, 'y': x2, 'pi': PI, 'sin': torch.sin, 'cos': torch.cos, 'exp': torch.exp})
         
-        return u_xx* diff[0] + u_yy* diff[3] + f
+        # Compute the diffusion matrix multiplication with the gradient
+        diff_grad_u_x = diff[0] * u_x + diff[1] * u_y
+        diff_grad_u_y = diff[2] * u_x + diff[3] * u_y
+        
+        # Compute the divergence of the modified gradient
+        div_diff_grad_u = diff_grad_u_x + diff_grad_u_y
+        return - div_diff_grad_u - f    
     
     def post_processing(self, x, mu, w):
         x1, x2 = x.get_coordinates()
