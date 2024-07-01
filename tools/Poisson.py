@@ -36,7 +36,7 @@ class Poisson:
 ##______________________________________________________________________________________________
 
 
-  def genGeometry(self, filename, h=0.05, shape = 'Rectangle'):
+  def genGeometry(self, filename, h, shape = 'Rectangle'):
     """
     Generate a cube geometry following the dimension  self.dim
     """   
@@ -54,10 +54,10 @@ class Poisson:
         """
       elif shape == 'Disk':
         geo += """
-              Disk(1) = {0, 0, 0, 1.0};
-              Physical Curve("Gamma_D") = {1};
-              Physical Surface("Omega") = {1};
-              """
+        Disk(1) = {0, 0, 0, 1.0};
+        Physical Curve("Gamma_D") = {1};
+        Physical Surface("Omega") = {1};
+        """
 
     elif self.dim == 3:
       if shape == 'Box':
@@ -77,7 +77,7 @@ class Poisson:
     with open(filename, 'w') as f:
       f.write(geo)
 
-  def getMesh(self, filename, h=0.05, shape = 'Rectangle',verbose=False):
+  def getMesh(self, filename, h, shape = 'Rectangle',verbose=False):
     """create mesh"""
     import os
     for ext in [".msh",".geo"]:
@@ -92,7 +92,7 @@ class Poisson:
   
 ##______________________________________________________________________________________________
 
-  def feel_solver(self, filename, json, h = 0.05, shape = 'Rectangle',verbose=False):
+  def feel_solver(self, filename, json, h, shape = 'Rectangle',verbose=False):
     if verbose:
       print(f"Solving the laplacian problem for h = {h}...")
     poisson = self.pb
@@ -107,7 +107,7 @@ class Poisson:
   
 ##______________________________________________________________________________________________
 
-  def scimba_solver(self, shape='Rectangle', h=0.05, dim = 2, verbose=False):
+  def scimba_solver(self, h, shape='Rectangle', dim = 2, verbose=False):
     if verbose:
       print(f"Solving a Poisson problem for h = {h}...")    
     
@@ -147,6 +147,7 @@ class Poisson:
     - order the polynomial order
     - rhs is the expression of the right-hand side f(x,y)
     """
+    a = 0.0
     self.h = h
     self.measures = dict()
     self.rhs = rhs
@@ -173,7 +174,8 @@ class Poisson:
             },
             "coefficients":{
               "c": f"{diff}:x:y" if self.dim == 2 else f"{diff}:x:y:z",
-              "f": f"{rhs}:x:y"  if self.dim == 2 else f"{rhs}:x:y:z"
+              "f": f"{rhs}:x:y"  if self.dim == 2 else f"{rhs}:x:y:z",
+              "a": f"{a}"
             }
           }
         }
@@ -218,7 +220,6 @@ class Poisson:
               "rhs": f"{rhs}:x:y" if self.dim == 2 else f"{rhs}:x:y:z",
               "u_exact" : f"{u_exact}:x:y" if self.dim==2 else f"{u_exact}:x:y:z",
               "grad_u_exact" : f"{grad_u_exact}:x:y" if self.dim==2 else f"{grad_u_exact}:x:y:z"
-
             }
           },
             "Measures" :
@@ -290,10 +291,12 @@ class Poisson:
       mesh = pv_get_mesh((f"cfpdes-{self.dim}d-p{self.order}.exports/Export.case"))
       #pv_plot(mesh, field)
       pl = pv.Plotter(shape=(1,2))
+    
 
       pl.subplot(0,0)
       pl.add_title(f'Solution P{order}', font_size=10)
       pl.add_mesh(mesh[0].copy(), scalars = f"cfpdes.poisson.{name}", cmap=custom_cmap)
+      
 
       pl.subplot(0,1)
       pl.add_title('u_exact', font_size=10)
@@ -304,18 +307,22 @@ class Poisson:
       if plot == 1:
         pl.show()
         pl.screenshot(plot)
-      
-      
 
-    myplots(dim=2,factor=1)
+    if plot == 1:
+      field="cfpdes.poisson.u"
+      mesh = pv_get_mesh(f"cfpdes-{self.dim}d-p{self.order}.exports/Export.case")
+      pv_plot(mesh, field)
+
+      #myplots(dim=2,factor=1)
 
     # Comparing solutions
     if solver == 'scimba':
       import pyvista as pv
       import torch
       from tools.GmeshRead import mesh2d
+      from scipy.spatial import cKDTree
 
-      u_scimba = self.scimba_solver(shape=shape, h=h, dim=self.dim, verbose=True)
+      u_scimba = self.scimba_solver( h=h, shape=shape, dim=self.dim, verbose=True)
 
       # File path to the .case file
       file_path = 'cfpdes-2d-p1.exports/Export.case'
@@ -351,9 +358,21 @@ class Poisson:
       print("\nFeel++ solution 'cfpdes.poisson.u':")
       print(feel_solution) 
 
+      mshfile = "/workspaces/2024-stage-feelpp-scimba/feelppdb/feelpp_cfpde/np_1/omega-2.msh"  
+      my_mesh = mesh2d(mshfile)
+      my_mesh.read_mesh()
+      print("\n hsize = ", my_mesh.h)
+
+
+      kdtree = cKDTree(coordinates)
+      distances, _ = kdtree.query(coordinates, k=2)  # k=2 because the nearest neighbor of a point is itself
+      mesh_size = distances[:, 1].mean()  # Average distance to the nearest neighbor
+      print(f"Approximate mesh size h: {mesh_size}")
+
       coordinates_tensor = torch.tensor(coordinates, dtype=torch.float64)
       print(f"Shape of input tensor (coordinates): {coordinates_tensor.shape}")
-     
+      # Calculate mesh size
+
       points = coordinates_tensor
       labels = torch.zeros(len(points))  # Assuming all points have label 0    
       data = domain.SpaceTensor(points, labels, boundary=True)
@@ -371,6 +390,8 @@ class Poisson:
 
       print(f"ScimBa solution: {scimba_solution}")
       print("\n Difference : ", scimba_solution - feel_solution)
+
+      # Plotting the solutions
 
       mesh = pv_get_mesh((f"cfpdes-{self.dim}d-p{self.order}.exports/Export.case"))
       #pv_plot(mesh, field)
@@ -413,13 +434,6 @@ class Poisson:
       if plot == 1:
         pl.show()
         pl.screenshot(plot)
-
-
-
-      
-
-
-      
 
 
 #______________________________________________________________________________________________
@@ -466,7 +480,7 @@ def plot_convergence(P, df,dim,orders=[1]):
 
 # Définir les couleurs du bas au haut de la colormap de l'image
 colors = [
-    (75/255, 0, 130/255),   # indigo
+    #(75/255, 0, 130/255),   # indigo
     (0, 0, 255/255),        # bleu
     (0, 255/255, 255/255),  # cyan
     (0, 255/255, 0),        # vert

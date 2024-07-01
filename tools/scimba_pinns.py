@@ -40,7 +40,7 @@ class Poisson_2D(pdes.AbstractPDEx):
             nb_unknowns=1,
             space_domain=space_domain,
             nb_parameters=1,
-            parameter_domain=[[1.0000, 1.00001]],
+            parameter_domain=[[1.0000, 1.000001]],
         )
         
         self.diff = diff
@@ -59,23 +59,51 @@ class Poisson_2D(pdes.AbstractPDEx):
         x1, x2 = x.get_coordinates()
         g = eval(self.u_exact, {'x': x1, 'y': x2, 'pi': PI, 'sin' : torch.sin, 'cos': torch.cos, 'exp': torch.exp})
 
-        return  g
+        return  u - g
+
 
     def residual(self, w, x, mu, **kwargs):
+        # Ensure x1 and x2 are PyTorch tensors with requires_grad=True
         x1, x2 = x.get_coordinates()
-        u_x = self.get_variables(w, "w_x")
-        u_y = self.get_variables(w, "w_y")
 
-        diff = eval(self.diff, {'x': x1, 'y': x2, 'pi': PI, 'sin' : torch.sin, 'cos': torch.cos, 'exp': torch.exp})
-        f = eval(self.rhs, {'x': x1, 'y': x2, 'pi': PI, 'sin': torch.sin, 'cos': torch.cos, 'exp': torch.exp})
+        # Ensure diff and f are computed correctly
+        diff = eval(self.diff, {'x': x1, 'y': x2, 'pi': torch.pi, 'sin': torch.sin, 'cos': torch.cos, 'exp': torch.exp})
+        f = eval(self.rhs, {'x': x1, 'y': x2, 'pi': torch.pi, 'sin': torch.sin, 'cos': torch.cos, 'exp': torch.exp})
         
-        # Compute the diffusion matrix multiplication with the gradient
-        diff_grad_u_x = diff[0] * u_x + diff[1] * u_y
-        diff_grad_u_y = diff[2] * u_x + diff[3] * u_y
-        
-        # Compute the divergence of the modified gradient
-        div_diff_grad_u = diff_grad_u_x + diff_grad_u_y
-        return - div_diff_grad_u - f    
+        if diff == '(1,0,0,1)':            
+            u_xx = self.get_variables(w, "w_xx")
+            u_yy = self.get_variables(w, "w_yy")
+            
+            return u_xx* diff[0] + u_yy* diff[3] + f
+            
+        else:
+            # Compute the diffusion matrix multiplication with the gradient
+                
+            x1.requires_grad_(True)
+            x2.requires_grad_(True)
+
+            u_x = self.get_variables(w, "w_x")
+            u_y = self.get_variables(w, "w_y")
+
+            diff_grad_u_x = diff[0] * u_x + diff[1] * u_y
+            diff_grad_u_y = diff[2] * u_x + diff[3] * u_y
+            
+
+            # Compute the partial derivatives for the divergence
+            div_diff_grad_u_x = torch.autograd.grad(diff_grad_u_x, x1, grad_outputs=torch.ones_like(diff_grad_u_x), create_graph=True, allow_unused=True)[0]
+            div_diff_grad_u_y = torch.autograd.grad(diff_grad_u_y, x2, grad_outputs=torch.ones_like(diff_grad_u_y), create_graph=True, allow_unused=True)[0]
+
+            # Handle the case where gradients are None
+            if div_diff_grad_u_x is None:
+                div_diff_grad_u_x = torch.zeros_like(x1)
+            if div_diff_grad_u_y is None:
+                div_diff_grad_u_y = torch.zeros_like(x2)
+
+            # Compute the divergence of the modified gradient
+            div_diff_grad_u = div_diff_grad_u_x + div_diff_grad_u_y
+            #print('\ndiv diff u = ', div_diff_grad_u)
+            return div_diff_grad_u + f
+       
     
     def post_processing(self, x, mu, w):
         x1, x2 = x.get_coordinates()
@@ -122,7 +150,7 @@ class PoissonDisk2D(pdes.AbstractPDEx):
     
 #___________________________________________________________________________________________________________
 
-def Run_laplacian2D(pde, epoch=100, bc_loss_bool=True, w_bc=10, w_res=10):
+def Run_laplacian2D(pde, epoch=1000, bc_loss_bool=True, w_bc=10, w_res=10):
    
     # Initialize samplers
     x_sampler = sampling_pde.XSampler(pde=pde)
@@ -175,6 +203,7 @@ def Run_laplacian2D(pde, epoch=100, bc_loss_bool=True, w_bc=10, w_res=10):
     n_visu = 20000
     reference_solution = True
     trainer.plot(n_visu, reference_solution=True)
+    trainer.plot_derivative_mu(n_visu)
     u = pinn.get_w
 
     return u
@@ -187,6 +216,13 @@ if __name__ == "__main__":
     pde = Poisson_2D(xdomain)
     u = Run_laplacian2D(pde)
     print(u)
+
+    u_exact = 'x*x/(1+x) + y*y/(1+y)'
+    rhs = '-(4 + 2*x + 2*y) / ((1+x)*(1+y))'
+    pde = Poisson_2D(xdomain, rhs=rhs, diff='(1+x,0,0,1+y)', g='x*x/(1+x) + y*y/(1+y)', u_exact = u_exact )
+    u = Run_laplacian2D(pde)
+    print(u)
+
     # Example points to evaluate u
     points = [[0.1, 0.2], [0.5, 0.7], [1.0, 1.0]]
     points = torch.tensor(points, dtype=torch.float64)
