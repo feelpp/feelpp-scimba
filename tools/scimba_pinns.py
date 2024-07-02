@@ -12,6 +12,7 @@ import torch
 import pyvista as pv 
 import matplotlib.pyplot as plt
 import numpy as np
+import sympy as sp
 import matplotlib.collections as mcoll
 
 from scimba.equations import domain, pdes
@@ -25,6 +26,23 @@ torch.set_default_device(device)
 PI = 3.14159265358979323846
 ELLIPSOID_A = 4 / 3
 ELLIPSOID_B = 1 / ELLIPSOID_A
+
+def differentiate_elements(diff_matrix_str, variables=['x', 'y']):
+    # Define the symbols (variables) used in the expression
+    symbols = sp.symbols(variables)
+    
+    # Parse the diff matrix string into a list of sympy expressions
+    diff_matrix_str = diff_matrix_str.replace('(', '').replace(')', '')
+    expressions_str_list = diff_matrix_str.split(',')
+    expressions = [sp.sympify(expr) for expr in expressions_str_list]
+
+    # Compute the derivatives of each expression with respect to each variable
+    derivatives = []
+    for var in symbols:
+        derivs = [sp.diff(expr, var) for expr in expressions]
+        derivatives.append(derivs)
+
+    return derivatives
 
 #___________________________________________________________________________________________________________
 
@@ -67,44 +85,37 @@ class Poisson_2D(pdes.AbstractPDEx):
         x1, x2 = x.get_coordinates()
 
         # Ensure diff and f are computed correctly
-        diff = eval(self.diff, {'x': x1, 'y': x2, 'pi': torch.pi, 'sin': torch.sin, 'cos': torch.cos, 'exp': torch.exp})
-        f = eval(self.rhs, {'x': x1, 'y': x2, 'pi': torch.pi, 'sin': torch.sin, 'cos': torch.cos, 'exp': torch.exp})
+        diff = eval(self.diff, {'x': x1, 'y': x2, 'pi': PI, 'sin': torch.sin, 'cos': torch.cos, 'exp': torch.exp})
+        f = eval(self.rhs, {'x': x1, 'y': x2, 'pi': PI, 'sin': torch.sin, 'cos': torch.cos, 'exp': torch.exp})
         
-        if diff == '(1,0,0,1)':            
-            u_xx = self.get_variables(w, "w_xx")
-            u_yy = self.get_variables(w, "w_yy")
-            
-            return u_xx* diff[0] + u_yy* diff[3] + f
-            
-        else:
-            # Compute the diffusion matrix multiplication with the gradient
-                
-            x1.requires_grad_(True)
-            x2.requires_grad_(True)
+        u_x = self.get_variables(w, "w_x")
+        u_y = self.get_variables(w, "w_y")
 
-            u_x = self.get_variables(w, "w_x")
-            u_y = self.get_variables(w, "w_y")
+        u_xx = self.get_variables(w, "w_xx")
+        u_yy = self.get_variables(w, "w_yy")
+        
+        variables = ['x', 'y']
+        derivatives = differentiate_elements(self.diff, variables)
+        #print(derivatives)
+        
+        # Evaluate derivatives
+        derivatives_eval = []
+        for i in range(len(derivatives)):
+            row_eval = []
+            for j in range(len(derivatives[i])):
+                derivative_expr = str(derivatives[i][j])
+                eval_expr = eval(derivative_expr, {'x': x1, 'y': x2, 'pi': PI, 'sin': np.sin, 'cos': np.cos, 'exp': np.exp})
+                row_eval.append(eval_expr)
+            derivatives_eval.append(row_eval)
 
-            diff_grad_u_x = diff[0] * u_x + diff[1] * u_y
-            diff_grad_u_y = diff[2] * u_x + diff[3] * u_y
-            
-
-            # Compute the partial derivatives for the divergence
-            div_diff_grad_u_x = torch.autograd.grad(diff_grad_u_x, x1, grad_outputs=torch.ones_like(diff_grad_u_x), create_graph=True, allow_unused=True)[0]
-            div_diff_grad_u_y = torch.autograd.grad(diff_grad_u_y, x2, grad_outputs=torch.ones_like(diff_grad_u_y), create_graph=True, allow_unused=True)[0]
-
-            # Handle the case where gradients are None
-            if div_diff_grad_u_x is None:
-                div_diff_grad_u_x = torch.zeros_like(x1)
-            if div_diff_grad_u_y is None:
-                div_diff_grad_u_y = torch.zeros_like(x2)
-
-            # Compute the divergence of the modified gradient
-            div_diff_grad_u = div_diff_grad_u_x + div_diff_grad_u_y
-            #print('\ndiv diff u = ', div_diff_grad_u)
-            return div_diff_grad_u + f
-       
-    
+        # Compute div_grad_u (assuming derivatives_eval and diff are properly aligned)
+        div_grad_u_up = (derivatives_eval[0][0]*u_x + diff[0]*u_xx) + (derivatives_eval[0][1]*u_y + diff[1]*u_yy)
+        div_grad_u_down = (derivatives_eval[1][0]*u_x + diff[2]*u_xx) + (derivatives_eval[1][1]*u_y + diff[3]*u_yy)
+        div_grad_u = div_grad_u_up + div_grad_u_down
+        
+        return div_grad_u + f
+        
+        
     def post_processing(self, x, mu, w):
         x1, x2 = x.get_coordinates()
         g = eval(self.u_exact, {'x': x1, 'y': x2, 'pi': PI, 'sin' : torch.sin, 'cos': torch.cos, 'exp': torch.exp})
@@ -150,7 +161,7 @@ class PoissonDisk2D(pdes.AbstractPDEx):
     
 #___________________________________________________________________________________________________________
 
-def Run_laplacian2D(pde, epoch=1000, bc_loss_bool=True, w_bc=10, w_res=10):
+def Run_laplacian2D(pde, epoch=200, bc_loss_bool=True, w_bc=10, w_res=10):
    
     # Initialize samplers
     x_sampler = sampling_pde.XSampler(pde=pde)
@@ -203,7 +214,7 @@ def Run_laplacian2D(pde, epoch=1000, bc_loss_bool=True, w_bc=10, w_res=10):
     n_visu = 20000
     reference_solution = True
     trainer.plot(n_visu, reference_solution=True)
-    trainer.plot_derivative_mu(n_visu)
+    #trainer.plot_derivative_mu(n_visu)
     u = pinn.get_w
 
     return u

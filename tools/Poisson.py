@@ -54,7 +54,8 @@ class Poisson:
         """
       elif shape == 'Disk':
         geo += """
-        Disk(1) = {0, 0, 0, 1.0};
+        Disk(1) = {0, 0, 0, 1.0};        
+        Characteristic Length{ PointsOf{ Surface{1}; } } = h;
         Physical Curve("Gamma_D") = {1};
         Physical Surface("Omega") = {1};
         """
@@ -70,7 +71,8 @@ class Poisson:
         
       elif shape == 'Sphere':
         geo += """
-        Sphere(1) = {0, 0, 0, 1.0};
+        Sphere(1) = {0, 0, 0, 1.0};        
+        Characteristic Length{ PointsOf{ volume{1}; } } = h;
         Physical Surface("Gamma_D") = {1};
         Physical Volume("Omega") = {1};
         """
@@ -389,7 +391,7 @@ class Poisson:
       #scimba_solution = scimba_solution.tensor.detach().numpy()
 
       print(f"ScimBa solution: {scimba_solution}")
-      print("\n Difference : ", scimba_solution - feel_solution)
+      print("\n Difference : ", np.abs(scimba_solution - feel_solution))
 
       # Plotting the solutions
 
@@ -404,7 +406,8 @@ class Poisson:
 
       pl.subplot(1,1)
       pl.add_title('u_scimba - u_feel', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = scimba_solution - feel_solution, cmap=custom_cmap)  
+      pl.add_mesh(mesh[0].copy(), scalars = scimba_solution - feel_solution, cmap=custom_cmap, clim=[-1e-5, 1e-5])  
+
       print('norm sup = ', np.linalg.norm(scimba_solution - feel_solution, np.inf))   
       
       pl.subplot(0,1)
@@ -456,14 +459,14 @@ def runLaplacianPk(P, df, model, measures, verbose=False):
 
   return df
 
-def runConvergenceAnalysis(P, json, measures, dim=2,hs=[0.1, 0.05, 0.025, 0.0125],orders=[1],verbose=False):
+def runConvergenceAnalysis(P, json, measures, dim=2,hs=[0.1, 0.05, 0.025, 0.0125],orders=[1, 2],verbose=False):
   df=pd.DataFrame({'h':hs})
   for order in orders:
     df=runLaplacianPk(P, df=df,model=[dim,order,json(dim=dim,order=order)], measures = measures,verbose=verbose)
   print('df = ', df.to_markdown())
   return df
 
-def plot_convergence(P, df,dim,orders=[1]):
+def plot_convergence(P, df,dim,orders=[1,2]):
   fig=px.line(df, x="h", y=[f'P{order}-Norm_poisson_{norm}-error' for order,norm in list(itertools.product(orders,['L2','H1']))])
   fig.update_xaxes(title_text="h",type="log")
   fig.update_yaxes(title_text="Error",type="log")
@@ -486,7 +489,7 @@ colors = [
     (0, 255/255, 0),        # vert
     (255/255, 255/255, 0),  # jaune
     (255/255, 127/255, 0),  # orange
-    (255/255, 0 , 0),        # rouge
+    (255/255, 0 , 0),       # rouge
     (148/255, 0, 211/255),  # violet
     (1, 1, 1)               # blanc
 
