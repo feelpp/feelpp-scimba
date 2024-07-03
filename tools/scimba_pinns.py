@@ -12,6 +12,7 @@ import torch
 import pyvista as pv 
 import matplotlib.pyplot as plt
 import numpy as np
+import sympy as sp
 import matplotlib.collections as mcoll
 
 from scimba.equations import domain, pdes
@@ -26,6 +27,23 @@ PI = 3.14159265358979323846
 ELLIPSOID_A = 4 / 3
 ELLIPSOID_B = 1 / ELLIPSOID_A
 
+def differentiate_elements(diff_matrix_str, variables=['x', 'y']):
+    # Define the symbols (variables) used in the expression
+    symbols = sp.symbols(variables)
+    
+    # Parse the diff matrix string into a list of sympy expressions
+    diff_matrix_str = diff_matrix_str.replace('(', '').replace(')', '')
+    expressions_str_list = diff_matrix_str.split(',')
+    expressions = [sp.sympify(expr) for expr in expressions_str_list]
+
+    # Compute the derivatives of each expression with respect to each variable
+    derivatives = []
+    for var in symbols:
+        derivs = [sp.diff(expr, var) for expr in expressions]
+        derivatives.append(derivs)
+
+    return derivatives
+
 #___________________________________________________________________________________________________________
 
 class Poisson_2D(pdes.AbstractPDEx):
@@ -33,13 +51,14 @@ class Poisson_2D(pdes.AbstractPDEx):
                  rhs = '8*pi*pi*sin(2*pi*x) * sin(2*pi*y)',
                  diff='(1,0,0,1)', 
                  g ='0',
-                 u_exact = 'sin(2*pi*x) * sin(2*pi*y)'):
+                 u_exact = 'sin(2*pi*x) * sin(2*pi*y)', 
+                 grad_u_exact = '(2*pi*cos(2*pi*x) * sin(2*pi*y), 2*pi*sin(2*pi*x) * cos(2*pi*y))'):
         
         super().__init__(
             nb_unknowns=1,
             space_domain=space_domain,
             nb_parameters=1,
-            parameter_domain=[[1.0000, 1.00001]],
+            parameter_domain=[[1.0000, 1.000001]],
         )
         
         self.diff = diff
@@ -58,18 +77,45 @@ class Poisson_2D(pdes.AbstractPDEx):
         x1, x2 = x.get_coordinates()
         g = eval(self.u_exact, {'x': x1, 'y': x2, 'pi': PI, 'sin' : torch.sin, 'cos': torch.cos, 'exp': torch.exp})
 
-        return  g
+        return  u - g
+
 
     def residual(self, w, x, mu, **kwargs):
+        # Ensure x1 and x2 are PyTorch tensors with requires_grad=True
         x1, x2 = x.get_coordinates()
-        u_xx = self.get_variables(w, "w_xx")
-        u_yy = self.get_variables(w, "w_yy")
 
-        diff = eval(self.diff, {'x': x1, 'y': x2, 'pi': PI, 'sin' : torch.sin, 'cos': torch.cos, 'exp': torch.exp})
+        # Ensure diff and f are computed correctly
+        diff = eval(self.diff, {'x': x1, 'y': x2, 'pi': PI, 'sin': torch.sin, 'cos': torch.cos, 'exp': torch.exp})
         f = eval(self.rhs, {'x': x1, 'y': x2, 'pi': PI, 'sin': torch.sin, 'cos': torch.cos, 'exp': torch.exp})
         
-        return u_xx* diff[0] + u_yy* diff[3] + f
-    
+        u_x = self.get_variables(w, "w_x")
+        u_y = self.get_variables(w, "w_y")
+
+        u_xx = self.get_variables(w, "w_xx")
+        u_yy = self.get_variables(w, "w_yy")
+        
+        variables = ['x', 'y']
+        derivatives = differentiate_elements(self.diff, variables)
+        #print(derivatives)
+        
+        # Evaluate derivatives
+        derivatives_eval = []
+        for i in range(len(derivatives)):
+            row_eval = []
+            for j in range(len(derivatives[i])):
+                derivative_expr = str(derivatives[i][j])
+                eval_expr = eval(derivative_expr, {'x': x1, 'y': x2, 'pi': PI, 'sin': np.sin, 'cos': np.cos, 'exp': np.exp})
+                row_eval.append(eval_expr)
+            derivatives_eval.append(row_eval)
+
+        # Compute div_grad_u (assuming derivatives_eval and diff are properly aligned)
+        div_grad_u_up = (derivatives_eval[0][0]*u_x + diff[0]*u_xx) + (derivatives_eval[0][1]*u_y + diff[1]*u_yy)
+        div_grad_u_down = (derivatives_eval[1][0]*u_x + diff[2]*u_xx) + (derivatives_eval[1][1]*u_y + diff[3]*u_yy)
+        div_grad_u = div_grad_u_up + div_grad_u_down
+        
+        return div_grad_u + f
+        
+        
     def post_processing(self, x, mu, w):
         x1, x2 = x.get_coordinates()
         g = eval(self.u_exact, {'x': x1, 'y': x2, 'pi': PI, 'sin' : torch.sin, 'cos': torch.cos, 'exp': torch.exp})
@@ -115,7 +161,7 @@ class PoissonDisk2D(pdes.AbstractPDEx):
     
 #___________________________________________________________________________________________________________
 
-def Run_laplacian2D(pde, epoch=100, bc_loss_bool=True, w_bc=10, w_res=10):
+def Run_laplacian2D(pde, epoch=10000, bc_loss_bool=True, w_bc=10, w_res=10):
    
     # Initialize samplers
     x_sampler = sampling_pde.XSampler(pde=pde)
@@ -168,6 +214,7 @@ def Run_laplacian2D(pde, epoch=100, bc_loss_bool=True, w_bc=10, w_res=10):
     n_visu = 20000
     reference_solution = True
     trainer.plot(n_visu, reference_solution=True)
+    trainer.plot_derivative_mu(n_visu)
     u = pinn.get_w
 
     return u
@@ -180,6 +227,13 @@ if __name__ == "__main__":
     pde = Poisson_2D(xdomain)
     u = Run_laplacian2D(pde)
     print(u)
+
+    u_exact = 'x*x/(1+x) + y*y/(1+y)'
+    rhs = '-(4 + 2*x + 2*y) / ((1+x)*(1+y))'
+    pde = Poisson_2D(xdomain, rhs=rhs, diff='(1+x,0,0,1+y)', g='x*x/(1+x) + y*y/(1+y)', u_exact = u_exact )
+    u = Run_laplacian2D(pde)
+    print(u)
+
     # Example points to evaluate u
     points = [[0.1, 0.2], [0.5, 0.7], [1.0, 1.0]]
     points = torch.tensor(points, dtype=torch.float64)

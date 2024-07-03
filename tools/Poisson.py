@@ -36,7 +36,7 @@ class Poisson:
 ##______________________________________________________________________________________________
 
 
-  def genGeometry(self, filename, h=0.05, shape = 'Rectangle'):
+  def genGeometry(self, filename, h, shape = 'Rectangle'):
     """
     Generate a cube geometry following the dimension  self.dim
     """   
@@ -54,10 +54,11 @@ class Poisson:
         """
       elif shape == 'Disk':
         geo += """
-              Disk(1) = {0, 0, 0, 1.0};
-              Physical Curve("Gamma_D") = {1};
-              Physical Surface("Omega") = {1};
-              """
+        Disk(1) = {0, 0, 0, 1.0};        
+        Characteristic Length{ PointsOf{ Surface{1}; } } = h;
+        Physical Curve("Gamma_D") = {1};
+        Physical Surface("Omega") = {1};
+        """
 
     elif self.dim == 3:
       if shape == 'Box':
@@ -70,14 +71,15 @@ class Poisson:
         
       elif shape == 'Sphere':
         geo += """
-        Sphere(1) = {0, 0, 0, 1.0};
+        Sphere(1) = {0, 0, 0, 1.0};        
+        Characteristic Length{ PointsOf{ volume{1}; } } = h;
         Physical Surface("Gamma_D") = {1};
         Physical Volume("Omega") = {1};
         """
     with open(filename, 'w') as f:
       f.write(geo)
 
-  def getMesh(self, filename, h=0.05, shape = 'Rectangle',verbose=False):
+  def getMesh(self, filename, h, shape = 'Rectangle',verbose=False):
     """create mesh"""
     import os
     for ext in [".msh",".geo"]:
@@ -92,7 +94,7 @@ class Poisson:
   
 ##______________________________________________________________________________________________
 
-  def feel_solver(self, filename, json, h = 0.05, shape = 'Rectangle',verbose=False):
+  def feel_solver(self, filename, json, h, shape = 'Rectangle',verbose=False):
     if verbose:
       print(f"Solving the laplacian problem for h = {h}...")
     poisson = self.pb
@@ -107,7 +109,7 @@ class Poisson:
   
 ##______________________________________________________________________________________________
 
-  def scimba_solver(self, shape='Rectangle', h=0.05, dim = 2, verbose=False):
+  def scimba_solver(self, h, shape='Rectangle', dim = 2, verbose=False):
     if verbose:
       print(f"Solving a Poisson problem for h = {h}...")    
     
@@ -147,6 +149,7 @@ class Poisson:
     - order the polynomial order
     - rhs is the expression of the right-hand side f(x,y)
     """
+    a = 0.0
     self.h = h
     self.measures = dict()
     self.rhs = rhs
@@ -173,7 +176,8 @@ class Poisson:
             },
             "coefficients":{
               "c": f"{diff}:x:y" if self.dim == 2 else f"{diff}:x:y:z",
-              "f": f"{rhs}:x:y"  if self.dim == 2 else f"{rhs}:x:y:z"
+              "f": f"{rhs}:x:y"  if self.dim == 2 else f"{rhs}:x:y:z",
+              "a": f"{a}"
             }
           }
         }
@@ -218,7 +222,6 @@ class Poisson:
               "rhs": f"{rhs}:x:y" if self.dim == 2 else f"{rhs}:x:y:z",
               "u_exact" : f"{u_exact}:x:y" if self.dim==2 else f"{u_exact}:x:y:z",
               "grad_u_exact" : f"{grad_u_exact}:x:y" if self.dim==2 else f"{grad_u_exact}:x:y:z"
-
             }
           },
             "Measures" :
@@ -290,10 +293,12 @@ class Poisson:
       mesh = pv_get_mesh((f"cfpdes-{self.dim}d-p{self.order}.exports/Export.case"))
       #pv_plot(mesh, field)
       pl = pv.Plotter(shape=(1,2))
+    
 
       pl.subplot(0,0)
       pl.add_title(f'Solution P{order}', font_size=10)
       pl.add_mesh(mesh[0].copy(), scalars = f"cfpdes.poisson.{name}", cmap=custom_cmap)
+      
 
       pl.subplot(0,1)
       pl.add_title('u_exact', font_size=10)
@@ -304,18 +309,22 @@ class Poisson:
       if plot == 1:
         pl.show()
         pl.screenshot(plot)
-      
-      
 
-    myplots(dim=2,factor=1)
+    if plot == 1:
+      field="cfpdes.poisson.u"
+      mesh = pv_get_mesh(f"cfpdes-{self.dim}d-p{self.order}.exports/Export.case")
+      pv_plot(mesh, field)
+
+      #myplots(dim=2,factor=1)
 
     # Comparing solutions
     if solver == 'scimba':
       import pyvista as pv
       import torch
       from tools.GmeshRead import mesh2d
+      from scipy.spatial import cKDTree
 
-      u_scimba = self.scimba_solver(shape=shape, h=h, dim=self.dim, verbose=True)
+      u_scimba = self.scimba_solver( h=h, shape=shape, dim=self.dim, verbose=True)
 
       # File path to the .case file
       file_path = 'cfpdes-2d-p1.exports/Export.case'
@@ -353,7 +362,8 @@ class Poisson:
 
       coordinates_tensor = torch.tensor(coordinates, dtype=torch.float64)
       print(f"Shape of input tensor (coordinates): {coordinates_tensor.shape}")
-     
+      # Calculate mesh size
+
       points = coordinates_tensor
       labels = torch.zeros(len(points))  # Assuming all points have label 0    
       data = domain.SpaceTensor(points, labels, boundary=True)
@@ -370,57 +380,80 @@ class Poisson:
       #scimba_solution = scimba_solution.tensor.detach().numpy()
 
       print(f"ScimBa solution: {scimba_solution}")
-      print("\n Difference : ", scimba_solution - feel_solution)
+      print("\n Difference : ", np.abs(scimba_solution - feel_solution))
+
+      # Plotting the solutions
 
       mesh = pv_get_mesh((f"cfpdes-{self.dim}d-p{self.order}.exports/Export.case"))
-      #pv_plot(mesh, field)
       pl = pv.Plotter(shape=(3,2))
+
+
+      # First row: u_feel and u_scimba
+
+      clim = [np.min(feel_solution), np.max(feel_solution)]
+      pl.subplot(0,0)
+      pl.add_title('u_feel', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars = 'cfpdes.poisson.u', cmap=custom_cmap, clim=clim)
+
+
+      clim = [np.min(scimba_solution), np.max(scimba_solution)]
+      pl.subplot(0,1)      
+      pl.add_title('u_scimba', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars = scimba_solution, cmap=custom_cmap, clim=clim)
+      pl.add_scalar_bar(title='u_scimba')
+
+      # Second row: u_exact and u_scimba - u_feel (normalized)
 
       pl.subplot(1,0)
       pl.add_title('u_exact', font_size=8)
       pl.add_mesh(mesh[0].copy(), scalars = 'cfpdes.expr.u_exact', cmap=custom_cmap)      
+      
 
 
-      pl.subplot(1,1)
-      pl.add_title('u_scimba - u_feel', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = scimba_solution - feel_solution, cmap=custom_cmap)  
-      print('norm sup = ', np.linalg.norm(scimba_solution - feel_solution, np.inf))   
-      
-      pl.subplot(0,1)
-      pl.add_title('u_scimba', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = scimba_solution, cmap=custom_cmap)
-      pl.add_scalar_bar(title='u_scimba')
-      
-      
-      pl.subplot(0,0)
-      pl.add_title(f'u_feel', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = 'cfpdes.poisson.u', cmap=custom_cmap)
-     
+      diff = np.abs(scimba_solution - feel_solution)
+      diff_normalized = (diff - np.min(diff)) / (np.max(diff) - np.min(diff))
+      clim = [np.min(diff), np.max(diff)]
+ 
+      pl.subplot(1,1)      
+      pl.add_title('u_scimba - u_feel(normalized)', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars = diff_normalized, cmap=custom_cmap, clim=clim)  
+      pl.add_scalar_bar(title='u_scimba - u_feel')
 
-      pl.subplot(2,1)
-      pl.add_title('u_exact - u_feel', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = u_ex - feel_solution, cmap=custom_cmap)   
-      pl.add_scalar_bar(title='u_exact - u_feel')
-     
+
+      print(' ||u_scimba - u-feel||∞ = ', np.linalg.norm(scimba_solution - feel_solution, np.inf))   
+      
+
+      # Third row: u_exact - u_scimba and u_exact - u_feel
+
+
+      diff = np.abs(u_ex - scimba_solution)
+      diff_normalized = (diff - np.min(diff)) / (np.max(diff) - np.min(diff))
+      clim = [np.min(diff), np.max(diff)]
+      
       pl.subplot(2,0)
       pl.add_title('u_exact - u_scimba', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = u_ex - scimba_solution, cmap=custom_cmap)   
+      pl.add_mesh(mesh[0].copy(), scalars = diff_normalized, cmap=custom_cmap, clim=clim)   
       pl.add_scalar_bar(title='u_exact - u_scimba ')
      
+      
+      
+
+      diff = np.abs(u_ex - feel_solution)
+      diff_normalized = (diff - np.min(diff)) / (np.max(diff) - np.min(diff))
+      clim = [np.min(diff), np.max(diff)]
+      
+      pl.subplot(2,1)
+      pl.add_title('u_exact - u_feel', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars = diff_normalized, cmap=custom_cmap, clim=clim)   
+      pl.add_scalar_bar(title='u_exact - u_feel')      
+
+
 
       pl.link_views()
       pl.view_xy()    
       if plot == 1:
         pl.show()
         pl.screenshot(plot)
-
-
-
-      
-
-
-      
-
 
 #______________________________________________________________________________________________
 
@@ -442,14 +475,14 @@ def runLaplacianPk(P, df, model, measures, verbose=False):
 
   return df
 
-def runConvergenceAnalysis(P, json, measures, dim=2,hs=[0.1, 0.05, 0.025, 0.0125],orders=[1],verbose=False):
+def runConvergenceAnalysis(P, json, measures, dim=2,hs=[0.1, 0.05, 0.025, 0.0125],orders=[1, 2],verbose=False):
   df=pd.DataFrame({'h':hs})
   for order in orders:
     df=runLaplacianPk(P, df=df,model=[dim,order,json(dim=dim,order=order)], measures = measures,verbose=verbose)
   print('df = ', df.to_markdown())
   return df
 
-def plot_convergence(P, df,dim,orders=[1]):
+def plot_convergence(P, df,dim,orders=[1,2]):
   fig=px.line(df, x="h", y=[f'P{order}-Norm_poisson_{norm}-error' for order,norm in list(itertools.product(orders,['L2','H1']))])
   fig.update_xaxes(title_text="h",type="log")
   fig.update_yaxes(title_text="Error",type="log")
@@ -472,7 +505,7 @@ colors = [
     (0, 255/255, 0),        # vert
     (255/255, 255/255, 0),  # jaune
     (255/255, 127/255, 0),  # orange
-    (255/255, 0 , 0),        # rouge
+    (255/255, 0 , 0),       # rouge
     (148/255, 0, 211/255),  # violet
     (1, 1, 1)               # blanc
 
