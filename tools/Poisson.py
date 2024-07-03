@@ -360,17 +360,6 @@ class Poisson:
       print("\nFeel++ solution 'cfpdes.poisson.u':")
       print(feel_solution) 
 
-      mshfile = "/workspaces/2024-stage-feelpp-scimba/feelppdb/feelpp_cfpde/np_1/omega-2.msh"  
-      my_mesh = mesh2d(mshfile)
-      my_mesh.read_mesh()
-      print("\n hsize = ", my_mesh.h)
-
-
-      kdtree = cKDTree(coordinates)
-      distances, _ = kdtree.query(coordinates, k=2)  # k=2 because the nearest neighbor of a point is itself
-      mesh_size = distances[:, 1].mean()  # Average distance to the nearest neighbor
-      print(f"Approximate mesh size h: {mesh_size}")
-
       coordinates_tensor = torch.tensor(coordinates, dtype=torch.float64)
       print(f"Shape of input tensor (coordinates): {coordinates_tensor.shape}")
       # Calculate mesh size
@@ -396,48 +385,75 @@ class Poisson:
       # Plotting the solutions
 
       mesh = pv_get_mesh((f"cfpdes-{self.dim}d-p{self.order}.exports/Export.case"))
-      #pv_plot(mesh, field)
       pl = pv.Plotter(shape=(3,2))
+
+
+      # First row: u_feel and u_scimba
+
+      clim = [np.min(feel_solution), np.max(feel_solution)]
+      pl.subplot(0,0)
+      pl.add_title('u_feel', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars = 'cfpdes.poisson.u', cmap=custom_cmap, clim=clim)
+
+
+      clim = [np.min(scimba_solution), np.max(scimba_solution)]
+      pl.subplot(0,1)      
+      pl.add_title('u_scimba', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars = scimba_solution, cmap=custom_cmap, clim=clim)
+      pl.add_scalar_bar(title='u_scimba')
+
+      # Second row: u_exact and u_scimba - u_feel (normalized)
 
       pl.subplot(1,0)
       pl.add_title('u_exact', font_size=8)
       pl.add_mesh(mesh[0].copy(), scalars = 'cfpdes.expr.u_exact', cmap=custom_cmap)      
-
-
-      pl.subplot(1,1)
-      pl.add_title('u_scimba - u_feel', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = scimba_solution - feel_solution, cmap=custom_cmap, clim=[-1e-5, 1e-5])  
-
-      print('norm sup = ', np.linalg.norm(scimba_solution - feel_solution, np.inf))   
       
-      pl.subplot(0,1)
-      pl.add_title('u_scimba', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = scimba_solution, cmap=custom_cmap)
-      pl.add_scalar_bar(title='u_scimba')
-      
-      
-      pl.subplot(0,0)
-      pl.add_title(f'u_feel', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = 'cfpdes.poisson.u', cmap=custom_cmap)
-     
 
-      pl.subplot(2,1)
-      pl.add_title('u_exact - u_feel', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = u_ex - feel_solution, cmap=custom_cmap)   
-      pl.add_scalar_bar(title='u_exact - u_feel')
-     
+
+      diff = np.abs(scimba_solution - feel_solution)
+      diff_normalized = (diff - np.min(diff)) / (np.max(diff) - np.min(diff))
+      clim = [np.min(diff), np.max(diff)]
+ 
+      pl.subplot(1,1)      
+      pl.add_title('u_scimba - u_feel(normalized)', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars = diff_normalized, cmap=custom_cmap, clim=clim)  
+      pl.add_scalar_bar(title='u_scimba - u_feel')
+
+
+      print(' ||u_scimba - u-feel||∞ = ', np.linalg.norm(scimba_solution - feel_solution, np.inf))   
+      
+
+      # Third row: u_exact - u_scimba and u_exact - u_feel
+
+
+      diff = np.abs(u_ex - scimba_solution)
+      diff_normalized = (diff - np.min(diff)) / (np.max(diff) - np.min(diff))
+      clim = [np.min(diff), np.max(diff)]
+      
       pl.subplot(2,0)
       pl.add_title('u_exact - u_scimba', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = u_ex - scimba_solution, cmap=custom_cmap)   
+      pl.add_mesh(mesh[0].copy(), scalars = diff_normalized, cmap=custom_cmap, clim=clim)   
       pl.add_scalar_bar(title='u_exact - u_scimba ')
      
+      
+      
+
+      diff = np.abs(u_ex - feel_solution)
+      diff_normalized = (diff - np.min(diff)) / (np.max(diff) - np.min(diff))
+      clim = [np.min(diff), np.max(diff)]
+      
+      pl.subplot(2,1)
+      pl.add_title('u_exact - u_feel', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars = diff_normalized, cmap=custom_cmap, clim=clim)   
+      pl.add_scalar_bar(title='u_exact - u_feel')      
+
+
 
       pl.link_views()
       pl.view_xy()    
       if plot == 1:
         pl.show()
         pl.screenshot(plot)
-
 
 #______________________________________________________________________________________________
 
