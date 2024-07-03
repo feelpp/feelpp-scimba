@@ -161,7 +161,7 @@ class PoissonDisk2D(pdes.AbstractPDEx):
     
 #___________________________________________________________________________________________________________
 
-def Run_laplacian2D(pde, epoch=200, bc_loss_bool=True, w_bc=10, w_res=10):
+def Run_laplacian2D(pde, epoch=10000, bc_loss_bool=True, w_bc=10, w_res=10):
    
     # Initialize samplers
     x_sampler = sampling_pde.XSampler(pde=pde)
@@ -214,7 +214,7 @@ def Run_laplacian2D(pde, epoch=200, bc_loss_bool=True, w_bc=10, w_res=10):
     n_visu = 20000
     reference_solution = True
     trainer.plot(n_visu, reference_solution=True)
-    #trainer.plot_derivative_mu(n_visu)
+    trainer.plot_derivative_mu(n_visu)
     u = pinn.get_w
 
     return u

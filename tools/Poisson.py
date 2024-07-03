@@ -499,7 +499,7 @@ def plot_convergence(P, df,dim,orders=[1,2]):
 
 # Définir les couleurs du bas au haut de la colormap de l'image
 colors = [
-    #(75/255, 0, 130/255),   # indigo
+    (75/255, 0, 130/255),   # indigo
     (0, 0, 255/255),        # bleu
     (0, 255/255, 255/255),  # cyan
     (0, 255/255, 0),        # vert
