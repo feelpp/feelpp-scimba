@@ -161,7 +161,7 @@ class PoissonDisk2D(pdes.AbstractPDEx):
     
 #___________________________________________________________________________________________________________
 
-def Run_laplacian2D(pde, epoch=10000, bc_loss_bool=True, w_bc=10, w_res=10):
+def Run_Poisson2D(pde, epoch=1000, bc_loss_bool=True, w_bc=10, w_res=10):
    
     # Initialize samplers
     x_sampler = sampling_pde.XSampler(pde=pde)
@@ -182,7 +182,7 @@ def Run_laplacian2D(pde, epoch=10000, bc_loss_bool=True, w_bc=10, w_res=10):
 
     # Define network architecture and losses
     tlayers = [20, 20, 20, 20, 20]
-    network = pinn_x.MLP_x(pde=pde, layer_sizes=tlayers, activation_type="sine")
+    network = pinn_x.MLP_x(pde=pde, layer_sizes=tlayers) #, activation_type="sine")
     pinn = pinn_x.PINNx(network, pde)
     losses = pinn_losses.PinnLossesData(
         bc_loss_bool=bc_loss_bool, w_res=w_res, w_bc=w_bc
@@ -215,6 +215,8 @@ def Run_laplacian2D(pde, epoch=10000, bc_loss_bool=True, w_bc=10, w_res=10):
     reference_solution = True
     trainer.plot(n_visu, reference_solution=True)
     trainer.plot_derivative_mu(n_visu)
+    trainer.plot_derivative_xmu(n_visu)
+
     u = pinn.get_w
 
     return u
@@ -225,13 +227,13 @@ if __name__ == "__main__":
     xdomain = domain.SpaceDomain(2, domain.SquareDomain(2, [[0.0, 1.0], [0.0, 1.0]]))
     print(xdomain)
     pde = Poisson_2D(xdomain)
-    u = Run_laplacian2D(pde)
+    u = Run_Poisson2D(pde)
     print(u)
 
     u_exact = 'x*x/(1+x) + y*y/(1+y)'
     rhs = '-(4 + 2*x + 2*y) / ((1+x)*(1+y))'
     pde = Poisson_2D(xdomain, rhs=rhs, diff='(1+x,0,0,1+y)', g='x*x/(1+x) + y*y/(1+y)', u_exact = u_exact )
-    u = Run_laplacian2D(pde)
+    u = Run_Poisson2D(pde)
     print(u)
 
     # Example points to evaluate u
