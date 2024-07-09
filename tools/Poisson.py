@@ -1,7 +1,7 @@
 import os
 import feelpp
 from feelpp.toolboxes.cfpdes import *
-from tools.scimba_pinns import Run_laplacian2D, Poisson_2D, PoissonDisk2D
+from tools.scimba_pinns import Run_Poisson2D, Poisson_2D, PoissonDisk2D
 from scimba.equations import domain
 
 import pyvista as pv 
@@ -122,7 +122,7 @@ class Poisson:
       xdomain = domain.SpaceDomain(2, domain.SquareDomain(2, [[0.0, 1.0], [0.0, 1.0]]))
     
     pde = Poisson_2D(xdomain, rhs=self.rhs, diff=diff, g=self.g, u_exact=self.u_exact)
-    u = Run_laplacian2D(pde)
+    u = Run_Poisson2D(pde)
 
     return u
 
@@ -157,7 +157,7 @@ class Poisson:
     self.gN = gN
     self.u_exact = u_exact
     self.diff = diff
-    self.pb    = cfpdes(dim=self.dim, keyword=f"cfpdes-{self.dim}d-p{self.order}")
+    self.pb = cfpdes(dim=self.dim, keyword=f"cfpdes-{self.dim}d-p{self.order}")
     self.model = lambda order,dim=2,name="u": {
       "Name": "Poisson",
       "ShortName": "Poisson",
@@ -198,7 +198,7 @@ class Poisson:
             "g":
             {
               "markers":["Gamma_D"],
-              "expr":f"{g}:x:y"
+              "expr":f"{g}:x:y" if self.dim == 2 else f"{g}:x:y:z"
             }
           },
           "Neumann": 
@@ -206,7 +206,7 @@ class Poisson:
             "gN": 
             {
               "markers":["Gamma_D"],
-              "expr":f"{gN}:x:y:nx:ny"
+              "expr":f"{gN}:x:y:nx:ny" if self.dim == 2 else f"{gN}:x:y:z:nx:ny:nz"
             }
           }
         }
@@ -400,7 +400,7 @@ class Poisson:
       pl.subplot(0,1)      
       pl.add_title('u_scimba', font_size=8)
       pl.add_mesh(mesh[0].copy(), scalars = scimba_solution, cmap=custom_cmap, clim=clim)
-      pl.add_scalar_bar(title='u_scimba')
+      #pl.add_scalar_bar(title='u_scimba')
 
       # Second row: u_exact and u_scimba - u_feel (normalized)
 
@@ -411,40 +411,53 @@ class Poisson:
 
 
       diff = np.abs(scimba_solution - feel_solution)
+      print('diff = ', diff)
       diff_normalized = (diff - np.min(diff)) / (np.max(diff) - np.min(diff))
       clim = [np.min(diff), np.max(diff)]
+      print('clim = ', clim)
  
       pl.subplot(1,1)      
       pl.add_title('u_scimba - u_feel(normalized)', font_size=8)
       pl.add_mesh(mesh[0].copy(), scalars = diff_normalized, cmap=custom_cmap, clim=clim)  
-      pl.add_scalar_bar(title='u_scimba - u_feel')
+      pl.add_scalar_bar(title='u_scimba - u_feel', 
+                  n_labels=5,          # Number of labels on the scalar bar
+                  label_font_size=12,  # Font size of the labels
+                  title_font_size=14,  # Font size of the title
+                  fmt="%.2e",          # Format for the scalar bar labels
+                  vertical=False,      # Horizontal orientation of the scalar bar
+                  width=0.5,           # Width of the scalar bar
+                  height=0.08,         # Height of the scalar bar
+                  position_x=0.35,     # Position on the x-axis
+                  position_y=0.02)     # Position on the y-axis
 
 
-      print(' ||u_scimba - u-feel||∞ = ', np.linalg.norm(scimba_solution - feel_solution, np.inf))   
+      print(' ||u_scimba - u_feel||∞ = ', np.linalg.norm(scimba_solution - feel_solution, np.inf))   
       
 
       # Third row: u_exact - u_scimba and u_exact - u_feel
 
 
       diff = np.abs(u_ex - scimba_solution)
+      print('diff = ', diff)
       diff_normalized = (diff - np.min(diff)) / (np.max(diff) - np.min(diff))
       clim = [np.min(diff), np.max(diff)]
       
       pl.subplot(2,0)
       pl.add_title('u_exact - u_scimba', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = diff_normalized, cmap=custom_cmap, clim=clim)   
+      pl.add_mesh(mesh[0].copy(), scalars = diff_normalized, cmap=custom_cmap)   
       pl.add_scalar_bar(title='u_exact - u_scimba ')
      
       
       
 
       diff = np.abs(u_ex - feel_solution)
+      print('diff = ', diff)
       diff_normalized = (diff - np.min(diff)) / (np.max(diff) - np.min(diff))
       clim = [np.min(diff), np.max(diff)]
       
       pl.subplot(2,1)
       pl.add_title('u_exact - u_feel', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = diff_normalized, cmap=custom_cmap, clim=clim)   
+      pl.add_mesh(mesh[0].copy(), scalars = diff_normalized, cmap=custom_cmap)   
       pl.add_scalar_bar(title='u_exact - u_feel')      
 
 
