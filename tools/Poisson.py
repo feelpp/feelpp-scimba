@@ -382,6 +382,9 @@ class Poisson:
       print(f"ScimBa solution: {scimba_solution}")
       print("\n Difference : ", np.abs(scimba_solution - feel_solution))
 
+
+#______________________________________________________________________________________________
+
       # Plotting the solutions
 
       mesh = pv_get_mesh((f"cfpdes-{self.dim}d-p{self.order}.exports/Export.case"))
@@ -391,73 +394,58 @@ class Poisson:
       # First row: u_feel and u_scimba
 
       clim = [np.min(feel_solution), np.max(feel_solution)]
+      print('clim feel = ', clim)
       pl.subplot(0,0)
       pl.add_title('u_feel', font_size=8)
       pl.add_mesh(mesh[0].copy(), scalars = 'cfpdes.poisson.u', cmap=custom_cmap, clim=clim)
 
 
       clim = [np.min(scimba_solution), np.max(scimba_solution)]
+      print('clim scimba = ', clim)
       pl.subplot(0,1)      
       pl.add_title('u_scimba', font_size=8)
       pl.add_mesh(mesh[0].copy(), scalars = scimba_solution, cmap=custom_cmap, clim=clim)
       #pl.add_scalar_bar(title='u_scimba')
 
+#______________________________________________________________________________________________
+
       # Second row: u_exact and u_scimba - u_feel (normalized)
 
       pl.subplot(1,0)
       pl.add_title('u_exact', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = 'cfpdes.expr.u_exact', cmap=custom_cmap)      
-      
+      pl.add_mesh(mesh[0].copy(), scalars = 'cfpdes.expr.u_exact', cmap=custom_cmap, clim=clim)      
 
 
-      diff = np.abs(scimba_solution - feel_solution)
+      diff = np.abs(scimba_solution - feel_solution)/np.abs(u_ex)
       print('diff = ', diff)
-      diff_normalized = (diff - np.min(diff)) / (np.max(diff) - np.min(diff))
       clim = [np.min(diff), np.max(diff)]
-      print('clim = ', clim)
- 
+      print('clim sc - feel = ', clim) 
       pl.subplot(1,1)      
-      pl.add_title('u_scimba - u_feel(normalized)', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = diff_normalized, cmap=custom_cmap, clim=clim)  
-      pl.add_scalar_bar(title='u_scimba - u_feel', 
-                  n_labels=5,          # Number of labels on the scalar bar
-                  label_font_size=12,  # Font size of the labels
-                  title_font_size=14,  # Font size of the title
-                  fmt="%.2e",          # Format for the scalar bar labels
-                  vertical=False,      # Horizontal orientation of the scalar bar
-                  width=0.5,           # Width of the scalar bar
-                  height=0.08,         # Height of the scalar bar
-                  position_x=0.35,     # Position on the x-axis
-                  position_y=0.02)     # Position on the y-axis
-
+      pl.add_title('|u_scimba - u_feel|/|u_exact|', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars = diff, cmap=custom_cmap, clim=clim)  
+      pl.add_scalar_bar(title='u_scimba - u_feel')
 
       print(' ||u_scimba - u_feel||∞ = ', np.linalg.norm(scimba_solution - feel_solution, np.inf))   
       
+#______________________________________________________________________________________________
 
       # Third row: u_exact - u_scimba and u_exact - u_feel
 
 
-      diff = np.abs(u_ex - scimba_solution)
+      diff = np.abs(u_ex - scimba_solution)/np.abs(u_ex)
       print('diff = ', diff)
-      diff_normalized = (diff - np.min(diff)) / (np.max(diff) - np.min(diff))
       clim = [np.min(diff), np.max(diff)]
-      
       pl.subplot(2,0)
-      pl.add_title('u_exact - u_scimba', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = diff_normalized, cmap=custom_cmap)   
-      pl.add_scalar_bar(title='u_exact - u_scimba ')
-     
+      pl.add_title('|u_exact - u_scimba|/|u_exact|', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars = diff, cmap=custom_cmap, clim=clim)   
+      pl.add_scalar_bar(title='u_exact - u_scimba ')  
       
-      
-
-      diff = np.abs(u_ex - feel_solution)
+      diff = np.abs(u_ex - feel_solution)/np.abs(u_ex)
       print('diff = ', diff)
-      diff_normalized = (diff - np.min(diff)) / (np.max(diff) - np.min(diff))
       clim = [np.min(diff), np.max(diff)]
-      
       pl.subplot(2,1)
-      pl.add_title('u_exact - u_feel', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = diff_normalized, cmap=custom_cmap)   
+      pl.add_title('|u_exact - u_feel|/|u_exact|', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars = diff, cmap=custom_cmap, clim= clim)   
       pl.add_scalar_bar(title='u_exact - u_feel')      
 
 
@@ -512,7 +500,8 @@ def plot_convergence(P, df,dim,orders=[1,2]):
 
 # Définir les couleurs du bas au haut de la colormap de l'image
 colors = [
-    (75/255, 0, 130/255),   # indigo
+    (0.188, 0.188, 0.220),  # bleu-noir
+    #(75/255, 0, 130/255),   # indigo
     (0, 0, 255/255),        # bleu
     (0, 255/255, 255/255),  # cyan
     (0, 255/255, 0),        # vert

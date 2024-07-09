@@ -161,7 +161,7 @@ class PoissonDisk2D(pdes.AbstractPDEx):
     
 #___________________________________________________________________________________________________________
 
-def Run_Poisson2D(pde, epoch=1000, bc_loss_bool=True, w_bc=10, w_res=10):
+def Run_Poisson2D(pde, epoch=600, bc_loss_bool=True, w_bc=10, w_res=10):
    
     # Initialize samplers
     x_sampler = sampling_pde.XSampler(pde=pde)
@@ -233,6 +233,11 @@ if __name__ == "__main__":
     u_exact = 'x*x/(1+x) + y*y/(1+y)'
     rhs = '-(4 + 2*x + 2*y) / ((1+x)*(1+y))'
     pde = Poisson_2D(xdomain, rhs=rhs, diff='(1+x,0,0,1+y)', g='x*x/(1+x) + y*y/(1+y)', u_exact = u_exact )
+    u = Run_Poisson2D(pde)
+    print(u)
+
+    u_exact = 'x*x + y*y'
+    pde = Poisson_2D(xdomain, rhs='-4*x -4*y', diff='(x,y,-y,x+y)', g=u_exact, u_exact = u_exact)
     u = Run_Poisson2D(pde)
     print(u)
 
