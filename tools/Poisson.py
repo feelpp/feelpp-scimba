@@ -122,7 +122,7 @@ class Poisson:
       xdomain = domain.SpaceDomain(2, domain.SquareDomain(2, [[0.0, 1.0], [0.0, 1.0]]))
     
     pde = Poisson_2D(xdomain, rhs=self.rhs, diff=diff, g=self.g, u_exact=self.u_exact)
-    u , pinn = Run_Poisson2D(pde, epoch=200)
+    u , pinn = Run_Poisson2D(pde, epoch=1000)
 
     return u
 
@@ -297,11 +297,7 @@ class Poisson:
 
     def myplots(title, scalars, err, clim, dim=2, field=f"cfpdes.poisson.{name}", factor=1, cmap=custom_cmap):
       mesh = pv_get_mesh((f"cfpdes-{self.dim}d-p{self.order}.exports/Export.case"))
-      #pv_plot(mesh, field)
       pl = pv.Plotter(shape=(1,3))
-
-      #clim = [np.min(scalars), np.max(scalars)]
-      #print(f"clim {scalars} = ", clim)      
 
       pl.subplot(0,0)
       pl.add_title(f'u = {title} ', font_size=8)
@@ -372,8 +368,6 @@ class Poisson:
     if solver == 'scimba':
       import pyvista as pv
       import torch
-      from tools.GmeshRead import mesh2d
-      from scipy.spatial import cKDTree
 
       u_scimba = self.scimba_solver( h=h, shape=shape, dim=self.dim, verbose=True)
       
@@ -391,7 +385,6 @@ class Poisson:
         # Extract the mesh points (coordinates)
         coordinates = block.points
         solution = 'cfpdes.poisson.u'
-        solution_expression = block.point_data[solution]
 
         df = pd.DataFrame(block.point_data)
         print(df.head())
@@ -420,7 +413,6 @@ class Poisson:
       mu = torch.ones((len(points), 1), dtype=torch.float64, requires_grad=True)
 
       scimba_solution = []
-      div_grad_solution = []
       
       u_values = u_scimba(data, mu)
 
@@ -430,8 +422,6 @@ class Poisson:
 
         scimba_solution = np.append(scimba_solution, u_value_np[0]) 
       
-      #scimba_solution = scimba_solution.tensor.detach().numpy()
-
       print(f"ScimBa solution: {scimba_solution}")
       print(f"Feel++ solution: {feel_solution}")
       print(f"Exact solution: {u_ex}")
@@ -441,28 +431,36 @@ class Poisson:
       mesh = pv_get_mesh((f"cfpdes-{self.dim}d-p{self.order}.exports/Export.case"))
 
       # Plot the mesh with the chosen scalars and titles
+      # Feel++ solution
       clim_feel = [np.min(feel_solution), np.max(feel_solution)]
       print('clim feel = ', clim_feel)
-      pv_plot(mesh[0].copy(), feel_solution, title='Feel++ Solution', clim=clim_feel)
+      pv_plot(mesh[0].copy(), feel_solution, title=f'Feel++ Solution \n clim = {clim_feel} ', clim=clim_feel)
 
+      # ScimBa solution
       clim_scimba = [np.min(scimba_solution), np.max(scimba_solution)]
       print('clim scimba = ', clim_scimba)
-      pv_plot(mesh[0].copy(), scimba_solution, title='Scimba Solution', clim=clim_scimba)
+      pv_plot(mesh[0].copy(), scimba_solution, title=f'Scimba Solution \n clim = {clim_scimba}', clim=clim_scimba)
       
+      # Exact solution
       clim_exact = [np.min(u_ex), np.max(u_ex)]
       print('clim exact = ', clim_exact)
-      pv_plot(mesh[0].copy(), u_ex, title='Exact Solution', clim=clim_exact)
+      pv_plot(mesh[0].copy(), u_ex, title=f'Exact Solution \n clim = {clim_exact}', clim=clim_exact)
 
+      # Error plots
       err_feel = np.abs(u_ex - feel_solution) / np.abs(u_ex)
       err_scimba = np.abs(u_ex - scimba_solution) / np.abs(u_ex)
       clim_err = [np.min(err_feel), np.max(err_feel)]
-      print('clim err_feel = ', clim_err)
-      pv_plot(mesh[0].copy(), err_feel, title='|u_exact - u_feel|/|u_exact|', clim=clim_err)
-      print('clim err_scimba = ', [np.min(err_scimba), np.max(err_scimba)])
-      pv_plot(mesh[0].copy(), err_scimba, title='|u_exact - u_scimba|/|u_exact|', clim=[np.min(err_scimba), np.max(err_scimba)])
+      print('clim err_feel = |u_feel - u_exact|/|u_exact| ∈ ', clim_err)
+
+      pv_plot(mesh[0].copy(), err_feel, title=f'|u_exact - u_feel|/|u_exact| \n clim = {clim_err}', clim=clim_err)
+      print('clim err_scimba = |u_scimba - u_exact|/|u_exact| ∈ ', [np.min(err_scimba), np.max(err_scimba)])
+      pv_plot(mesh[0].copy(), err_scimba, title=f'|u_exact - u_scimba|/|u_exact| \n clim = {[np.min(err_scimba), np.max(err_scimba)]}', clim=[np.min(err_scimba), np.max(err_scimba)])
 
       myplots(title = 'u_feel : ', scalars='cfpdes.poisson.u', err=np.abs(u_ex - feel_solution), clim=[np.min(feel_solution), np.max(feel_solution)])
+      print(' ||u_feel - u_exact||∞ = ', np.linalg.norm(feel_solution - u_ex, np.inf))
+
       myplots(title = 'u_scimba :', scalars=scimba_solution, err=np.abs(u_ex - scimba_solution), clim=[np.min(scimba_solution), np.max(scimba_solution)])
+      print(' ||u_scimba - u_exact||∞ = ', np.linalg.norm(scimba_solution - u_ex, np.inf))
 
       """
       # Plotting the solutions
