@@ -27,6 +27,21 @@ PI = 3.14159265358979323846
 ELLIPSOID_A = 4 / 3
 ELLIPSOID_B = 1 / ELLIPSOID_A
 
+def evaluate_u_exact(u_exact_expr, points):
+    # Create symbols
+    x, y = sp.symbols('x y')
+    
+    # Convert the expression to a sympy expression
+    u_exact_sympy = sp.sympify(u_exact_expr)
+    
+    # Evaluate the expression at the given points
+    u_exact_values = []
+    for point in points:
+        u_exact_val = u_exact_sympy.evalf(subs={x: point[0], y: point[1]})
+        u_exact_values.append(float(u_exact_val))
+    
+    return np.array(u_exact_values)
+
 def differentiate_elements(diff_matrix_str, variables=['x', 'y']):
     # Define the symbols (variables) used in the expression
     symbols = sp.symbols(variables)
@@ -43,7 +58,6 @@ def differentiate_elements(diff_matrix_str, variables=['x', 'y']):
         derivatives.append(derivs)
 
     return derivatives
-
 #___________________________________________________________________________________________________________
 
 class Poisson_2D(pdes.AbstractPDEx):
@@ -69,6 +83,22 @@ class Poisson_2D(pdes.AbstractPDEx):
         self.first_derivative = True
         self.second_derivative = True
 
+    
+        def anisotropy_matrix(w, x, mu):
+            x1, x2 = x.get_coordinates()
+
+            # Evaluate diff elements to tensors
+            diff_expr = eval(self.diff, {'x': x1, 'y': x2, 'pi': PI, 'sin': torch.sin, 'cos': torch.cos, 'exp': torch.exp})
+            diff_tensors = [torch.tensor(element, dtype=torch.float64, requires_grad=True).unsqueeze(-1) if not isinstance(element, torch.Tensor) else element.unsqueeze(-1) for element in diff_expr]
+
+            # Ensure all tensors have the same shape
+            target_shape = diff_tensors[0].shape
+            diff_tensors = [tensor.expand(target_shape) for tensor in diff_tensors]
+
+            return torch.cat(diff_tensors, dim=-1)
+
+        self.anisotropy_matrix = anisotropy_matrix
+
     def make_data(self, n_data):
         pass
 
@@ -78,8 +108,46 @@ class Poisson_2D(pdes.AbstractPDEx):
         g = eval(self.u_exact, {'x': x1, 'y': x2, 'pi': PI, 'sin' : torch.sin, 'cos': torch.cos, 'exp': torch.exp})
 
         return  u - g
+    
+    def residual(self, w, x, mu, **kwargs):
+        x1, x2 = x.get_coordinates()
+        u = self.get_variables(w)
+        diff = eval(self.diff, {'x': x1, 'y': x2, 'pi': PI, 'sin': torch.sin, 'cos': torch.cos, 'exp': torch.exp})
+        div_K_grad_u = self.get_variables(w, "div_K_grad_w")
+        f = eval(self.rhs, {'x': x1, 'y': x2, 'pi': PI, 'sin': torch.sin, 'cos': torch.cos, 'exp': torch.exp})
+        if self.diff != '(1,0,0,1)':
+            
+            u_x = self.get_variables(w, "w_x")
+            u_y = self.get_variables(w, "w_y")
 
+            u_xx = self.get_variables(w, "w_xx")
+            u_yy = self.get_variables(w, "w_yy")
+            
+            variables = ['x', 'y']
+            derivatives = differentiate_elements(self.diff, variables)
+            #print(derivatives)
+            
+            # Evaluate derivatives
+            derivatives_eval = []
+            for i in range(len(derivatives)):
+                row_eval = []
+                for j in range(len(derivatives[i])):
+                    derivative_expr = str(derivatives[i][j])
+                    eval_expr = eval(derivative_expr, {'x': x1, 'y': x2, 'pi': PI, 'sin': np.sin, 'cos': np.cos, 'exp': np.exp})
+                    row_eval.append(eval_expr)
+                derivatives_eval.append(row_eval)
 
+            # Compute div_grad_u (assuming derivatives_eval and diff are properly aligned)
+            div_grad_u_up = (derivatives_eval[0][0]*u_x + diff[0]*u_xx) + (derivatives_eval[0][1]*u_y + diff[1]*u_yy)
+            div_grad_u_down = (derivatives_eval[1][0]*u_x + diff[2]*u_xx) + (derivatives_eval[1][1]*u_y + diff[3]*u_yy)
+            div_grad_u = div_grad_u_up + div_grad_u_down
+            
+            return div_grad_u + f
+        else:
+            return div_K_grad_u + f
+        
+
+    """
     def residual(self, w, x, mu, **kwargs):
         # Ensure x1 and x2 are PyTorch tensors with requires_grad=True
         x1, x2 = x.get_coordinates()
@@ -114,7 +182,7 @@ class Poisson_2D(pdes.AbstractPDEx):
         div_grad_u = div_grad_u_up + div_grad_u_down
         
         return div_grad_u + f
-        
+    """
         
     def post_processing(self, x, mu, w):
         x1, x2 = x.get_coordinates()
@@ -161,7 +229,7 @@ class PoissonDisk2D(pdes.AbstractPDEx):
     
 #___________________________________________________________________________________________________________
 
-def Run_Poisson2D(pde, epoch=600, bc_loss_bool=True, w_bc=10, w_res=10):
+def Run_Poisson2D(pde, epoch=200, bc_loss_bool=True, w_bc=10, w_res=10):
    
     # Initialize samplers
     x_sampler = sampling_pde.XSampler(pde=pde)
@@ -214,43 +282,53 @@ def Run_Poisson2D(pde, epoch=600, bc_loss_bool=True, w_bc=10, w_res=10):
     n_visu = 20000
     reference_solution = True
     trainer.plot(n_visu, reference_solution=True)
-    trainer.plot_derivative_mu(n_visu)
-    trainer.plot_derivative_xmu(n_visu)
-
+    #trainer.plot_derivative_mu(n_visu)
+    #trainer.plot_derivative_xmu(n_visu)
     u = pinn.get_w
 
-    return u
+    return u , pinn
 
 if __name__ == "__main__":
     # Laplacien strong Bc on Square with nn
 
     xdomain = domain.SpaceDomain(2, domain.SquareDomain(2, [[0.0, 1.0], [0.0, 1.0]]))
     print(xdomain)
+    
     pde = Poisson_2D(xdomain)
-    u = Run_Poisson2D(pde)
-    print(u)
+    u , pinn = Run_Poisson2D(pde)
+    print(pinn)
 
     u_exact = 'x*x/(1+x) + y*y/(1+y)'
     rhs = '-(4 + 2*x + 2*y) / ((1+x)*(1+y))'
     pde = Poisson_2D(xdomain, rhs=rhs, diff='(1+x,0,0,1+y)', g='x*x/(1+x) + y*y/(1+y)', u_exact = u_exact )
-    u = Run_Poisson2D(pde)
-    print(u)
-
+    u, pinn = Run_Poisson2D(pde)
+    print(pinn)
+    """
     u_exact = 'x*x + y*y'
     pde = Poisson_2D(xdomain, rhs='-4*x -4*y', diff='(x,y,-y,x+y)', g=u_exact, u_exact = u_exact)
-    u = Run_Poisson2D(pde)
-    print(u)
+    u , pinn = Run_Poisson2D(pde)
+    print(pinn)
+    """
 
-    # Example points to evaluate u
+     # Example points to evaluate u
     points = [[0.1, 0.2], [0.5, 0.7], [1.0, 1.0]]
-    points = torch.tensor(points, dtype=torch.float64)
+    points = torch.tensor(points, dtype=torch.float64, requires_grad=True)
     labels = torch.zeros(len(points))  # Assuming all points have label 0    
     data = domain.SpaceTensor(points, labels, boundary=True)
     points = points.to(torch.float32)
-    mu = torch.ones((len(points), 1), dtype=torch.float64)
+    mu = torch.ones((len(points), 1), dtype=torch.float64, requires_grad=True)
 
-    u_values = u(data, mu)
+    u_values = pinn.get_w(data, mu)
     for point, u_value in zip(points, u_values):
         print(f"u( {point[0:]} ) = {u_value[0]}")
 
-    
+    # Correct way to compute div_grad_values
+    div_grad_dict = {"w": pinn.get_w(data, mu)}
+    pinn.get_div_K_grad_w(div_grad_dict, data, mu, pde.anisotropy_matrix)
+    for point, div_grad_value in zip(points, div_grad_dict["div_K_grad_w"]):
+        print(f"div_K_grad_w( {point[0:]} ) = {div_grad_value[0]}")
+
+     # Evaluate u_exact at the given points
+    u_exact_values = evaluate_u_exact(u_exact, points)
+    for point, u_exact_value in zip(points, u_exact_values):
+        print(f"u_exact( {point} ) = {u_exact_value}")
