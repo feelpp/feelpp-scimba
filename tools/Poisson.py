@@ -122,7 +122,7 @@ class Poisson:
       xdomain = domain.SpaceDomain(2, domain.SquareDomain(2, [[0.0, 1.0], [0.0, 1.0]]))
     
     pde = Poisson_2D(xdomain, rhs=self.rhs, diff=diff, g=self.g, u_exact=self.u_exact)
-    u , pinn = Run_Poisson2D(pde, epoch=1000)
+    u , pinn = Run_Poisson2D(pde, epoch=200)
 
     return u
 
@@ -295,7 +295,7 @@ class Poisson:
 #    def pv_plot(mesh, field, clim=None, cmap=custom_cmap, cpos='xy', show_scalar_bar=True, show_edges=True):
 #      mesh.plot(scalars=field, cmap=cmap, cpos=cpos, show_scalar_bar=show_scalar_bar, show_edges=show_edges)
 
-    def myplots(title, scalars, err, dim=2, field=f"cfpdes.poisson.{name}", factor=1, cmap=custom_cmap):
+    def myplots(title, scalars, err, clim, dim=2, field=f"cfpdes.poisson.{name}", factor=1, cmap=custom_cmap):
       mesh = pv_get_mesh((f"cfpdes-{self.dim}d-p{self.order}.exports/Export.case"))
       #pv_plot(mesh, field)
       pl = pv.Plotter(shape=(1,3))
@@ -305,27 +305,53 @@ class Poisson:
 
       pl.subplot(0,0)
       pl.add_title(f'u = {title} ', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars=scalars, cmap=custom_cmap)
+      pl.add_mesh(mesh[0].copy(), scalars=scalars, cmap=cmap, clim=clim, show_scalar_bar= False)
+      pl.add_scalar_bar(
+            title=f'u = {title} ',
+            n_labels=4,  # Reduce the number of labels for clarity
+            label_font_size=12,  # Increase label font size for better readability
+            title_font_size=14,  # Increase title font size for better readability
+            fmt="%.2e",  # Scientific notation format
+            vertical=False,
+            width=0.8,  # Increase width
+            height=0.08,  # Maintain height
+            position_x=0.12,  # Adjust x position
+            position_y=0.1  # Raise the y position
+            )
 
 
       pl.subplot(0,1)
       pl.add_title('u_exact :', font_size=8)      
-      pl.add_mesh(mesh[0].copy(), scalars='cfpdes.expr.u_exact', cmap=custom_cmap)
+      pl.add_mesh(mesh[0].copy(), scalars='cfpdes.expr.u_exact', cmap=custom_cmap, show_scalar_bar= False)
+      pl.add_scalar_bar(
+            title='u_ex',
+            n_labels=4,  # Reduce the number of labels for clarity
+            label_font_size=12,  # Increase label font size for better readability
+            title_font_size=14,  # Increase title font size for better readability
+            fmt="%.2e",  # Scientific notation format
+            vertical=False,
+            width=0.8,  # Increase width
+            height=0.08,  # Maintain height
+            position_x=0.12,  # Adjust x position
+            position_y=0.1  # Raise the y position
+            )
 
-      clim = [np.min(err), np.max(err)]
+      clim_err = [np.min(err), np.max(err)]
       pl.subplot(0,2)
       pl.add_title(f'|u_exact - u|: ', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars=err, cmap=custom_cmap, clim=clim)
-      pl.add_scalar_bar(title='u_ex-u/u_ex',
-                        n_labels=5,
-                        label_font_size=12,
-                        title_font_size=14,
-                        fmt="%.2e",
-                        vertical=False,
-                        width=0.5,
-                        height=0.08,
-                        position_x=0.35,
-                        position_y=0.02)
+      pl.add_mesh(mesh[0].copy(), scalars=err, cmap=custom_cmap, clim=clim_err, show_scalar_bar= False)
+      pl.add_scalar_bar(
+            title='u_ex-u/u_ex',
+            n_labels=4,  # Reduce the number of labels for clarity
+            label_font_size=12,  # Increase label font size for better readability
+            title_font_size=14,  # Increase title font size for better readability
+            fmt="%.2e",  # Scientific notation format
+            vertical=False,
+            width=0.8,  # Increase width
+            height=0.08,  # Maintain height
+            position_x=0.12,  # Adjust x position
+            position_y=0.1  # Raise the y position
+            )
       
       pl.link_views()
       pl.view_xy()    
@@ -435,8 +461,8 @@ class Poisson:
       print('clim err_scimba = ', [np.min(err_scimba), np.max(err_scimba)])
       pv_plot(mesh[0].copy(), err_scimba, title='|u_exact - u_scimba|/|u_exact|', clim=[np.min(err_scimba), np.max(err_scimba)])
 
-      myplots(title = 'u_feel : ', scalars='cfpdes.poisson.u', err=np.abs(u_ex - feel_solution))
-      myplots(title = 'u_scimba :', scalars=scimba_solution, err=np.abs(u_ex - scimba_solution))
+      myplots(title = 'u_feel : ', scalars='cfpdes.poisson.u', err=np.abs(u_ex - feel_solution), clim=[np.min(feel_solution), np.max(feel_solution)])
+      myplots(title = 'u_scimba :', scalars=scimba_solution, err=np.abs(u_ex - scimba_solution), clim=[np.min(scimba_solution), np.max(scimba_solution)])
 
       """
       # Plotting the solutions
