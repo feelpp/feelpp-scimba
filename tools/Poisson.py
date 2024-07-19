@@ -122,7 +122,7 @@ class Poisson:
       xdomain = domain.SpaceDomain(2, domain.SquareDomain(2, [[0.0, 1.0], [0.0, 1.0]]))
     
     pde = Poisson_2D(xdomain, rhs=self.rhs, diff=diff, g=self.g, u_exact=self.u_exact)
-    u = Run_Poisson2D(pde)
+    u , pinn = Run_Poisson2D(pde, epoch=1000)
 
     return u
 
@@ -285,35 +285,82 @@ class Poisson:
       reader = pv.get_reader(mesh_path)
       mesh = reader.read()
       return mesh
-
-    def pv_plot(mesh, field, clim=None, cmap=custom_cmap, cpos='xy', show_scalar_bar=True, show_edges=True):
-      mesh.plot(scalars=field, clim=clim, cmap=cmap, cpos=cpos, show_scalar_bar=show_scalar_bar, show_edges=show_edges)
-
-    def myplots(dim=2, field=f"cfpdes.poisson.{name}", factor=1, cmap=custom_cmap):
-      mesh = pv_get_mesh((f"cfpdes-{self.dim}d-p{self.order}.exports/Export.case"))
-      #pv_plot(mesh, field)
-      pl = pv.Plotter(shape=(1,2))
     
+    def pv_plot(mesh, scalars, title, clim=None, cmap=custom_cmap, cpos='xy', show_scalar_bar=True, show_edges=True):
+      pl = pv.Plotter()
+      pl.add_mesh(mesh, scalars=scalars, cmap=cmap, clim=clim, show_scalar_bar=show_scalar_bar, show_edges=show_edges)
+      pl.add_title(title, font_size=12)
+      pl.show(cpos=cpos)
+
+#    def pv_plot(mesh, field, clim=None, cmap=custom_cmap, cpos='xy', show_scalar_bar=True, show_edges=True):
+#      mesh.plot(scalars=field, cmap=cmap, cpos=cpos, show_scalar_bar=show_scalar_bar, show_edges=show_edges)
+
+    def myplots(title, scalars, err, clim, dim=2, field=f"cfpdes.poisson.{name}", factor=1, cmap=custom_cmap):
+      mesh = pv_get_mesh((f"cfpdes-{self.dim}d-p{self.order}.exports/Export.case"))
+      pl = pv.Plotter(shape=(1,3))
 
       pl.subplot(0,0)
-      pl.add_title(f'Solution P{order}', font_size=10)
-      pl.add_mesh(mesh[0].copy(), scalars = f"cfpdes.poisson.{name}", cmap=custom_cmap)
-      
+      pl.add_title(f'u = {title} ', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars=scalars, cmap=cmap, clim=clim, show_scalar_bar= False)
+      pl.add_scalar_bar(
+            title=f'u = {title} ',
+            n_labels=4,  # Reduce the number of labels for clarity
+            label_font_size=12,  # Increase label font size for better readability
+            title_font_size=14,  # Increase title font size for better readability
+            fmt="%.2e",  # Scientific notation format
+            vertical=False,
+            width=0.8,  # Increase width
+            height=0.08,  # Maintain height
+            position_x=0.12,  # Adjust x position
+            position_y=0.1  # Raise the y position
+            )
+
 
       pl.subplot(0,1)
-      pl.add_title('u_exact', font_size=10)
-      pl.add_mesh(mesh[0].copy(), scalars = 'cfpdes.expr.u_exact', cmap=custom_cmap)      
+      pl.add_title('u_exact :', font_size=8)      
+      pl.add_mesh(mesh[0].copy(), scalars='cfpdes.expr.u_exact', cmap=custom_cmap, show_scalar_bar= False)
+      pl.add_scalar_bar(
+            title='u_ex',
+            n_labels=4,  # Reduce the number of labels for clarity
+            label_font_size=12,  # Increase label font size for better readability
+            title_font_size=14,  # Increase title font size for better readability
+            fmt="%.2e",  # Scientific notation format
+            vertical=False,
+            width=0.8,  # Increase width
+            height=0.08,  # Maintain height
+            position_x=0.12,  # Adjust x position
+            position_y=0.1  # Raise the y position
+            )
 
+      clim_err = [np.min(err), np.max(err)]
+      pl.subplot(0,2)
+      pl.add_title(f'|u_exact - u|: ', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars=err, cmap=custom_cmap, clim=clim_err, show_scalar_bar= False)
+      pl.add_scalar_bar(
+            title='u_ex-u/u_ex',
+            n_labels=4,  # Reduce the number of labels for clarity
+            label_font_size=12,  # Increase label font size for better readability
+            title_font_size=14,  # Increase title font size for better readability
+            fmt="%.2e",  # Scientific notation format
+            vertical=False,
+            width=0.8,  # Increase width
+            height=0.08,  # Maintain height
+            position_x=0.12,  # Adjust x position
+            position_y=0.1  # Raise the y position
+            )
+      
       pl.link_views()
       pl.view_xy()    
       if plot == 1:
         pl.show()
         pl.screenshot(plot)
 
+#_____
+
     if plot == 1:
       field="cfpdes.poisson.u"
       mesh = pv_get_mesh(f"cfpdes-{self.dim}d-p{self.order}.exports/Export.case")
-      pv_plot(mesh, field)
+      pv_plot(mesh, field,title='Solution')
 
       #myplots(dim=2,factor=1)
 
@@ -321,11 +368,9 @@ class Poisson:
     if solver == 'scimba':
       import pyvista as pv
       import torch
-      from tools.GmeshRead import mesh2d
-      from scipy.spatial import cKDTree
 
       u_scimba = self.scimba_solver( h=h, shape=shape, dim=self.dim, verbose=True)
-
+      
       # File path to the .case file
       file_path = 'cfpdes-2d-p1.exports/Export.case'
 
@@ -340,7 +385,6 @@ class Poisson:
         # Extract the mesh points (coordinates)
         coordinates = block.points
         solution = 'cfpdes.poisson.u'
-        solution_expression = block.point_data[solution]
 
         df = pd.DataFrame(block.point_data)
         print(df.head())
@@ -360,15 +404,16 @@ class Poisson:
       print("\nFeel++ solution 'cfpdes.poisson.u':")
       print(feel_solution) 
 
-      coordinates_tensor = torch.tensor(coordinates, dtype=torch.float64)
+      coordinates_tensor = torch.tensor(coordinates, dtype=torch.float64, requires_grad=True)
       print(f"Shape of input tensor (coordinates): {coordinates_tensor.shape}")
-      # Calculate mesh size
-
+      
       points = coordinates_tensor
-      labels = torch.zeros(len(points))  # Assuming all points have label 0    
+      labels = torch.zeros(len(points))
       data = domain.SpaceTensor(points, labels, boundary=True)
-      mu = torch.ones((len(points), 1), dtype=torch.float64)
+      mu = torch.ones((len(points), 1), dtype=torch.float64, requires_grad=True)
+
       scimba_solution = []
+      
       u_values = u_scimba(data, mu)
 
       for point, u_value in zip(points, u_values):
@@ -377,96 +422,174 @@ class Poisson:
 
         scimba_solution = np.append(scimba_solution, u_value_np[0]) 
       
-      #scimba_solution = scimba_solution.tensor.detach().numpy()
-
       print(f"ScimBa solution: {scimba_solution}")
-      print("\n Difference : ", np.abs(scimba_solution - feel_solution))
+      print(f"Feel++ solution: {feel_solution}")
+      print(f"Exact solution: {u_ex}")
+      print("\n Difference |scimba_solution - feel_solution| : ", np.abs(scimba_solution - feel_solution))
 
       # Plotting the solutions
-
       mesh = pv_get_mesh((f"cfpdes-{self.dim}d-p{self.order}.exports/Export.case"))
-      pl = pv.Plotter(shape=(3,2))
 
+      # Plot the mesh with the chosen scalars and titles
+      # Feel++ solution
+      clim_feel = [np.min(feel_solution), np.max(feel_solution)]
+      print('clim feel = ', clim_feel)
+      pv_plot(mesh[0].copy(), feel_solution, title=f'Feel++ Solution \n clim = {clim_feel} ', clim=clim_feel)
+
+      # ScimBa solution
+      clim_scimba = [np.min(scimba_solution), np.max(scimba_solution)]
+      print('clim scimba = ', clim_scimba)
+      pv_plot(mesh[0].copy(), scimba_solution, title=f'Scimba Solution \n clim = {clim_scimba}', clim=clim_scimba)
+      
+      # Exact solution
+      clim_exact = [np.min(u_ex), np.max(u_ex)]
+      print('clim exact = ', clim_exact)
+      pv_plot(mesh[0].copy(), u_ex, title=f'Exact Solution \n clim = {clim_exact}', clim=clim_exact)
+
+      # Error plots
+      err_feel = np.abs(u_ex - feel_solution) / np.abs(u_ex)
+      err_scimba = np.abs(u_ex - scimba_solution) / np.abs(u_ex)
+      clim_err = [np.min(err_feel), np.max(err_feel)]
+      print('clim err_feel = |u_feel - u_exact|/|u_exact| ∈ ', clim_err)
+
+      pv_plot(mesh[0].copy(), err_feel, title=f'|u_exact - u_feel|/|u_exact| \n clim = {clim_err}', clim=clim_err)
+      print('clim err_scimba = |u_scimba - u_exact|/|u_exact| ∈ ', [np.min(err_scimba), np.max(err_scimba)])
+      pv_plot(mesh[0].copy(), err_scimba, title=f'|u_exact - u_scimba|/|u_exact| \n clim = {[np.min(err_scimba), np.max(err_scimba)]}', clim=[np.min(err_scimba), np.max(err_scimba)])
+
+      myplots(title = 'u_feel : ', scalars='cfpdes.poisson.u', err=np.abs(u_ex - feel_solution), clim=[np.min(feel_solution), np.max(feel_solution)])
+      print(' ||u_feel - u_exact||∞ = ', np.linalg.norm(feel_solution - u_ex, np.inf))
+
+      myplots(title = 'u_scimba :', scalars=scimba_solution, err=np.abs(u_ex - scimba_solution), clim=[np.min(scimba_solution), np.max(scimba_solution)])
+      print(' ||u_scimba - u_exact||∞ = ', np.linalg.norm(scimba_solution - u_ex, np.inf))
+
+      """
+      # Plotting the solutions
+
+
+      pl = pv.Plotter(shape=(3, 2))
 
       # First row: u_feel and u_scimba
 
-      clim = [np.min(feel_solution), np.max(feel_solution)]
-      pl.subplot(0,0)
+      # u_feel plot
+      clim_feel = [np.min(feel_solution), np.max(feel_solution)]
+      print('clim feel = ', clim_feel)
+      pl.subplot(0, 0)
       pl.add_title('u_feel', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = 'cfpdes.poisson.u', cmap=custom_cmap, clim=clim)
+      pl.add_mesh(mesh[0].copy(), scalars=feel_solution, cmap=custom_cmap, clim=clim_feel)
+      pl.add_scalar_bar(title='u_feel',
+                        n_labels=5,
+                        label_font_size=12,
+                        title_font_size=14,
+                        fmt="%.2e",
+                        vertical=False,
+                        width=0.5,
+                        height=0.08,
+                        position_x=0.35,
+                        position_y=0.02)
 
-
-      clim = [np.min(scimba_solution), np.max(scimba_solution)]
-      pl.subplot(0,1)      
+      # u_scimba plot
+      clim_scimba = [np.min(scimba_solution), np.max(scimba_solution)]
+      print('clim scimba = ', clim_scimba)
+      pl.subplot(0, 1)
       pl.add_title('u_scimba', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = scimba_solution, cmap=custom_cmap, clim=clim)
-      #pl.add_scalar_bar(title='u_scimba')
+      pl.add_mesh(mesh[0].copy(), scalars=scimba_solution, cmap=custom_cmap, clim=clim_scimba)
+      pl.add_scalar_bar(title='u_scimba',
+                        n_labels=5,
+                        label_font_size=12,
+                        title_font_size=14,
+                        fmt="%.2e",
+                        vertical=False,
+                        width=0.5,
+                        height=0.08,
+                        position_x=0.35,
+                        position_y=0.02)
 
       # Second row: u_exact and u_scimba - u_feel (normalized)
 
-      pl.subplot(1,0)
+      # u_exact plot
+      clim_exact = [np.min(u_ex), np.max(u_ex)]
+      print('clim u_ex = ', clim_exact)
+      pl.subplot(1, 0)
       pl.add_title('u_exact', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = 'cfpdes.expr.u_exact', cmap=custom_cmap)      
-      
+      pl.add_mesh(mesh[0].copy(), scalars=u_ex, cmap=custom_cmap, clim=clim_exact)
+      pl.add_scalar_bar(title='u_exact',
+                        n_labels=5,
+                        label_font_size=12,
+                        title_font_size=14,
+                        fmt="%.2e",
+                        vertical=False,
+                        width=0.5,
+                        height=0.08,
+                        position_x=0.35,
+                        position_y=0.02)
 
+      # |u_scimba - u_feel|/|u_exact| plot
+      err_scimba_feel = np.abs(scimba_solution - feel_solution) / np.abs(u_ex)
+      print('err = ', err_scimba_feel)
+      clim_err_scimba_feel = [np.min(err_scimba_feel), np.max(err_scimba_feel)]
+      print('clim u_sc - u_feel =  = ', clim_err_scimba_feel)
+      pl.subplot(1, 1)
+      pl.add_title('|u_scimba - u_feel|/|u_exact|', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars=err_scimba_feel, cmap=custom_cmap, clim=clim_err_scimba_feel)
+      pl.add_scalar_bar(title='|u_scimba - u_feel|/|u_exact|',
+                        n_labels=5,
+                        label_font_size=12,
+                        title_font_size=14,
+                        fmt="%.2e",
+                        vertical=False,
+                        width=0.5,
+                        height=0.08,
+                        position_x=0.35,
+                        position_y=0.02)
 
-      diff = np.abs(scimba_solution - feel_solution)
-      print('diff = ', diff)
-      diff_normalized = (diff - np.min(diff)) / (np.max(diff) - np.min(diff))
-      clim = [np.min(diff), np.max(diff)]
-      print('clim = ', clim)
- 
-      pl.subplot(1,1)      
-      pl.add_title('u_scimba - u_feel(normalized)', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = diff_normalized, cmap=custom_cmap, clim=clim)  
-      pl.add_scalar_bar(title='u_scimba - u_feel', 
-                  n_labels=5,          # Number of labels on the scalar bar
-                  label_font_size=12,  # Font size of the labels
-                  title_font_size=14,  # Font size of the title
-                  fmt="%.2e",          # Format for the scalar bar labels
-                  vertical=False,      # Horizontal orientation of the scalar bar
-                  width=0.5,           # Width of the scalar bar
-                  height=0.08,         # Height of the scalar bar
-                  position_x=0.35,     # Position on the x-axis
-                  position_y=0.02)     # Position on the y-axis
+      print(' ||u_scimba - u_feel||∞ = ', np.linalg.norm(scimba_solution - feel_solution, np.inf))
 
+      # Third row: |u_exact - u_scimba|/|u_exact| and |u_exact - u_feel|/|u_exact|
 
-      print(' ||u_scimba - u_feel||∞ = ', np.linalg.norm(scimba_solution - feel_solution, np.inf))   
-      
+      # |u_exact - u_scimba|/|u_exact| plot
+      err_exact_scimba = np.abs(u_ex - scimba_solution) / np.abs(u_ex)
+      print('err = ', err_exact_scimba)
+      clim_err_exact_scimba = [np.min(err_exact_scimba), np.max(err_exact_scimba)]
+      print('clim ex - sc = ', clim_err_exact_scimba)
+      pl.subplot(2, 0)
+      pl.add_title('|u_exact - u_scimba|/|u_exact|', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars=err_exact_scimba, cmap=custom_cmap, clim=clim_err_exact_scimba)
+      pl.add_scalar_bar(title='u_exact - u_scimba',
+                        n_labels=5,
+                        label_font_size=12,
+                        title_font_size=14,
+                        fmt="%.2e",
+                        vertical=False,
+                        width=0.5,
+                        height=0.08,
+                        position_x=0.35,
+                        position_y=0.02)
 
-      # Third row: u_exact - u_scimba and u_exact - u_feel
-
-
-      diff = np.abs(u_ex - scimba_solution)
-      print('diff = ', diff)
-      diff_normalized = (diff - np.min(diff)) / (np.max(diff) - np.min(diff))
-      clim = [np.min(diff), np.max(diff)]
-      
-      pl.subplot(2,0)
-      pl.add_title('u_exact - u_scimba', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = diff_normalized, cmap=custom_cmap)   
-      pl.add_scalar_bar(title='u_exact - u_scimba ')
-     
-      
-      
-
-      diff = np.abs(u_ex - feel_solution)
-      print('diff = ', diff)
-      diff_normalized = (diff - np.min(diff)) / (np.max(diff) - np.min(diff))
-      clim = [np.min(diff), np.max(diff)]
-      
-      pl.subplot(2,1)
-      pl.add_title('u_exact - u_feel', font_size=8)
-      pl.add_mesh(mesh[0].copy(), scalars = diff_normalized, cmap=custom_cmap)   
-      pl.add_scalar_bar(title='u_exact - u_feel')      
-
-
+      # |u_exact - u_feel|/|u_exact| plot
+      err_exact_feel = np.abs(u_ex - feel_solution) / np.abs(u_ex)
+      print('err = ', err_exact_feel)
+      clim_err_exact_feel = [np.min(err_exact_feel), np.max(err_exact_feel)]
+      print('clim ex - feel = ', clim_err_exact_feel)
+      pl.subplot(2, 1)
+      pl.add_title('|u_exact - u_feel|/|u_exact|', font_size=8)
+      pl.add_mesh(mesh[0].copy(), scalars=err_exact_feel, cmap=custom_cmap, clim=clim_err_exact_feel)
+      pl.add_scalar_bar(title='u_exact - u_feel',
+                        n_labels=5,
+                        label_font_size=12,
+                        title_font_size=14,
+                        fmt="%.2e",
+                        vertical=False,
+                        width=0.5,
+                        height=0.08,
+                        position_x=0.35,
+                        position_y=0.02)
 
       pl.link_views()
-      pl.view_xy()    
+      pl.view_xy()
       if plot == 1:
-        pl.show()
-        pl.screenshot(plot)
+          pl.show()
+          pl.screenshot(plot)
+      """
 
 #______________________________________________________________________________________________
 
@@ -488,14 +611,14 @@ def runLaplacianPk(P, df, model, measures, verbose=False):
 
   return df
 
-def runConvergenceAnalysis(P, json, measures, dim=2,hs=[0.1, 0.05, 0.025, 0.0125],orders=[1, 2],verbose=False):
+def runConvergenceAnalysis(P, json, measures, dim=2,hs=[0.1, 0.05, 0.025, 0.0125],orders=[1],verbose=False):
   df=pd.DataFrame({'h':hs})
   for order in orders:
     df=runLaplacianPk(P, df=df,model=[dim,order,json(dim=dim,order=order)], measures = measures,verbose=verbose)
   print('df = ', df.to_markdown())
   return df
 
-def plot_convergence(P, df,dim,orders=[1,2]):
+def plot_convergence(P, df,dim,orders=[1]):
   fig=px.line(df, x="h", y=[f'P{order}-Norm_poisson_{norm}-error' for order,norm in list(itertools.product(orders,['L2','H1']))])
   fig.update_xaxes(title_text="h",type="log")
   fig.update_yaxes(title_text="Error",type="log")
@@ -512,7 +635,8 @@ def plot_convergence(P, df,dim,orders=[1,2]):
 
 # Définir les couleurs du bas au haut de la colormap de l'image
 colors = [
-    (75/255, 0, 130/255),   # indigo
+    (0.188, 0.188, 0.220),  # bleu-noir
+    #(75/255, 0, 130/255),   # indigo
     (0, 0, 255/255),        # bleu
     (0, 255/255, 255/255),  # cyan
     (0, 255/255, 0),        # vert

@@ -3,8 +3,8 @@
 FROM ghcr.io/feelpp/feelpp:jammy
 
 # Set labels for metadata
-LABEL maintainer="Helya Amiri <helya.amiri@etu.unistra.fr>, Rayen Tlili <rayen.tlili@etu.unistra.fr>"
-LABEL description="Docker image with Feel++, Scimba, and PyTorch."
+LABEL maintainer="Rayen Tlili <rayen.tlili@etu.unistra.fr>"
+LABEL description="Docker image with Feel++ & ScimBa"
 
 USER root
 
@@ -18,13 +18,13 @@ RUN pip3 install torch xvfbwrapper pyvista plotly panel ipykernel matplotlib tab
 
 
 # Clone the Scimba repository
-RUN git clone https://gitlab.inria.fr/scimba/scimba.git /workspaces/2024-m1-scimba-feelpp/scimba
+RUN git clone https://gitlab.inria.fr/scimba/scimba.git /workspaces/2024-stage-feelpp-scimba
 
 # Install Scimba and its dependencies
-WORKDIR /workspaces/2024-m1-scimba-feelpp/scimba
+WORKDIR /workspaces/2024-stage-feelpp-scimba/scimba
 RUN pip3 install scimba
 
-# Copy the xvfb script into the container
+# Copy the xvfb script into the container for visualization
 COPY tools/load_xvfb.sh /usr/local/bin/load_xvfb.sh
 RUN chmod +x /usr/local/bin/load_xvfb.sh
 
