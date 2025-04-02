@@ -20,7 +20,6 @@
 }
 
 \title{Coupling Feel++ and SciMBA for Advanced PDE Solving:\\ Project Proposals}
-\author{Your Name}
 \date{\today}
 
 \begin{document}
@@ -30,6 +29,14 @@
 \section{Introduction}
 This document proposes several projects aimed at coupling the finite element library \textbf{Feel++} with the scientific machine learning library \textbf{SciMBA} (which includes techniques such as Physics-Informed Neural Networks (PINNs) and Neural Operators). These projects are designed for a master’s semester project and focus on establishing a direct in-memory interface to build a \( P_c^k \) Lagrange interpolant from SciMBA data without resorting to file I/O.
 
+\section{Context}
+
+Please check : \url{https://numpex.github.io/exama/exama/index.html}
+
+Also check
+\begin{itemize}
+    \item \url{https://numpex.github.io/exama/exama/software/feelpp.html}
+\end{itemize}
 \section{Direct Interface: Building the \( P_c^k \) Lagrange Interpolant}
 
 \subsection{Motivation}
@@ -76,9 +83,9 @@ f(x,y) = 2\pi^2 \sin(\pi x) \sin(\pi y).
 
 \textbf{Tools:}
 \begin{itemize}
-    \item Feel++ toolbox (e.g., \texttt{feelpp\_toolbox\_heat})
+    \item Feel++ toolbox (e.g., \texttt{feelpp\_toolbox\_coefficientformpde})
     \item SciMBA PINN tutorials
-    \item Matplotlib for visualization
+    \item plotly for visualization
 \end{itemize}
 
 \subsection{Project 2: Neural Operator Surrogate for FEM}
@@ -94,7 +101,7 @@ where \(\mu\) controls the diffusion coefficient \(a\).
 \textbf{Steps:}
 \begin{enumerate}[label=\arabic*.]
     \item Generate a dataset by running Feel++ simulations while varying \(\mu\).
-    \item Train a Fourier Neural Operator using SciMBA to learn the mapping \(\mu \mapsto u(x,y)\).
+    \item Train a Fourier Neural Operator using SciMBA to learn the mapping \(\mu \mapsto u(x,y;\mu)\).
     \item For new values of \(\mu\), use the trained operator to predict the solution and pass the results directly to Feel++.
     \item Build the \( P_c^k \) Lagrange interpolant of the predicted solution and compare it against new Feel++ simulations.
 \end{enumerate}
@@ -119,6 +126,7 @@ Split the domain at \( x = 0.5 \).
 
 \textbf{Challenges:}
 \begin{itemize}
+    \item use Schwartz like method for domain decomposition with overlapping 
     \item Matching boundary conditions at the interface.
     \item Efficient data exchange between Python and C++.
 \end{itemize}
@@ -164,8 +172,5 @@ Couple two different physical phenomena solved by different methods through dire
     \item Exchange interface data directly using the \( P_c^k \) interpolant.
     \item Iterate to ensure consistency across the coupled simulation.
 \end{enumerate}
-
-\section{Conclusion}
-These projects leverage the strengths of both Feel++ and SciMBA by coupling high-fidelity FEM simulations with state-of-the-art scientific machine learning techniques. By establishing a direct in-memory interface to build the \( P_c^k \) Lagrange interpolant, file I/O overhead is eliminated, enabling rapid, iterative, and real-time hybrid simulations. This framework offers a solid foundation for a master’s project and paves the way for advanced research in numerical methods and scientific machine learning.
 
 \end{document}
