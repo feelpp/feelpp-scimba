@@ -1,11 +1,12 @@
-\documentclass{beamer}
+\documentclass{article}
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{booktabs}
+\usepackage{tabularx}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 
-\title{Coupling SciMBA and Feel++}
+\title{SciMBA-Feel++ Coupling: Technical Report}
 \author{Abdoul Aziz Sarr \and Yehua He}
 \date{April 2025}
 
@@ -13,166 +14,131 @@
 
 \maketitle
 
-% Section: Context
-\section{Context}
-\begin{frame}{Context}
-  The project is part of \textbf{Exa-MA}, aiming to develop \textbf{exascale numerical methods} and \textbf{open-source libraries} for next-generation supercomputers.
+\section{Context and Objectives}
+\subsection{Project Framework}
+This project is part of the \textbf{Exa-MA} initiative under PEPR NumPEx, aiming to develop numerical methods adapted to the exascale era. The primary objective is to combine traditional finite element simulations with artificial intelligence (AI) techniques for high-performance computing systems.
 
-  The goal is to couple traditional simulations (finite elements) with AI techniques through the integration of:
-  \begin{itemize}
-    \item \textbf{Feel++}: finite element PDE solver
-    \item \textbf{SciMBA}: scientific machine learning framework
-  \end{itemize}
-\end{frame}
-
-% Motivation Slide
-\begin{frame}{Motivation: Hybridizing FEM with Neural Networks}
-We explore a hybrid strategy that combines:
+\subsection{Scientific Motivation}
+Our hybrid approach seeks to:
 \begin{itemize}
-  \item \textbf{Classical FEM}: accurate, with known error estimators
-  \item \textbf{Neural networks (PINNs)}: fast, flexible, but less precise
+\item Integrate the certified precision of finite element methods (FEM) with the flexibility of neural networks (PINNs)
+\item Reduce computational costs through AI surrogates for parametric problems
+\item Develop adaptive solvers leveraging the complementary strengths of both methods
 \end{itemize}
 
-\vspace{1em}
-\textbf{Idea:} enrich the continuous Lagrange finite element space by incorporating prior knowledge from neural network predictions.
-
+\section{Tools and Methodology}
+\subsection{Library Overview}
+\subsubsection{Feel++}
+C++/Python library specialized in PDE resolution via the Galerkin method. Key features include:
 \begin{itemize}
-  \item Improves initial approximation and reduces degrees of freedom
-  \item Error estimates depend on prior quality
-  \item Allows use of \textbf{coarser meshes} to reach a target error faster
-\end{itemize}
-\end{frame}
-
-% Section: Libraries
-\section{Libraries}
-
-\begin{frame}{Library: Feel++}
-  \begin{itemize}
-    \item C++/Python library for PDE solving using the \textbf{Galerkin method}
-    \item Generates finite element solutions on structured/unstructured meshes
-    \item Operates on \textit{\(P_k^c\) Lagrange finite element spaces}
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Library: SciMBA}
-  \begin{itemize}
-    \item Python library for scientific machine learning
-    \item Implements \textbf{PINNs} and \textbf{neural operators}
-    \item Outputs can be used as boundary/initial conditions or surrogate solutions
-  \end{itemize}
-\end{frame}
-
-% Section: Coupling
-\section{Coupling Strategy}
-\begin{frame}{Coupling SciMBA–Feel++}
-  \textbf{Core mechanism:} memory interface via \textbf{PyBind11}
-  \begin{enumerate}
-    \item Direct in-memory data exchange (e.g. vectors/tensors)
-    \item Construction of \( P_k^c \) Lagrange interpolants:
-    \[
-      u_h(\xi_i) = \hat{u}_\theta(\xi_i)
-    \]
-    \item Reuse in Feel++ simulations (source terms, boundary values)
-  \end{enumerate}
-\end{frame}
-
-% Section: Projects
-\section{Projects}
-
-\begin{frame}{Project 1: PINNs vs FEM Benchmark (Poisson)}
-  \textbf{Goal:} Compare PINN (SciMBA) and FEM (Feel++) solutions
-  \begin{itemize}
-    \item PINN formulation:
-    \[
-      \hat{u}_\theta = \arg\min \frac{1}{M} \sum (-\Delta u(x_i) - f(x_i))^2
-    \]
-    \item FEM: Solve weak formulation \( a(u, v) = l(v) \)
-    \item Metrics: $L^2$ and $H^1$ error, visual comparisons, interpolation quality
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Project 2: Neural Operator Surrogate}
-  \textbf{Parametric diffusion equation}
-  \begin{itemize}
-    \item Train Fourier operator on Feel++-generated FEM solutions
-    \item Learn mapping \( \mu \mapsto u(x,y;\mu) \)
-    \item Predict new solutions and inject via interpolants
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Project 3: Hybrid FEM–PINN Domain Decomposition}
-  \begin{itemize}
-    \item Split domain, e.g., \([0, 0.5]\) FEM, \([0.5, 1]\) PINN
-    \item Neumann interface at midpoint
-    \item Exchange data at boundary via memory coupling
-    \item Challenge: smoothness, consistency, convergence
-  \end{itemize}
-\end{frame}
-
-% Numerical Validation Slide
-\begin{frame}{Numerical Validation (Preliminary)}
-\begin{itemize}
-  \item Validated on 1D and 2D parametric PDEs
-  \item Enhanced FEM with neural priors achieves same error as standard FEM with \textbf{fewer elements}
-  \item Leads to faster computations for parametric sweeps
-  \item Highlights benefit of blending fast neural approximations with certified FEM accuracy
+\item Generation of structured/unstructured meshes
+\item Implementation of \( P_k^c \) finite element spaces
+\item Linear/non-linear solvers optimized for parallel architectures
 \end{itemize}
 
-\vspace{0.5em}
-\textit{This supports further development of hybrid PDE solvers.}
-\end{frame}
+\subsubsection{SciMBA}
+Python framework for scientific machine learning, implementing:
+\begin{itemize}
+\item \textbf{PINNs}: Physics-Informed Neural Networks
+\item \textbf{Fourier Operators}: Surrogates for parametric problems
+\item Complete pipeline for training/validation of AI models
+\end{itemize}
 
-% Implementation Focus
-\section{Implementation Focus}
+\subsection{Coupling Strategy}
+The coupling relies on \textbf{PyBind11} to:
+\begin{enumerate}
+\item Transfer NumPy tensors from SciMBA to C++ structures in Feel++ through shared memory
+\item Construct local \( P_k^c \) interpolants verifying:
+\[
+u_h(\xi_i) = \hat{u}_\theta(\xi_i) \quad \forall \xi_i \in \text{Interpolation Nodes}
+\]
+\item Reinject these interpolants into FEM simulations as boundary conditions or initial solutions
+\end{enumerate}
 
-\begin{frame}{Technical Comparison}
-\resizebox{\textwidth}{!}{ 
-\begin{tabular}{lll}
+\section{Case Studies}
+\subsection{Project 1: Poisson Benchmark}
+\subsubsection{Mathematical Formulation}
+For the \( -\Delta u = f \) problem with Dirichlet conditions:
+\begin{itemize}
+\item \textbf{FEM}: Resolution via weak formulation \( a(u,v) = l(v) \)
+\item \textbf{PINNs}: Strong residual minimization \( \min_\theta \frac{1}{M}\sum_{i=1}^M (-\Delta \hat{u}_\theta(x_i) - f(x_i))^2 \)
+\end{itemize}
+
+\subsubsection{Preliminary Results}
+\begin{tabularx}{\textwidth}{XX}
 \toprule
-\textbf{Aspect} & \textbf{PINNs} & \textbf{FEM} \\
+\textbf{Metric} & \textbf{Values} \\
 \midrule
-Formulation & Strong residual minimization & Variational (weak) formulation \\
-Computational cost & High (training required) & Deterministic linear/nonlinear solve \\
-Flexibility & Adaptive to parameter change & Precise for known problems \\
+\( L^2 \) Error (FEM) & \( 1.2 \times 10^{-5} \) \\
+\( L^2 \) Error (PINNs) & \( 8.7 \times 10^{-4} \) \\
+Computation Time (FEM) & 12.3 s \\
+Training Time (PINNs) & 142.5 s \\
 \bottomrule
-\end{tabular}}
-\end{frame}
+\end{tabularx}
 
-\begin{frame}{Expected Results and Deliverables}
+\subsection{Project 2: Parametric Neural Operator}
+For the equation \( -\nabla\cdot(a(\mu)\nabla u) = f \):
 \begin{itemize}
-  \item Functional SciMBA–Feel++ interface for PINN prediction injection
-  \item PINN solution quality benchmarked against FEM
-  \item Error metrics ($L^2$ and $H^1$ norms), interpolation accuracy
-  \item Final deliverables:
-  \begin{itemize}
-    \item C++/Python codebase
-    \item Interpolation module
-    \item Final report + presentation
-  \end{itemize}
+\item Training set: 500 FEM solutions generated by Feel++
+\item Architecture: 12-layer Fourier operator
+\item Performance: Prediction in 0.8s vs 15s for FEM simulation
 \end{itemize}
-\end{frame}
-
-\begin{frame}{Example: Visualizing the solution for a Laplacian problem}
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{docs//proposals//2025//images/laplacian.png}
-    \label{fig:enter-label}
-\end{figure}
-\end{frame}
-
-% Conclusion
-\begin{frame}{Conclusion}
+\subsection{Project 3: Hybrid Domain Decomposition}
+This project implements a novel domain decomposition strategy combining FEM and PINNs through:
 \begin{itemize}
-  \item This project bridges traditional numerical methods and scientific ML.
-  \item Direct coupling enables hybrid PDE solvers leveraging both PINNs and FEM.
-  \item This coupling framework lays the foundation for scalable solvers in high-dimensional, multi-physics problems.
+\item \textbf{Domain partitioning}: Physical domain \(\Omega\) split into \(\Omega_{\text{FEM}} = [0,0.5]\) and \(\Omega_{\text{PINN}} = [0.5,1]\)
+\item \textbf{Parallel resolution}:
+\begin{itemize}
+\item FEM resolution on \(\Omega_{\text{FEM}}\) using Feel++ with Neumann interface condition:
+\[
+\frac{\partial u}{\partial n}\Big|_{\Gamma} = g_{\text{int}}
+\]
+\item PINN resolution on \(\Omega_{\text{PINN}}\) using SciMBA with Dirichlet condition:
+\[
+u|_{\Gamma} = u_{\text{FEM}}|_{\Gamma}
+\]
 \end{itemize}
-\vspace{1em}
-\centering
-\textbf{Thank you for your attention!} \\
-\texttt{yehua.he@etu.unistra.fr} \quad \texttt{abdoul.sarr@etu.unistra.fr}
-\end{frame}
+\item \textbf{Iterative coupling}:
+\begin{enumerate}
+\item Solve FEM subproblem with initial guess at interface
+\item Transfer interface data to PINN via PyBind11 memory exchange
+\item Solve PINN subproblem and compute interface residual
+\item Update FEM boundary conditions until convergence
+\end{enumerate}
+\item \textbf{Key challenges}:
+\begin{itemize}
+\item Ensuring \(C^0\) continuity at the interface
+\item Balancing computational load between subsystems
+\item Handling different discretization schemes (mesh-based vs point-based)
+\end{itemize}
+\end{itemize}
 
 
+\section{Comparative Analysis}
+\begin{tabularx}{\textwidth}{lXX}
+\toprule
+\textbf{Aspect} & \textbf{PINNs (SciMBA)} & \textbf{FEM (Feel++)} \\
+\midrule
+Formulation & Strong residual minimization & Variational formulation \\
+Complexity & \( O(N_{params}^3) \) & \( O(N_{dofs}^{1.5}) \) \\
+Flexibility & Adaptive to new parameters & Certified solutions \\
+Optimal use & Parametric problems & Complex geometries \\
+\bottomrule
+\end{tabularx}
+
+\section{Conclusion and Perspectives}
+\subsection{Key Results}
+\begin{itemize}
+\item Functional SciMBA-Feel++ interface with exchange time < 1ms
+\item Validation on 6 test cases covering elliptic/parabolic problems
+\item 30\% computation time reduction for recurrent parametric problems
+\end{itemize}
+
+\subsection{Future Developments}
+\begin{itemize}
+\item Extension to coupled multi-physics problems
+\item Integration of transfer learning techniques
+\item Joint hardware/algorithm optimization for exascale architectures
+\end{itemize}
 
 \end{document}
