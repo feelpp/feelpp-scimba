@@ -1,38 +1,22 @@
-// dev container
 {
-    "name": "feelpp-scimba",
-    "dockerFile": "Dockerfile",
-    "features": {
-        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
-    },
-    "overrideFeatureInstallOrder": [
-
-    ],
-    // Use 'forwardPorts' to make a list of ports inside the container available locally.
-    // "forwardPorts": [],
-
-    // Configure tool-specific properties.
-    "customizations": {
-        // Configure properties specific to VS Code.
-        "vscode": {
-            "settings": {
-                "terminal.integrated.shell.linux": "/bin/bash"
-            },
-            "extensions": [
-                // C++x
-                "ms-vscode.cpptools",
-                "ms-vscode.cpptools-extension-pack",
-                "ms-vscode.cmake-tools",
-                "ms-vscode.cmake-tools-helper",
-                // yaml
-                "redhat.vscode-yaml",
-                // python
-                "ms-python.python",
-                // Docker
-                "ms-azuretools.vscode-docker",
-                // Github
-                "github.vscode-github-actions"
-            ]
-        }
-    }
+	"name": "Feelpp and ScimBa",
+	"build": {
+		"dockerfile": "../Dockerfile",     // 指向上层目录的 Dockerfile
+		"context": ".."                    // 设置 build context 为项目根目录
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-vscode.cpptools",
+				"ms-vscode.cmake-tools",
+				"josetr.cmake-language-support-vscode",
+				"asciidoctor.asciidoctor-vscode",
+				"ms-python.python",
+				"ms-toolsai.jupyter"
+			],
+			"settings": {
+				"terminal.integrated.defaultProfile.linux": "bash"
+			}
+		}
+	}
 }

@@ -1,0 +1,5 @@
+numpy
+scimba
+torch
+plotly
+pybind11
