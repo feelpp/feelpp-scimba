@@ -45,18 +45,6 @@ $$
 
 ---
 
-## 🔁 Workflow Overview
-
-```mermaid
-graph TD
-  A[Train PINN in SciMBA] --> B[Predict on FEM mesh]
-  B --> C[Pass prediction via PyBind11]
-  C --> D[Construct interpolation in FEM module]
-  D --> E[Compare against FEM solution (mock)]
-```
-
----
-
 ## 🔧 Technologies
 
 | Task             | Stack |
