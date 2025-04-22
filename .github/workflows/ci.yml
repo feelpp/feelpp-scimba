@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test-docker:
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ github.job }}
+      options: --user root # Exécuter les commandes en tant que root à l'intérieur du conteneur
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: |
+          docker build -t ci-environment -f Dockerfile .
+
+      - name: Install ipykernel inside the container
+        run: |
+          docker exec -u root ci-environment python -m pip install ipykernel
+
+      - name: Execute notebooks inside the container
+        run: |
+          docker run --rm -v "${{ github.workspace }}:/app" ci-environment bash -c "cd /app && jupyter nbconvert --execute reproduction.ipynb && jupyter nbconvert --execute diffusion.ipynb"
+
+      - name: Lint with flake8 inside the container
+        run: |
+          docker run --rm -v "${{ github.workspace }}:/app" ci-environment bash -c "cd /app && pip install flake8 && flake8 ."
+
+      - name: Run tests (if you have dedicated test scripts) inside the container
+        run: |
+          docker run --rm -v "${{ github.workspace }}:/app" ci-environment bash -c "cd /app && echo 'No dedicated test scripts found (tests/).'"
+          # Si vous aviez des tests pytest par exemple:
+          # docker run --rm -v "${{ github.workspace }}:/app" ci-environment bash -c "cd /app && pip install pytest && pytest tests/"
+
+      - name: Check for code formatting with black inside the container
+        run: |
+          docker run --rm -v "${{ github.workspace }}:/app" ci-environment bash -c "cd /app && pip install black && black --check ."
