@@ -1,0 +1,10 @@
+pyvista
+pandas < 2.2
+torch
+xvfbwrapper 
+panel 
+ipykernel 
+matplotlib 
+tabulate 
+nbformat 
+gmsh
