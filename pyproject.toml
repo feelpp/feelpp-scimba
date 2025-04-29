@@ -11,10 +11,15 @@ authors = [
   "Rayen Tlili <rayen.tlili@etu.unistra.fr>"
 ]
 license = "LGPL-3.0-or-later"
-readme = "README.adoc"
+readme = "README.md"
 homepage = "https://github.com/feelpp/feelpp-scimba"
 repository = "https://github.com/feelpp/feelpp-scimba"
 keywords = ["feel++", "scimba", "fem", "python"]
+
+packages = [
+  { include = "feelpp_scimba", from = "." }
+]
+
 
 [tool.poetry.dependencies]
 python = "^3.9"
