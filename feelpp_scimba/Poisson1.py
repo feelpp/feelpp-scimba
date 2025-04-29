@@ -1,7 +1,7 @@
 import os
 import feelpp.core as fppc
 from feelpp.toolboxes.cfpdes import *
-from tools.scimba_pinns import Run_Poisson2D, Poisson_2D, PoissonDisk2D
+from feelpp_scimba.scimba_pinns import Run_Poisson2D, Poisson_2D, PoissonDisk2D
 from scimba.equations import domain
 
 import pyvista as pv 
