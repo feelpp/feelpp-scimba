@@ -1,5 +1,5 @@
 import os
-import feelpp
+import feelpp.core as fppc
 from feelpp.toolboxes.cfpdes import *
 from tools.scimba_pinns import Run_Poisson2D, Poisson_2D, PoissonDisk2D
 from scimba.equations import domain
@@ -89,7 +89,7 @@ class Poisson:
     if verbose:
         print(f"generate mesh {filename} with h={h} and dimension={self.dim}")
     self.genGeometry(filename=filename,h=h, shape=shape)
-    mesh = feelpp.load(feelpp.mesh(dim=self.dim,realdim=self.dim), filename, h)
+    mesh = fppc.load(fppc.mesh(dim=self.dim,realdim=self.dim), filename, h)
     return mesh
   
 ##______________________________________________________________________________________________
