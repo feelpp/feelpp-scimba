@@ -77,7 +77,7 @@ Inside the container you’ll have Feel++, ScimBa, and all Python dependencies r
 import sys
 import feelpp
 import feelpp.toolboxes.core as tb
-from tools.Poisson import Poisson
+from feelpp_scimba.Poisson import Poisson
 
 # Initialize Feel++
 sys.argv = ["feelpp_app"]
