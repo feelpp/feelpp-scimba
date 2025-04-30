@@ -3,6 +3,8 @@ name: CI
 on:
   push:
     branches: [ main ]
+    tags:
+      - 'v*'
   pull_request:
     branches: [ main ]
 
@@ -27,3 +29,38 @@ jobs:
         run: |
           source .venv/bin/activate
           pytest -q
+  release:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    needs: test
+    runs-on: self-ubuntu-24.04
+    steps:
+      - name: Checkout tagged code
+        uses: actions/checkout@v4
+
+      - name: Create & activate venv with system packages
+        run: |
+          python3 -m venv --system-site-packages .venv
+
+      - name: Install uv & project (with test extras)
+        run: |
+          source .venv/bin/activate
+          pip install uv
+          uv pip install -e .
+
+      - name: Build distributions
+        run: |
+          source .venv/bin/activate
+          uv build --sdist --wheel
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.tar.gz
+            dist/*.whl
+          draft: false
+          prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') || contains(github.ref, 'preview') }}
+          name: Release ${{ github.ref_name }}
+          generate_release_notes: true
+          tag_name: ${{ github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
