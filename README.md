@@ -75,7 +75,7 @@ Inside the container you’ll have Feel++, ScimBa, and all Python dependencies r
 
 ```python
 import sys
-import feelpp
+import feelpp.core as fppc
 import feelpp.toolboxes.core as tb
 from feelpp_scimba.Poisson import Poisson
 
@@ -84,7 +84,7 @@ sys.argv = ["feelpp_app"]
 env = feelpp.Environment(
     sys.argv,
     opts=tb.toolboxes_options("coefficient-form-pdes", "cfpdes"),
-    config=feelpp.localRepository("feelpp_cfpde")
+    config=fppc.localRepository("feelpp_cfpde")
 )
 
 # Solve a 2D Poisson problem
