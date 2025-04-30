@@ -3,54 +3,49 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "feelpp-scimba"
-version = "0.1.0"
+name        = "feelpp-scimba"
+version     = "0.1.0"
 description = "Integration of Feel++ Python bindings with ScimBa"
-authors = [
+authors     = [
   "Christophe Prud'homme <christophe.prudhomme@cemosis.fr>",
   "Rayen Tlili <rayen.tlili@etu.unistra.fr>"
 ]
-license = "LGPL-3.0-or-later"
-readme = "README.md"
-homepage = "https://github.com/feelpp/feelpp-scimba"
-repository = "https://github.com/feelpp/feelpp-scimba"
-keywords = ["feel++", "scimba", "fem", "python"]
+license     = "LGPL-3.0-or-later"
+readme      = "README.md"
+homepage    = "https://github.com/feelpp/feelpp-scimba"
+repository  = "https://github.com/feelpp/feelpp-scimba"
+keywords    = ["feel++", "scimba", "fem", "python"]
 
 packages = [
   { include = "feelpp_scimba", from = "." }
 ]
 
-
 [tool.poetry.dependencies]
-python = "^3.9"
-pandas = "<2.2"
-torch = "*"
-xvfbwrapper = "*"
-pyvista = "*"
-plotly = "*"
-panel = "*"
-ipykernel = "*"
-matplotlib = "*"
-tabulate = "*"
-nbformat = "*"
-gmsh = "*"
-scimba = "^0.5.2"
+python       = "^3.9"
+pandas       = "<2.2"
+torch        = "*"
+xvfbwrapper  = "*"
+pyvista      = "*"
+plotly       = "*"
+panel        = "*"
+ipykernel    = "*"
+matplotlib   = "*"
+tabulate     = "*"
+nbformat     = "*"
+gmsh         = "*"
+scimba       = "^0.5.2"
+
+# mark pytest and nbmake as optional
+pytest       = { version = "^7.0", optional = true }
+nbmake       = { version = ">=1.5", optional = true }
 
 [tool.poetry.extras]
-test = ["pytest"]
-
-[tool.poetry.group.test.dependencies]
-pytest = "^7.0"
+test = [ "pytest","nbmake" ]
 
 [tool.pytest.ini_options]
-# only search for tests here:
-testpaths = ["tests"]
-# only pick up files named test_*.py
-python_files = ["test_*.py"]
-# skip virtualenv, build artifacts, docs, etc.
+python_files  = ["test_*.py"]
 norecursedirs = [".venv", "build", "docs", ".git"]
-# quiet output & disable warning plugin
-addopts = "-q --disable-warnings"
+addopts       = "-q --disable-warnings"
 
 [tool.poetry.scripts]
 feelpp-scimba = "feelpp_scimba.__main__:main"
