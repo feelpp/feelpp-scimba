@@ -53,6 +53,11 @@ Integration of [ScimBa](https://pypi.org/project/scimba/) and [Feel++](https://d
    uv pip install -e .
    ```
 
+5. **Install all dependencies including for testing**
+   ```bash
+   uv pip install -e .[test]
+   ```
+
 ---
 
 ## Using the Docker Image
