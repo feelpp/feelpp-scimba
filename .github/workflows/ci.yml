@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: self-ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+
+      - name: Create & activate venv with system packages
+        run: |
+          python3 -m venv --system-site-packages .venv
+
+      - name: Install uv & project
+        run: |
+          source .venv/bin/activate
+          pip install uv
+          uv pip install -e .[test]
+
+      - name: Run tests
+        run: |
+          source .venv/bin/activate
+          pytest -q
