@@ -37,9 +37,9 @@ gmsh = "*"
 scimba = "^0.5.2"
 
 [tool.poetry.extras]
-dev = ["pytest"]
+test = ["pytest"]
 
-[tool.poetry.group.dev.dependencies]
+[tool.poetry.group.test.dependencies]
 pytest = "^7.0"
 
 [tool.pytest.ini_options]
