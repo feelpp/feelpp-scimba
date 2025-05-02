@@ -122,7 +122,7 @@ class Poisson:
       xdomain = domain.SpaceDomain(2, domain.SquareDomain(2, [[0.0, 1.0], [0.0, 1.0]]))
     
     pde = Poisson_2D(xdomain, rhs=self.rhs, diff=diff, g=self.g, u_exact=self.u_exact)
-    u , pinn = Run_Poisson2D(pde, epoch=1000)
+    u , pinn = Run_Poisson2D(pde, epoch=100)
 
     return u
 
@@ -449,6 +449,8 @@ class Poisson:
       # Error plots
       err_feel = np.abs(u_ex - feel_solution) / np.abs(u_ex)
       err_scimba = np.abs(u_ex - scimba_solution) / np.abs(u_ex)
+      self.errl2_scimba = np.sqrt(np.sum((scimba_solution - u_ex)**2) / np.sum(u_ex**2))
+
       clim_err = [np.min(err_feel), np.max(err_feel)]
       print('clim err_feel = |u_feel - u_exact|/|u_exact| ∈ ', clim_err)
 
@@ -631,6 +633,22 @@ def plot_convergence(P, df,dim,orders=[1]):
           height=900,
       )
   return fig
+def plot_scimba_convergence(P, df):
+  fig = px.line(df, x="h", y="Scimba_L2_error", markers=True)
+  fig.update_xaxes(title_text="h",type="log")
+  fig.update_yaxes(title_text="Error",type="log")
+  last_rate = df['convergence_rate'].iloc[-1]
+  fig.update_traces(name=f"ScimBa - L2 error - rate {last_rate:.2f}")
+
+  fig.update_layout(
+    title=f"Convergence rate for the 2D Poisson problem",
+    autosize=False,
+    width=900,
+    height=900,
+  )
+  return fig
+
+
 #______________________________________________________________________________________________
 
 # Définir les couleurs du bas au haut de la colormap de l'image
