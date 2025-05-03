@@ -16,8 +16,9 @@ homepage    = "https://github.com/feelpp/feelpp-scimba"
 repository  = "https://github.com/feelpp/feelpp-scimba"
 keywords    = ["feel++", "scimba", "fem", "python"]
 
+# Include the full 'feelpp' namespace, which contains the 'scimba' subpackage
 packages = [
-  { include = "feelpp_scimba", from = "." }
+  { include = "feelpp", from = "." }
 ]
 
 [tool.poetry.dependencies]
@@ -35,12 +36,12 @@ nbformat     = "*"
 gmsh         = "*"
 scimba       = "^0.5.2"
 
-# mark pytest and nbmake as optional
+# optional test dependencies
 pytest       = { version = "^7.0", optional = true }
 nbmake       = { version = ">=1.5", optional = true }
 
 [tool.poetry.extras]
-test = [ "pytest","nbmake" ]
+test = [ "pytest", "nbmake" ]
 
 [tool.pytest.ini_options]
 python_files  = ["test_*.py"]
@@ -48,4 +49,4 @@ norecursedirs = [".venv", "build", "docs", ".git"]
 addopts       = "-q --disable-warnings"
 
 [tool.poetry.scripts]
-feelpp-scimba = "feelpp_scimba.__main__:main"
+feelpp-scimba = "feelpp.scimba.__main__:main"

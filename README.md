@@ -58,6 +58,11 @@ Integration of [ScimBa](https://pypi.org/project/scimba/) and [Feel++](https://d
    uv pip install -e .[test]
    ```
 
+6. **Run tests**
+   ```bash
+   pytest
+   ```
+
 ---
 
 ## Using the Docker Image
@@ -82,7 +87,7 @@ Inside the container you’ll have Feel++, ScimBa, and all Python dependencies r
 import sys
 import feelpp.core as fppc
 import feelpp.toolboxes.core as tb
-from feelpp_scimba.Poisson import Poisson
+from feelpp.scimba.Poisson import Poisson
 
 # Initialize Feel++
 sys.argv = ["feelpp_app"]
