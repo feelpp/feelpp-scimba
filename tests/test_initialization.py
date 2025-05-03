@@ -2,7 +2,7 @@ import os,sys
 import pytest
 import feelpp.core as fppc
 import feelpp.toolboxes.core as tb
-from feelpp_scimba.Poisson import Poisson, runLaplacianPk, runConvergenceAnalysis, plot_convergence, custom_cmap
+from feelpp.scimba.Poisson import Poisson, runLaplacianPk, runConvergenceAnalysis, plot_convergence, custom_cmap
 
 
 
@@ -24,9 +24,9 @@ def test_environment_creation(feelpp_env):
 
 def test_scimba_import(feelpp_env):
     try:
-        from feelpp_scimba.Poisson import Poisson, runLaplacianPk, runConvergenceAnalysis, plot_convergence, custom_cmap
+        from feelpp.scimba.Poisson import Poisson, runLaplacianPk, runConvergenceAnalysis, plot_convergence, custom_cmap
     except ImportError as e:
-        pytest.fail(f"Failed to import feelpp_scimba: {e}")
+        pytest.fail(f"Failed to import feelpp.scimba: {e}")
 
 @pytest.fixture(scope="module")
 def P(feelpp_env):
