@@ -1,3 +1,5 @@
-.venv/
+feelppdb
 __pycache__
-feelppdb/
+*.pyc
+*.pyo
+.venv/
