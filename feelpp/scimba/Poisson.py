@@ -109,7 +109,7 @@ class Poisson:
   
 ##______________________________________________________________________________________________
 
-  def scimba_solver(self, h, shape='Rectangle', dim = 2, verbose=False):
+  def scimba_solver(self, h,nb_coll, shape='Rectangle', dim = 2, verbose=False):
     if verbose:
       print(f"Solving a Poisson problem for h = {h}...")    
     
@@ -122,7 +122,7 @@ class Poisson:
       xdomain = domain.SpaceDomain(2, domain.SquareDomain(2, [[0.0, 1.0], [0.0, 1.0]]))
     
     pde = Poisson_2D(xdomain, rhs=self.rhs, diff=diff, g=self.g, u_exact=self.u_exact)
-    u , pinn = Run_Poisson2D(pde, epoch=1000)
+    u , pinn = Run_Poisson2D(pde, epoch=1000,nb_coll=nb_coll)
 
     return u
 
@@ -649,6 +649,7 @@ def plot_scimba_convergence(P, df):
         )
     return fig
 #______________________________________________________________________________________________
+
 
 # Définir les couleurs du bas au haut de la colormap de l'image
 colors = [
