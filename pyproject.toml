@@ -1,0 +1,52 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name        = "feelpp-scimba"
+version     = "0.1.0"
+description = "Integration of Feel++ Python bindings with ScimBa"
+authors     = [
+  "Christophe Prud'homme <christophe.prudhomme@cemosis.fr>",
+  "Rayen Tlili <rayen.tlili@etu.unistra.fr>"
+]
+license     = "LGPL-3.0-or-later"
+readme      = "README.md"
+homepage    = "https://github.com/feelpp/feelpp-scimba"
+repository  = "https://github.com/feelpp/feelpp-scimba"
+keywords    = ["feel++", "scimba", "fem", "python"]
+
+# Include the full 'feelpp' namespace, which contains the 'scimba' subpackage
+packages = [
+  { include = "feelpp", from = "." }
+]
+
+[tool.poetry.dependencies]
+python       = "^3.9"
+pandas       = "<2.2"
+torch        = "*"
+xvfbwrapper  = "*"
+pyvista      = "*"
+plotly       = "*"
+panel        = "*"
+ipykernel    = "*"
+matplotlib   = "*"
+tabulate     = "*"
+nbformat     = "*"
+gmsh         = "*"
+scimba       = "^0.5.2"
+
+# optional test dependencies
+pytest       = { version = "^7.0", optional = true }
+nbmake       = { version = ">=1.5", optional = true }
+
+[tool.poetry.extras]
+test = [ "pytest", "nbmake" ]
+
+[tool.pytest.ini_options]
+python_files  = ["test_*.py"]
+norecursedirs = [".venv", "build", "docs", ".git"]
+addopts       = "-q --disable-warnings"
+
+[tool.poetry.scripts]
+feelpp-scimba = "feelpp.scimba.__main__:main"
