@@ -2,3 +2,4 @@ feelppdb
 __pycache__
 *.pyc
 *.pyo
+.venv/

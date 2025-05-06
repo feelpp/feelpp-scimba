@@ -449,6 +449,8 @@ class Poisson:
       # Error plots
       err_feel = np.abs(u_ex - feel_solution) / np.abs(u_ex)
       err_scimba = np.abs(u_ex - scimba_solution) / np.abs(u_ex)
+      self.errl2_scimba = np.sqrt(np.sum((scimba_solution - u_ex)**2) / np.sum(u_ex**2))
+
       clim_err = [np.min(err_feel), np.max(err_feel)]
       print('clim err_feel = |u_feel - u_exact|/|u_exact| ∈ ', clim_err)
 
