@@ -1,9 +1,0 @@
-FORMAT:
-type: master_server gold 
-SERVERS
-number of servers: 1 
-#Server 1
-machine id: gaya
-executable: /usr/local/bin/ensight76/bin/ensight7.server
-data_path: /nvme0/csmi/sarr/feelpp-scimba/notebooks/feelppdb/feelpp_cfpde/np_1
-casefile: Export.case
