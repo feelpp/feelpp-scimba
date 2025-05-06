@@ -1,0 +1,120 @@
+{
+ "Environment": {
+  "application": {
+   "name": "feelpp_app"
+  },
+  "hardware": {
+   "gaya": {
+    "backend": "kwsys",
+    "domain_name": "gaya.math.unistra.fr",
+    "hostname": "gaya",
+    "mem": {
+     "available": {
+      "host": "1056375976",
+      "physical": "743123",
+      "proc": "1056375976",
+      "virtual": "0"
+     },
+     "total": {
+      "host": "1056375976",
+      "physical": "1031617",
+      "virtual": "0"
+     },
+     "used": {
+      "checkpoint-1": {
+       "host": "274000768",
+       "proc": "1681220"
+      }
+     }
+    },
+    "os": {
+     "is_apple": "0",
+     "is_linux": "1",
+     "is_windows": "0",
+     "name": "Linux",
+     "platform": "x86_64",
+     "release": "5.15.0-131-generic",
+     "version": "#141-Ubuntu SMP Fri Jan 10 21:18:28 UTC 2025"
+    },
+    "proc": {
+     "apic_id": "0",
+     "cache_size": "512",
+     "clock_frequency": "3290.366943",
+     "cpu_id_support": "0",
+     "extended_name": "Unknown AMD family",
+     "family_id": "23",
+     "is_64bits": "1",
+     "logical_cpu_number": "192",
+     "logical_per_physical": "2",
+     "model_id": "49",
+     "physical_cpu_number": "96",
+     "serial_number": "",
+     "stepping_code": "0",
+     "type_id": "0",
+     "vendor_id": "Advanced Micro Devices",
+     "vendor_name": "AuthenticAMD"
+    }
+   }
+  },
+  "run": {
+   "command-line": "feelpp_app",
+   "config-files": [],
+   "directories": {
+    "app": "/nvme0/csmi/sarr/feelpp-scimba/notebooks/feelppdb/feelpp_cfpde/np_1",
+    "downloads": "/nvme0/csmi/sarr/feelpp-scimba/notebooks/feelppdb/feelpp_cfpde/downloads",
+    "export": "/nvme0/csmi/sarr/feelpp-scimba/notebooks/feelppdb/feelpp_cfpde/np_1/exports",
+    "exprs": "/nvme0/csmi/sarr/feelpp-scimba/notebooks/feelppdb/feelpp_cfpde/exprs",
+    "logs": "/nvme0/csmi/sarr/feelpp-scimba/notebooks/feelppdb/feelpp_cfpde/np_1/logs"
+   },
+   "number_of_processors": 1,
+   "uuid": "d59659f6-4ade-499e-9f83-6d9299157ec4"
+  },
+  "software": {
+   "boost": {
+    "version": "1_74"
+   },
+   "mpi": {
+    "library": {
+     "openmpi": {
+      "version": {
+       "major": 4,
+       "minor": 1,
+       "release": 2
+      }
+     }
+    },
+    "version": "3.1"
+   },
+   "petsc": {
+    "date": {
+     "release": "Mar 30, 2021",
+     "version": "Sep 29, 2021"
+    },
+    "version": {
+     "major": 3,
+     "minor": 15,
+     "release": 1,
+     "subminor": 5
+    }
+   }
+  }
+ },
+ "journal": {
+  "checkpoints": {
+   "checkpoint-1": {
+    "time": {
+     "gm": "Tue May  6 08:53:18 2025 GMT",
+     "local": "Tue May  6 10:53:18 2025 CEST",
+     "time_t": 1746521598
+    }
+   },
+   "number": 1
+  },
+  "time": {
+   "gm": "Tue May  6 08:53:18 2025 GMT",
+   "local": "Tue May  6 10:53:18 2025 CEST",
+   "time_t": 1746521598
+  },
+  "version": "0.1.0"
+ }
+}

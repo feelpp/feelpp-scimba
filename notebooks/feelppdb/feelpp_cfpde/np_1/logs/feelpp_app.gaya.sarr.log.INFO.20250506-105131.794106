@@ -1,0 +1,460 @@
+Log file created at: 2025/05/06 10:51:31
+Running on machine: gaya
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I0506 10:51:31.623371 794106 environment.cpp:1736]  looking for "feelpp_cfpde/np_1/omega-2.geo"
+I0506 10:51:31.623489 794106 environment.cpp:1736]  looking for "/usr/share/feelpp/data/geo/omega-2.geo"
+I0506 10:51:31.623502 794106 environment.cpp:1736]  looking for "/usr/share/feel/config/omega-2.geo"
+I0506 10:51:31.623518 794106 environment.cpp:1736]  looking for "/nvme0/csmi/sarr/feelpp-scimba/notebooks/omega-2.geo"
+I0506 10:51:31.623535 794106 environment.cpp:1751] File "/nvme0/csmi/sarr/feelpp-scimba/notebooks/feelppdb/feelpp_cfpde/np_1/omega-2.geo" found
+I0506 10:51:31.623628 794106 environment.cpp:1708] File /nvme0/csmi/sarr/feelpp-scimba/notebooks/feelppdb/feelpp_cfpde/np_1/omega-2.geo found
+I0506 10:51:31.623704 794106 gmsh.cpp:256] [gmsh::setVerbosity] old Verbosity : 5, new Verbosity : 1 
+I0506 10:51:31.623710 794106 gmsh.cpp:468] Generate mesh on processor 0/1
+I0506 10:51:31.623852 794106 gmsh.cpp:373] [Gmsh::generateGeo] Geo geometry parameter ElementOrder not found ! 
+I0506 10:51:31.623893 794106 gmsh.cpp:394] [Gmsh::generateGeo] Parameter h parameter (hsize) not found ! 
+I0506 10:51:31.623919 794106 gmsh.cpp:446] "omega-2.geo" exists and its content correspond to the expected geometry
+I0506 10:51:31.623922 794106 gmsh.cpp:485] Mesh file omega-2.msh generated from geometry omega-2.geo
+I0506 10:51:31.623924 794106 gmsh.cpp:486]  - does mesh file name exists : false
+I0506 10:51:31.623927 794106 gmsh.cpp:491] Generating omega-2.msh...
+I0506 10:51:31.623930 794106 gmsh.cpp:662] [Gmsh::generate] env.part: 1
+I0506 10:51:31.623932 794106 gmsh.cpp:663] [Gmsh::generate] partitions: 1
+I0506 10:51:31.623934 794106 gmsh.cpp:664] [Gmsh::generate] partitioner: 1
+I0506 10:51:31.634202 794106 gmsh.cpp:766] Writing GMSH file omega-2.msh in ascii format
+I0506 10:51:31.634696 794106 gmsh.cpp:495] Generating omega-2.msh done.
+I0506 10:51:31.634709 794106 gmsh.cpp:507] Broadcast mesh file omega-2.msh to all other mpi processes, (created: 1)
+I0506 10:51:31.634737 794106 importergmsh.hpp:991] Reading Msh file omega-2.msh
+I0506 10:51:31.634766 794106 importergmsh.hpp:1015] GMSH mesh file version : 4.1 format: ascii size of double: 8
+I0506 10:51:31.635522 794106 meshimpl.hpp:1051] We have 40 faces in the database
+I0506 10:51:31.635701 794106 meshimpl.hpp:1325] We have now 392 faces in the mesh
+I0506 10:51:31.635735 794106 meshimpl.hpp:1863] update boundary points...
+I0506 10:51:31.635739 794106 meshimpl.hpp:1883] update boundary elements...
+I0506 10:51:31.637321 794106 meshimpl.hpp:524] h average : 0.101875
+I0506 10:51:31.637329 794106 meshimpl.hpp:525]     h min : 0.0836612
+I0506 10:51:31.637331 794106 meshimpl.hpp:526]     h max : 0.116863
+I0506 10:51:31.637833 794106 modelproperties.cpp:138] Model with model
+I0506 10:51:31.637848 794106 modelproperties.cpp:151] Model with boundary conditions
+I0506 10:51:31.637853 794106 modelproperties.cpp:173] Model with materials
+I0506 10:51:31.637871 794106 modelmaterials.cpp:209] Material Physical/Region :Omega
+I0506 10:51:31.637955 794106 modelproperties.cpp:181] Model with PostProcess
+I0506 10:51:33.504235 794106 worldcomm.cpp:895] [rank 0] makeResultRange: mesh count=3
+I0506 10:51:33.504248 794106 worldcomm.cpp:895] [rank 0] makeResultRange: res size=248
+I0506 10:51:33.504251 794106 worldcomm.cpp:895] [rank 0] makeResultRange: mesh count=3
+I0506 10:51:33.504252 794106 worldcomm.cpp:895] [rank 0] makeResultRange: res size=0
+I0506 10:51:33.504487 794106 worldcomm.cpp:895] [rank 0] [DofTable::build] starts, has mesh support: false
+I0506 10:51:33.504526 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] starts, dof_indices empty: true
+I0506 10:51:33.504530 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] allocation done
+I0506 10:51:33.504534 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap]  n_elts =  248 on processor 0
+I0506 10:51:33.504832 794106 worldcomm.cpp:895] [rank 0] [builddofmap - 0] dof generation nLocalDof : 145
+W0506 10:51:33.504994 794106 doftable.hpp:2587] TODO: finish implementation of this case below
+I0506 10:51:33.505156 794106 element_impl.hpp:199] creating element u : u
+I0506 10:51:33.508059 794106 exporterimpl.hpp:219] [Exporter] format :  ensightgold
+I0506 10:51:33.508064 794106 exporterimpl.hpp:220] [Exporter] N      :  1
+I0506 10:51:33.536367 794106 on.hpp:1184] call on(Ts&&... v) : 6
+I0506 10:51:33.536381 794106 on.hpp:1153] call getRhsVectorAsPtr(V const& v) : is_vector_ptr: true is_vectorblock: false, is_vectorcondensed: false
+I0506 10:51:33.536384 794106 on.hpp:1164] call getRhsVectorAsPtr(V const& v) : done
+I0506 10:51:33.536387 794106 on.hpp:1231] call on(Ts&&... v) : 6 done
+I0506 10:51:33.536391 794106 on.hpp:461] IntegratorOnExpr<ElementRange, Elem, RhsElem,  OnExpr>::onFaces() 
+I0506 10:51:33.536392 794106 on.hpp:505] [IntegratorOnExpr<>::onFaces()] start find a face
+I0506 10:51:33.536468 794106 on.hpp:743] IntegratorOnExpr<>::onFaces() zeroRows set 40 rhs values and set 40 dofs
+I0506 10:51:33.536473 794106 matrixpetsc.cpp:1786] MatrixPETSc:: zeroRows seq elimination
+I0506 10:51:33.536477 794106 matrixpetsc.cpp:1834] MatrixPETSc:: zeroRows seq unsymmetric number of rows : 40 value on diagonal : 1
+I0506 10:51:33.536502 794106 on.hpp:746] IntegratorOnExpr<ElementRange, Elem, RhsElem,  OnExpr>::onFaces() done.
+I0506 10:51:33.536566 794106 preconditionerpetsc.cpp:309] PreconditionerPetsc<T>::clear
+I0506 10:51:33.536741 794106 backendpetsc.cpp:86] call feel_petsc_pre_solve
+I0506 10:51:33.536788 794106 functionspetsc.cpp:39] mat solver package before 6
+I0506 10:51:33.536792 794106 functionspetsc.cpp:264] mat solver package is mumps
+I0506 10:51:33.538851 794106 backendpetsc.cpp:49] call feel_petsc_post_solve
+I0506 10:51:33.538857 794106 backendpetsc.cpp:65] call feel_petsc_post_solve done
+I0506 10:51:33.538861 794106 solverlinearpetsc.cpp:638] [solverlinearpetsc] reason = 2
+I0506 10:51:33.539615 794106 worldcomm.cpp:895] [rank 0] [DofTable::build] starts, has mesh support: false
+I0506 10:51:33.539649 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] starts, dof_indices empty: true
+I0506 10:51:33.539651 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] allocation done
+I0506 10:51:33.539655 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap]  n_elts =  248 on processor 0
+I0506 10:51:33.539914 794106 worldcomm.cpp:895] [rank 0] [builddofmap - 0] dof generation nLocalDof : 145
+W0506 10:51:33.540076 794106 doftable.hpp:2587] TODO: finish implementation of this case below
+I0506 10:51:33.540156 794106 element_impl.hpp:199] creating element cfpdes.poisson.u : u
+I0506 10:51:33.540585 794106 element_impl.hpp:199] creating element cfpdes.expr.grad_u_exact : u
+I0506 10:51:33.540798 794106 element_impl.hpp:199] creating element cfpdes.expr.grad_u_exact : u
+I0506 10:51:33.541164 794106 element_impl.hpp:199] creating element cfpdes.expr.rhs : u
+I0506 10:51:33.541357 794106 element_impl.hpp:199] creating element cfpdes.expr.u_exact : u
+I0506 10:51:33.541649 794106 worldcomm.cpp:895] [rank 0] [DofTable::build] starts, has mesh support: false
+I0506 10:51:33.541677 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] starts, dof_indices empty: true
+I0506 10:51:33.541679 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] allocation done
+I0506 10:51:33.541683 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap]  n_elts =  248 on processor 0
+I0506 10:51:33.541765 794106 worldcomm.cpp:895] [rank 0] [builddofmap - 0] dof generation nLocalDof : 248
+I0506 10:51:33.541822 794106 element_impl.hpp:199] creating element field : field
+I0506 10:51:33.541880 794106 element_impl.hpp:199] creating element cfpdes.pid : field
+I0506 10:51:33.545455 794106 exporterensightgold_impl.hpp:1250] writing part 1
+I0506 10:51:33.545570 794106 exporterensightgold_impl.hpp:1376] ExporterEnsightGold::writeVariableFiles Nodal: 4
+I0506 10:51:33.545573 794106 exporterensightgold_impl.hpp:1377] ExporterEnsightGold::writeVariableFiles Element: 1
+I0506 10:51:33.556726 794106 evaluator.hpp:849] evaluate minmax(expression)...
+I0506 10:51:33.557374 794106 evaluator.hpp:888] proc 0 index at which function (size: 1736) is minimal: 1071 coord = 
+0.241296
+0.749545
+I0506 10:51:33.557385 794106 evaluator.hpp:889] proc 0 index at which function (size: 1736) is maximal: 1268 coord = 
+0.749451
+0.755428
+I0506 10:51:33.557406 794106 evaluator.hpp:900] proc 0 : global min = -0.971496 at position 0 with coord : 
+ 0.241296
+0.749545
+I0506 10:51:33.557412 794106 evaluator.hpp:906] proc 0 : global max = 0.965817 at position 0 with coord : 
+ 0.749451
+0.755428
+I0506 10:51:33.557417 794106 evaluator.hpp:912] evaluate minmax(expression) done.
+I0506 10:51:33.752295 794106 environment.cpp:1736]  looking for "feelpp_cfpde/np_1/omega-2.geo"
+I0506 10:51:33.752321 794106 environment.cpp:1736]  looking for "/usr/share/feelpp/data/geo/omega-2.geo"
+I0506 10:51:33.752333 794106 environment.cpp:1736]  looking for "/usr/share/feel/config/omega-2.geo"
+I0506 10:51:33.752339 794106 environment.cpp:1736]  looking for "/nvme0/csmi/sarr/feelpp-scimba/notebooks/omega-2.geo"
+I0506 10:51:33.752350 794106 environment.cpp:1751] File "/nvme0/csmi/sarr/feelpp-scimba/notebooks/feelppdb/feelpp_cfpde/np_1/omega-2.geo" found
+I0506 10:51:33.752408 794106 environment.cpp:1708] File /nvme0/csmi/sarr/feelpp-scimba/notebooks/feelppdb/feelpp_cfpde/np_1/omega-2.geo found
+I0506 10:51:33.752458 794106 gmsh.cpp:256] [gmsh::setVerbosity] old Verbosity : 5, new Verbosity : 1 
+I0506 10:51:33.752465 794106 gmsh.cpp:468] Generate mesh on processor 0/1
+I0506 10:51:33.752511 794106 gmsh.cpp:373] [Gmsh::generateGeo] Geo geometry parameter ElementOrder not found ! 
+I0506 10:51:33.752543 794106 gmsh.cpp:394] [Gmsh::generateGeo] Parameter h parameter (hsize) not found ! 
+I0506 10:51:33.752583 794106 gmsh.cpp:446] "omega-2.geo" exists and its content correspond to the expected geometry
+I0506 10:51:33.752588 794106 gmsh.cpp:485] Mesh file omega-2.msh generated from geometry omega-2.geo
+I0506 10:51:33.752589 794106 gmsh.cpp:486]  - does mesh file name exists : false
+I0506 10:51:33.752592 794106 gmsh.cpp:491] Generating omega-2.msh...
+I0506 10:51:33.752596 794106 gmsh.cpp:662] [Gmsh::generate] env.part: 1
+I0506 10:51:33.752599 794106 gmsh.cpp:663] [Gmsh::generate] partitions: 1
+I0506 10:51:33.752600 794106 gmsh.cpp:664] [Gmsh::generate] partitioner: 1
+I0506 10:51:33.776335 794106 gmsh.cpp:766] Writing GMSH file omega-2.msh in ascii format
+I0506 10:51:33.777635 794106 gmsh.cpp:495] Generating omega-2.msh done.
+I0506 10:51:33.777650 794106 gmsh.cpp:507] Broadcast mesh file omega-2.msh to all other mpi processes, (created: 1)
+I0506 10:51:33.777676 794106 importergmsh.hpp:991] Reading Msh file omega-2.msh
+I0506 10:51:33.777696 794106 importergmsh.hpp:1015] GMSH mesh file version : 4.1 format: ascii size of double: 8
+I0506 10:51:33.779618 794106 meshimpl.hpp:1051] We have 80 faces in the database
+I0506 10:51:33.780273 794106 meshimpl.hpp:1325] We have now 1468 faces in the mesh
+I0506 10:51:33.780404 794106 meshimpl.hpp:1863] update boundary points...
+I0506 10:51:33.780416 794106 meshimpl.hpp:1883] update boundary elements...
+I0506 10:51:33.782168 794106 meshimpl.hpp:524] h average : 0.0509522
+I0506 10:51:33.782176 794106 meshimpl.hpp:525]     h min : 0.0428612
+I0506 10:51:33.782178 794106 meshimpl.hpp:526]     h max : 0.0688775
+I0506 10:51:33.783140 794106 modelproperties.cpp:138] Model with model
+I0506 10:51:33.783156 794106 modelproperties.cpp:151] Model with boundary conditions
+I0506 10:51:33.783161 794106 modelproperties.cpp:173] Model with materials
+I0506 10:51:33.783170 794106 modelmaterials.cpp:209] Material Physical/Region :Omega
+I0506 10:51:33.783257 794106 modelproperties.cpp:181] Model with PostProcess
+I0506 10:51:33.784989 794106 worldcomm.cpp:895] [rank 0] makeResultRange: mesh count=3
+I0506 10:51:33.785009 794106 worldcomm.cpp:895] [rank 0] makeResultRange: res size=952
+I0506 10:51:33.785012 794106 worldcomm.cpp:895] [rank 0] makeResultRange: mesh count=3
+I0506 10:51:33.785014 794106 worldcomm.cpp:895] [rank 0] makeResultRange: res size=0
+I0506 10:51:33.785225 794106 worldcomm.cpp:895] [rank 0] [DofTable::build] starts, has mesh support: false
+I0506 10:51:33.785310 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] starts, dof_indices empty: true
+I0506 10:51:33.785313 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] allocation done
+I0506 10:51:33.785321 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap]  n_elts =  952 on processor 0
+I0506 10:51:33.786160 794106 worldcomm.cpp:895] [rank 0] [builddofmap - 0] dof generation nLocalDof : 517
+W0506 10:51:33.786667 794106 doftable.hpp:2587] TODO: finish implementation of this case below
+I0506 10:51:33.786855 794106 element_impl.hpp:199] creating element u : u
+I0506 10:51:33.788825 794106 exporterimpl.hpp:219] [Exporter] format :  ensightgold
+I0506 10:51:33.788829 794106 exporterimpl.hpp:220] [Exporter] N      :  1
+I0506 10:51:33.854804 794106 on.hpp:1184] call on(Ts&&... v) : 6
+I0506 10:51:33.854830 794106 on.hpp:1153] call getRhsVectorAsPtr(V const& v) : is_vector_ptr: true is_vectorblock: false, is_vectorcondensed: false
+I0506 10:51:33.854833 794106 on.hpp:1164] call getRhsVectorAsPtr(V const& v) : done
+I0506 10:51:33.854836 794106 on.hpp:1231] call on(Ts&&... v) : 6 done
+I0506 10:51:33.854839 794106 on.hpp:461] IntegratorOnExpr<ElementRange, Elem, RhsElem,  OnExpr>::onFaces() 
+I0506 10:51:33.854841 794106 on.hpp:505] [IntegratorOnExpr<>::onFaces()] start find a face
+I0506 10:51:33.854952 794106 on.hpp:743] IntegratorOnExpr<>::onFaces() zeroRows set 80 rhs values and set 80 dofs
+I0506 10:51:33.854957 794106 matrixpetsc.cpp:1786] MatrixPETSc:: zeroRows seq elimination
+I0506 10:51:33.854962 794106 matrixpetsc.cpp:1834] MatrixPETSc:: zeroRows seq unsymmetric number of rows : 80 value on diagonal : 1
+I0506 10:51:33.854984 794106 on.hpp:746] IntegratorOnExpr<ElementRange, Elem, RhsElem,  OnExpr>::onFaces() done.
+I0506 10:51:33.855010 794106 preconditionerpetsc.cpp:309] PreconditionerPetsc<T>::clear
+I0506 10:51:33.855127 794106 backendpetsc.cpp:86] call feel_petsc_pre_solve
+I0506 10:51:33.855162 794106 functionspetsc.cpp:39] mat solver package before 6
+I0506 10:51:33.855165 794106 functionspetsc.cpp:264] mat solver package is mumps
+I0506 10:51:33.858210 794106 backendpetsc.cpp:49] call feel_petsc_post_solve
+I0506 10:51:33.858217 794106 backendpetsc.cpp:65] call feel_petsc_post_solve done
+I0506 10:51:33.858220 794106 solverlinearpetsc.cpp:638] [solverlinearpetsc] reason = 2
+I0506 10:51:33.858994 794106 worldcomm.cpp:895] [rank 0] [DofTable::build] starts, has mesh support: false
+I0506 10:51:33.859076 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] starts, dof_indices empty: true
+I0506 10:51:33.859081 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] allocation done
+I0506 10:51:33.859088 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap]  n_elts =  952 on processor 0
+I0506 10:51:33.859952 794106 worldcomm.cpp:895] [rank 0] [builddofmap - 0] dof generation nLocalDof : 517
+W0506 10:51:33.860555 794106 doftable.hpp:2587] TODO: finish implementation of this case below
+I0506 10:51:33.860749 794106 element_impl.hpp:199] creating element cfpdes.poisson.u : u
+I0506 10:51:33.861614 794106 element_impl.hpp:199] creating element cfpdes.expr.grad_u_exact : u
+I0506 10:51:33.862211 794106 element_impl.hpp:199] creating element cfpdes.expr.grad_u_exact : u
+I0506 10:51:33.862884 794106 element_impl.hpp:199] creating element cfpdes.expr.rhs : u
+I0506 10:51:33.863415 794106 element_impl.hpp:199] creating element cfpdes.expr.u_exact : u
+I0506 10:51:33.864008 794106 worldcomm.cpp:895] [rank 0] [DofTable::build] starts, has mesh support: false
+I0506 10:51:33.864079 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] starts, dof_indices empty: true
+I0506 10:51:33.864082 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] allocation done
+I0506 10:51:33.864090 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap]  n_elts =  952 on processor 0
+I0506 10:51:33.864279 794106 worldcomm.cpp:895] [rank 0] [builddofmap - 0] dof generation nLocalDof : 952
+I0506 10:51:33.864421 794106 element_impl.hpp:199] creating element field : field
+I0506 10:51:33.864512 794106 element_impl.hpp:199] creating element cfpdes.pid : field
+I0506 10:51:33.865658 794106 exporterensightgold_impl.hpp:1250] writing part 1
+I0506 10:51:33.865773 794106 exporterensightgold_impl.hpp:1376] ExporterEnsightGold::writeVariableFiles Nodal: 4
+I0506 10:51:33.865777 794106 exporterensightgold_impl.hpp:1377] ExporterEnsightGold::writeVariableFiles Element: 1
+I0506 10:51:33.880939 794106 evaluator.hpp:849] evaluate minmax(expression)...
+I0506 10:51:33.882016 794106 evaluator.hpp:888] proc 0 index at which function (size: 6664) is minimal: 5079 coord = 
+    0.25
+0.748964
+I0506 10:51:33.882028 794106 evaluator.hpp:889] proc 0 index at which function (size: 6664) is maximal: 5933 coord = 
+0.750001
+0.748963
+I0506 10:51:33.882040 794106 evaluator.hpp:900] proc 0 : global min = -0.991572 at position 0 with coord : 
+     0.25
+0.748964
+I0506 10:51:33.882046 794106 evaluator.hpp:906] proc 0 : global max = 0.991434 at position 0 with coord : 
+ 0.750001
+0.748963
+I0506 10:51:33.882052 794106 evaluator.hpp:912] evaluate minmax(expression) done.
+I0506 10:51:33.891415 794106 environment.cpp:1736]  looking for "feelpp_cfpde/np_1/omega-2.geo"
+I0506 10:51:33.891427 794106 environment.cpp:1736]  looking for "/usr/share/feelpp/data/geo/omega-2.geo"
+I0506 10:51:33.891440 794106 environment.cpp:1736]  looking for "/usr/share/feel/config/omega-2.geo"
+I0506 10:51:33.891446 794106 environment.cpp:1736]  looking for "/nvme0/csmi/sarr/feelpp-scimba/notebooks/omega-2.geo"
+I0506 10:51:33.891456 794106 environment.cpp:1751] File "/nvme0/csmi/sarr/feelpp-scimba/notebooks/feelppdb/feelpp_cfpde/np_1/omega-2.geo" found
+I0506 10:51:33.891505 794106 environment.cpp:1708] File /nvme0/csmi/sarr/feelpp-scimba/notebooks/feelppdb/feelpp_cfpde/np_1/omega-2.geo found
+I0506 10:51:33.891551 794106 gmsh.cpp:256] [gmsh::setVerbosity] old Verbosity : 5, new Verbosity : 1 
+I0506 10:51:33.891556 794106 gmsh.cpp:468] Generate mesh on processor 0/1
+I0506 10:51:33.891593 794106 gmsh.cpp:373] [Gmsh::generateGeo] Geo geometry parameter ElementOrder not found ! 
+I0506 10:51:33.891624 794106 gmsh.cpp:394] [Gmsh::generateGeo] Parameter h parameter (hsize) not found ! 
+I0506 10:51:33.891660 794106 gmsh.cpp:446] "omega-2.geo" exists and its content correspond to the expected geometry
+I0506 10:51:33.891664 794106 gmsh.cpp:485] Mesh file omega-2.msh generated from geometry omega-2.geo
+I0506 10:51:33.891667 794106 gmsh.cpp:486]  - does mesh file name exists : false
+I0506 10:51:33.891670 794106 gmsh.cpp:491] Generating omega-2.msh...
+I0506 10:51:33.891674 794106 gmsh.cpp:662] [Gmsh::generate] env.part: 1
+I0506 10:51:33.891676 794106 gmsh.cpp:663] [Gmsh::generate] partitions: 1
+I0506 10:51:33.891678 794106 gmsh.cpp:664] [Gmsh::generate] partitioner: 1
+I0506 10:51:33.967777 794106 gmsh.cpp:766] Writing GMSH file omega-2.msh in ascii format
+I0506 10:51:33.972389 794106 gmsh.cpp:495] Generating omega-2.msh done.
+I0506 10:51:33.972410 794106 gmsh.cpp:507] Broadcast mesh file omega-2.msh to all other mpi processes, (created: 1)
+I0506 10:51:33.972441 794106 importergmsh.hpp:991] Reading Msh file omega-2.msh
+I0506 10:51:33.972468 794106 importergmsh.hpp:1015] GMSH mesh file version : 4.1 format: ascii size of double: 8
+I0506 10:51:33.979584 794106 meshimpl.hpp:1051] We have 160 faces in the database
+I0506 10:51:33.982256 794106 meshimpl.hpp:1325] We have now 5633 faces in the mesh
+I0506 10:51:33.982849 794106 meshimpl.hpp:1863] update boundary points...
+I0506 10:51:33.982894 794106 meshimpl.hpp:1883] update boundary elements...
+I0506 10:51:33.986672 794106 meshimpl.hpp:524] h average : 0.0252927
+I0506 10:51:33.986682 794106 meshimpl.hpp:525]     h min : 0.0219856
+I0506 10:51:33.986685 794106 meshimpl.hpp:526]     h max : 0.0315418
+I0506 10:51:33.987181 794106 modelproperties.cpp:138] Model with model
+I0506 10:51:33.987196 794106 modelproperties.cpp:151] Model with boundary conditions
+I0506 10:51:33.987201 794106 modelproperties.cpp:173] Model with materials
+I0506 10:51:33.987210 794106 modelmaterials.cpp:209] Material Physical/Region :Omega
+I0506 10:51:33.987299 794106 modelproperties.cpp:181] Model with PostProcess
+I0506 10:51:33.989147 794106 worldcomm.cpp:895] [rank 0] makeResultRange: mesh count=3
+I0506 10:51:33.989207 794106 worldcomm.cpp:895] [rank 0] makeResultRange: res size=3702
+I0506 10:51:33.989208 794106 worldcomm.cpp:895] [rank 0] makeResultRange: mesh count=3
+I0506 10:51:33.989210 794106 worldcomm.cpp:895] [rank 0] makeResultRange: res size=0
+I0506 10:51:33.989575 794106 worldcomm.cpp:895] [rank 0] [DofTable::build] starts, has mesh support: false
+I0506 10:51:33.989881 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] starts, dof_indices empty: true
+I0506 10:51:33.989884 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] allocation done
+I0506 10:51:33.989902 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap]  n_elts =  3702 on processor 0
+I0506 10:51:33.993423 794106 worldcomm.cpp:895] [rank 0] [builddofmap - 0] dof generation nLocalDof : 1932
+W0506 10:51:33.995411 794106 doftable.hpp:2587] TODO: finish implementation of this case below
+I0506 10:51:33.996022 794106 element_impl.hpp:199] creating element u : u
+I0506 10:51:33.998075 794106 exporterimpl.hpp:219] [Exporter] format :  ensightgold
+I0506 10:51:33.998080 794106 exporterimpl.hpp:220] [Exporter] N      :  1
+I0506 10:51:34.048552 794106 on.hpp:1184] call on(Ts&&... v) : 6
+I0506 10:51:34.048580 794106 on.hpp:1153] call getRhsVectorAsPtr(V const& v) : is_vector_ptr: true is_vectorblock: false, is_vectorcondensed: false
+I0506 10:51:34.048584 794106 on.hpp:1164] call getRhsVectorAsPtr(V const& v) : done
+I0506 10:51:34.048588 794106 on.hpp:1231] call on(Ts&&... v) : 6 done
+I0506 10:51:34.048593 794106 on.hpp:461] IntegratorOnExpr<ElementRange, Elem, RhsElem,  OnExpr>::onFaces() 
+I0506 10:51:34.048596 794106 on.hpp:505] [IntegratorOnExpr<>::onFaces()] start find a face
+I0506 10:51:34.048789 794106 on.hpp:743] IntegratorOnExpr<>::onFaces() zeroRows set 160 rhs values and set 160 dofs
+I0506 10:51:34.048794 794106 matrixpetsc.cpp:1786] MatrixPETSc:: zeroRows seq elimination
+I0506 10:51:34.048802 794106 matrixpetsc.cpp:1834] MatrixPETSc:: zeroRows seq unsymmetric number of rows : 160 value on diagonal : 1
+I0506 10:51:34.048856 794106 on.hpp:746] IntegratorOnExpr<ElementRange, Elem, RhsElem,  OnExpr>::onFaces() done.
+I0506 10:51:34.048887 794106 preconditionerpetsc.cpp:309] PreconditionerPetsc<T>::clear
+I0506 10:51:34.049005 794106 backendpetsc.cpp:86] call feel_petsc_pre_solve
+I0506 10:51:34.049052 794106 functionspetsc.cpp:39] mat solver package before 6
+I0506 10:51:34.049057 794106 functionspetsc.cpp:264] mat solver package is mumps
+I0506 10:51:34.062744 794106 backendpetsc.cpp:49] call feel_petsc_post_solve
+I0506 10:51:34.062754 794106 backendpetsc.cpp:65] call feel_petsc_post_solve done
+I0506 10:51:34.062758 794106 solverlinearpetsc.cpp:638] [solverlinearpetsc] reason = 2
+I0506 10:51:34.064642 794106 worldcomm.cpp:895] [rank 0] [DofTable::build] starts, has mesh support: false
+I0506 10:51:34.065039 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] starts, dof_indices empty: true
+I0506 10:51:34.065043 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] allocation done
+I0506 10:51:34.065061 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap]  n_elts =  3702 on processor 0
+I0506 10:51:34.069630 794106 worldcomm.cpp:895] [rank 0] [builddofmap - 0] dof generation nLocalDof : 1932
+W0506 10:51:34.072423 794106 doftable.hpp:2587] TODO: finish implementation of this case below
+I0506 10:51:34.073141 794106 element_impl.hpp:199] creating element cfpdes.poisson.u : u
+I0506 10:51:34.077522 794106 element_impl.hpp:199] creating element cfpdes.expr.grad_u_exact : u
+I0506 10:51:34.080677 794106 element_impl.hpp:199] creating element cfpdes.expr.grad_u_exact : u
+I0506 10:51:34.083889 794106 element_impl.hpp:199] creating element cfpdes.expr.rhs : u
+I0506 10:51:34.086647 794106 element_impl.hpp:199] creating element cfpdes.expr.u_exact : u
+I0506 10:51:34.089535 794106 worldcomm.cpp:895] [rank 0] [DofTable::build] starts, has mesh support: false
+I0506 10:51:34.089901 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] starts, dof_indices empty: true
+I0506 10:51:34.089905 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] allocation done
+I0506 10:51:34.089932 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap]  n_elts =  3702 on processor 0
+I0506 10:51:34.090804 794106 worldcomm.cpp:895] [rank 0] [builddofmap - 0] dof generation nLocalDof : 3702
+I0506 10:51:34.091370 794106 element_impl.hpp:199] creating element field : field
+I0506 10:51:34.091825 794106 element_impl.hpp:199] creating element cfpdes.pid : field
+I0506 10:51:34.095666 794106 exporterensightgold_impl.hpp:1250] writing part 1
+I0506 10:51:34.095955 794106 exporterensightgold_impl.hpp:1376] ExporterEnsightGold::writeVariableFiles Nodal: 4
+I0506 10:51:34.095959 794106 exporterensightgold_impl.hpp:1377] ExporterEnsightGold::writeVariableFiles Element: 1
+I0506 10:51:34.146920 794106 evaluator.hpp:849] evaluate minmax(expression)...
+I0506 10:51:34.151260 794106 evaluator.hpp:888] proc 0 index at which function (size: 25914) is minimal: 23956 coord = 
+0.744578
+    0.25
+I0506 10:51:34.151280 794106 evaluator.hpp:889] proc 0 index at which function (size: 25914) is maximal: 19328 coord = 
+0.744578
+    0.75
+I0506 10:51:34.151302 794106 evaluator.hpp:900] proc 0 : global min = -0.997301 at position 0 with coord : 
+ 0.744578
+    0.25
+I0506 10:51:34.151310 794106 evaluator.hpp:906] proc 0 : global max = 0.997303 at position 0 with coord : 
+ 0.744578
+    0.75
+I0506 10:51:34.151317 794106 evaluator.hpp:912] evaluate minmax(expression) done.
+I0506 10:51:34.164105 794106 environment.cpp:1736]  looking for "feelpp_cfpde/np_1/omega-2.geo"
+I0506 10:51:34.164122 794106 environment.cpp:1736]  looking for "/usr/share/feelpp/data/geo/omega-2.geo"
+I0506 10:51:34.164139 794106 environment.cpp:1736]  looking for "/usr/share/feel/config/omega-2.geo"
+I0506 10:51:34.164149 794106 environment.cpp:1736]  looking for "/nvme0/csmi/sarr/feelpp-scimba/notebooks/omega-2.geo"
+I0506 10:51:34.164163 794106 environment.cpp:1751] File "/nvme0/csmi/sarr/feelpp-scimba/notebooks/feelppdb/feelpp_cfpde/np_1/omega-2.geo" found
+I0506 10:51:34.164222 794106 environment.cpp:1708] File /nvme0/csmi/sarr/feelpp-scimba/notebooks/feelppdb/feelpp_cfpde/np_1/omega-2.geo found
+I0506 10:51:34.164280 794106 gmsh.cpp:256] [gmsh::setVerbosity] old Verbosity : 5, new Verbosity : 1 
+I0506 10:51:34.164286 794106 gmsh.cpp:468] Generate mesh on processor 0/1
+I0506 10:51:34.164341 794106 gmsh.cpp:373] [Gmsh::generateGeo] Geo geometry parameter ElementOrder not found ! 
+I0506 10:51:34.164383 794106 gmsh.cpp:394] [Gmsh::generateGeo] Parameter h parameter (hsize) not found ! 
+I0506 10:51:34.164436 794106 gmsh.cpp:446] "omega-2.geo" exists and its content correspond to the expected geometry
+I0506 10:51:34.164441 794106 gmsh.cpp:485] Mesh file omega-2.msh generated from geometry omega-2.geo
+I0506 10:51:34.164443 794106 gmsh.cpp:486]  - does mesh file name exists : false
+I0506 10:51:34.164448 794106 gmsh.cpp:491] Generating omega-2.msh...
+I0506 10:51:34.164453 794106 gmsh.cpp:662] [Gmsh::generate] env.part: 1
+I0506 10:51:34.164455 794106 gmsh.cpp:663] [Gmsh::generate] partitions: 1
+I0506 10:51:34.164458 794106 gmsh.cpp:664] [Gmsh::generate] partitioner: 1
+I0506 10:51:34.433815 794106 gmsh.cpp:766] Writing GMSH file omega-2.msh in ascii format
+I0506 10:51:34.451709 794106 gmsh.cpp:495] Generating omega-2.msh done.
+I0506 10:51:34.451731 794106 gmsh.cpp:507] Broadcast mesh file omega-2.msh to all other mpi processes, (created: 1)
+I0506 10:51:34.451771 794106 importergmsh.hpp:991] Reading Msh file omega-2.msh
+I0506 10:51:34.451803 794106 importergmsh.hpp:1015] GMSH mesh file version : 4.1 format: ascii size of double: 8
+I0506 10:51:34.480444 794106 meshimpl.hpp:1051] We have 320 faces in the database
+I0506 10:51:34.493407 794106 meshimpl.hpp:1325] We have now 22339 faces in the mesh
+I0506 10:51:34.497581 794106 meshimpl.hpp:1863] update boundary points...
+I0506 10:51:34.498571 794106 meshimpl.hpp:1883] update boundary elements...
+I0506 10:51:34.515308 794106 meshimpl.hpp:524] h average : 0.012591
+I0506 10:51:34.515350 794106 meshimpl.hpp:525]     h min : 0.0106817
+I0506 10:51:34.515353 794106 meshimpl.hpp:526]     h max : 0.0168241
+I0506 10:51:34.516290 794106 modelproperties.cpp:138] Model with model
+I0506 10:51:34.516309 794106 modelproperties.cpp:151] Model with boundary conditions
+I0506 10:51:34.516316 794106 modelproperties.cpp:173] Model with materials
+I0506 10:51:34.516331 794106 modelmaterials.cpp:209] Material Physical/Region :Omega
+I0506 10:51:34.516427 794106 modelproperties.cpp:181] Model with PostProcess
+I0506 10:51:34.519364 794106 worldcomm.cpp:895] [rank 0] makeResultRange: mesh count=3
+I0506 10:51:34.519577 794106 worldcomm.cpp:895] [rank 0] makeResultRange: res size=14786
+I0506 10:51:34.519580 794106 worldcomm.cpp:895] [rank 0] makeResultRange: mesh count=3
+I0506 10:51:34.519582 794106 worldcomm.cpp:895] [rank 0] makeResultRange: res size=0
+I0506 10:51:34.521297 794106 worldcomm.cpp:895] [rank 0] [DofTable::build] starts, has mesh support: false
+I0506 10:51:34.523509 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] starts, dof_indices empty: true
+I0506 10:51:34.523514 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] allocation done
+I0506 10:51:34.523578 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap]  n_elts =  14786 on processor 0
+I0506 10:51:34.541368 794106 worldcomm.cpp:895] [rank 0] [builddofmap - 0] dof generation nLocalDof : 7554
+W0506 10:51:34.550390 794106 doftable.hpp:2587] TODO: finish implementation of this case below
+I0506 10:51:34.553498 794106 element_impl.hpp:199] creating element u : u
+I0506 10:51:34.556142 794106 exporterimpl.hpp:219] [Exporter] format :  ensightgold
+I0506 10:51:34.556149 794106 exporterimpl.hpp:220] [Exporter] N      :  1
+I0506 10:51:34.651775 794106 on.hpp:1184] call on(Ts&&... v) : 6
+I0506 10:51:34.651811 794106 on.hpp:1153] call getRhsVectorAsPtr(V const& v) : is_vector_ptr: true is_vectorblock: false, is_vectorcondensed: false
+I0506 10:51:34.651815 794106 on.hpp:1164] call getRhsVectorAsPtr(V const& v) : done
+I0506 10:51:34.651819 794106 on.hpp:1231] call on(Ts&&... v) : 6 done
+I0506 10:51:34.651824 794106 on.hpp:461] IntegratorOnExpr<ElementRange, Elem, RhsElem,  OnExpr>::onFaces() 
+I0506 10:51:34.651827 794106 on.hpp:505] [IntegratorOnExpr<>::onFaces()] start find a face
+I0506 10:51:34.652153 794106 on.hpp:743] IntegratorOnExpr<>::onFaces() zeroRows set 320 rhs values and set 320 dofs
+I0506 10:51:34.652160 794106 matrixpetsc.cpp:1786] MatrixPETSc:: zeroRows seq elimination
+I0506 10:51:34.652173 794106 matrixpetsc.cpp:1834] MatrixPETSc:: zeroRows seq unsymmetric number of rows : 320 value on diagonal : 1
+I0506 10:51:34.652323 794106 on.hpp:746] IntegratorOnExpr<ElementRange, Elem, RhsElem,  OnExpr>::onFaces() done.
+I0506 10:51:34.652357 794106 preconditionerpetsc.cpp:309] PreconditionerPetsc<T>::clear
+I0506 10:51:34.652480 794106 backendpetsc.cpp:86] call feel_petsc_pre_solve
+I0506 10:51:34.652540 794106 functionspetsc.cpp:39] mat solver package before 6
+I0506 10:51:34.652545 794106 functionspetsc.cpp:264] mat solver package is mumps
+I0506 10:51:34.706797 794106 backendpetsc.cpp:49] call feel_petsc_post_solve
+I0506 10:51:34.706816 794106 backendpetsc.cpp:65] call feel_petsc_post_solve done
+I0506 10:51:34.706820 794106 solverlinearpetsc.cpp:638] [solverlinearpetsc] reason = 2
+I0506 10:51:34.709049 794106 worldcomm.cpp:895] [rank 0] [DofTable::build] starts, has mesh support: false
+I0506 10:51:34.711400 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] starts, dof_indices empty: true
+I0506 10:51:34.711405 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] allocation done
+I0506 10:51:34.711552 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap]  n_elts =  14786 on processor 0
+I0506 10:51:34.732160 794106 worldcomm.cpp:895] [rank 0] [builddofmap - 0] dof generation nLocalDof : 7554
+W0506 10:51:34.743693 794106 doftable.hpp:2587] TODO: finish implementation of this case below
+I0506 10:51:34.746511 794106 element_impl.hpp:199] creating element cfpdes.poisson.u : u
+I0506 10:51:34.765144 794106 element_impl.hpp:199] creating element cfpdes.expr.grad_u_exact : u
+I0506 10:51:34.778698 794106 element_impl.hpp:199] creating element cfpdes.expr.grad_u_exact : u
+I0506 10:51:34.799163 794106 element_impl.hpp:199] creating element cfpdes.expr.rhs : u
+I0506 10:51:34.811359 794106 element_impl.hpp:199] creating element cfpdes.expr.u_exact : u
+I0506 10:51:34.820852 794106 worldcomm.cpp:895] [rank 0] [DofTable::build] starts, has mesh support: false
+I0506 10:51:34.821846 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] starts, dof_indices empty: true
+I0506 10:51:34.821849 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] allocation done
+I0506 10:51:34.821928 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap]  n_elts =  14786 on processor 0
+I0506 10:51:34.825225 794106 worldcomm.cpp:895] [rank 0] [builddofmap - 0] dof generation nLocalDof : 14786
+I0506 10:51:34.827370 794106 element_impl.hpp:199] creating element field : field
+I0506 10:51:34.828892 794106 element_impl.hpp:199] creating element cfpdes.pid : field
+I0506 10:51:34.840058 794106 exporterensightgold_impl.hpp:1250] writing part 1
+I0506 10:51:34.840516 794106 exporterensightgold_impl.hpp:1376] ExporterEnsightGold::writeVariableFiles Nodal: 4
+I0506 10:51:34.840519 794106 exporterensightgold_impl.hpp:1377] ExporterEnsightGold::writeVariableFiles Element: 1
+I0506 10:51:34.943503 794106 evaluator.hpp:849] evaluate minmax(expression)...
+I0506 10:51:34.955587 794106 evaluator.hpp:888] proc 0 index at which function (size: 103502) is minimal: 56050 coord = 
+0.750371
+    0.25
+I0506 10:51:34.955641 794106 evaluator.hpp:889] proc 0 index at which function (size: 103502) is maximal: 51188 coord = 
+0.750371
+    0.75
+I0506 10:51:34.955674 794106 evaluator.hpp:900] proc 0 : global min = -0.999143 at position 0 with coord : 
+ 0.750371
+    0.25
+I0506 10:51:34.955682 794106 evaluator.hpp:906] proc 0 : global max = 0.999143 at position 0 with coord : 
+ 0.750371
+    0.75
+I0506 10:51:34.955687 794106 evaluator.hpp:912] evaluate minmax(expression) done.
+I0506 10:51:34.969969 794106 environment.cpp:1736]  looking for "feelpp_cfpde/np_1/omega-2.geo"
+I0506 10:51:34.969981 794106 environment.cpp:1736]  looking for "/usr/share/feelpp/data/geo/omega-2.geo"
+I0506 10:51:34.969995 794106 environment.cpp:1736]  looking for "/usr/share/feel/config/omega-2.geo"
+I0506 10:51:34.970001 794106 environment.cpp:1736]  looking for "/nvme0/csmi/sarr/feelpp-scimba/notebooks/omega-2.geo"
+I0506 10:51:34.970012 794106 environment.cpp:1751] File "/nvme0/csmi/sarr/feelpp-scimba/notebooks/feelppdb/feelpp_cfpde/np_1/omega-2.geo" found
+I0506 10:51:34.970060 794106 environment.cpp:1708] File /nvme0/csmi/sarr/feelpp-scimba/notebooks/feelppdb/feelpp_cfpde/np_1/omega-2.geo found
+I0506 10:51:34.970108 794106 gmsh.cpp:256] [gmsh::setVerbosity] old Verbosity : 5, new Verbosity : 1 
+I0506 10:51:34.970113 794106 gmsh.cpp:468] Generate mesh on processor 0/1
+I0506 10:51:34.970158 794106 gmsh.cpp:373] [Gmsh::generateGeo] Geo geometry parameter ElementOrder not found ! 
+I0506 10:51:34.970196 794106 gmsh.cpp:394] [Gmsh::generateGeo] Parameter h parameter (hsize) not found ! 
+I0506 10:51:34.970237 794106 gmsh.cpp:446] "omega-2.geo" exists and its content correspond to the expected geometry
+I0506 10:51:34.970239 794106 gmsh.cpp:485] Mesh file omega-2.msh generated from geometry omega-2.geo
+I0506 10:51:34.970242 794106 gmsh.cpp:486]  - does mesh file name exists : false
+I0506 10:51:34.970245 794106 gmsh.cpp:491] Generating omega-2.msh...
+I0506 10:51:34.970248 794106 gmsh.cpp:662] [Gmsh::generate] env.part: 1
+I0506 10:51:34.970250 794106 gmsh.cpp:663] [Gmsh::generate] partitions: 1
+I0506 10:51:34.970252 794106 gmsh.cpp:664] [Gmsh::generate] partitioner: 1
+I0506 10:51:36.704881 794106 gmsh.cpp:766] Writing GMSH file omega-2.msh in ascii format
+I0506 10:51:36.791790 794106 gmsh.cpp:495] Generating omega-2.msh done.
+I0506 10:51:36.791886 794106 gmsh.cpp:507] Broadcast mesh file omega-2.msh to all other mpi processes, (created: 1)
+I0506 10:51:36.791932 794106 importergmsh.hpp:991] Reading Msh file omega-2.msh
+I0506 10:51:36.791985 794106 importergmsh.hpp:1015] GMSH mesh file version : 4.1 format: ascii size of double: 8
+I0506 10:51:36.926045 794106 meshimpl.hpp:1051] We have 640 faces in the database
+I0506 10:51:37.035207 794106 meshimpl.hpp:1325] We have now 89321 faces in the mesh
+I0506 10:51:37.075865 794106 meshimpl.hpp:1863] update boundary points...
+I0506 10:51:37.082155 794106 meshimpl.hpp:1883] update boundary elements...
+I0506 10:51:37.177009 794106 meshimpl.hpp:524] h average : 0.00626742
+I0506 10:51:37.177057 794106 meshimpl.hpp:525]     h min : 0.00516265
+I0506 10:51:37.177058 794106 meshimpl.hpp:526]     h max : 0.00810466
+I0506 10:51:37.179898 794106 modelproperties.cpp:138] Model with model
+I0506 10:51:37.179916 794106 modelproperties.cpp:151] Model with boundary conditions
+I0506 10:51:37.179926 794106 modelproperties.cpp:173] Model with materials
+I0506 10:51:37.179945 794106 modelmaterials.cpp:209] Material Physical/Region :Omega
+I0506 10:51:37.180045 794106 modelproperties.cpp:181] Model with PostProcess
+I0506 10:51:37.190410 794106 worldcomm.cpp:895] [rank 0] makeResultRange: mesh count=3
+I0506 10:51:37.191277 794106 worldcomm.cpp:895] [rank 0] makeResultRange: res size=59334
+I0506 10:51:37.191280 794106 worldcomm.cpp:895] [rank 0] makeResultRange: mesh count=3
+I0506 10:51:37.191282 794106 worldcomm.cpp:895] [rank 0] makeResultRange: res size=0
+I0506 10:51:37.201299 794106 worldcomm.cpp:895] [rank 0] [DofTable::build] starts, has mesh support: false
+I0506 10:51:37.210361 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] starts, dof_indices empty: true
+I0506 10:51:37.210374 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap] allocation done
+I0506 10:51:37.210893 794106 worldcomm.cpp:895] [rank 0] [DofTable::buildDofMap]  n_elts =  59334 on processor 0
+I0506 10:51:37.324415 794106 worldcomm.cpp:895] [rank 0] [builddofmap - 0] dof generation nLocalDof : 29988
+W0506 10:51:37.368475 794106 doftable.hpp:2587] TODO: finish implementation of this case below
+I0506 10:51:37.385483 794106 element_impl.hpp:199] creating element u : u
+I0506 10:51:37.389655 794106 exporterimpl.hpp:219] [Exporter] format :  ensightgold
+I0506 10:51:37.389664 794106 exporterimpl.hpp:220] [Exporter] N      :  1
+I0506 10:51:37.729001 794106 on.hpp:1184] call on(Ts&&... v) : 6
+I0506 10:51:37.729051 794106 on.hpp:1153] call getRhsVectorAsPtr(V const& v) : is_vector_ptr: true is_vectorblock: false, is_vectorcondensed: false
+I0506 10:51:37.729055 794106 on.hpp:1164] call getRhsVectorAsPtr(V const& v) : done
+I0506 10:51:37.729063 794106 on.hpp:1231] call on(Ts&&... v) : 6 done
+I0506 10:51:37.729068 794106 on.hpp:461] IntegratorOnExpr<ElementRange, Elem, RhsElem,  OnExpr>::onFaces() 
+I0506 10:51:37.729071 794106 on.hpp:505] [IntegratorOnExpr<>::onFaces()] start find a face
+I0506 10:51:37.729801 794106 on.hpp:743] IntegratorOnExpr<>::onFaces() zeroRows set 640 rhs values and set 640 dofs
+I0506 10:51:37.729811 794106 matrixpetsc.cpp:1786] MatrixPETSc:: zeroRows seq elimination
+I0506 10:51:37.729930 794106 matrixpetsc.cpp:1834] MatrixPETSc:: zeroRows seq unsymmetric number of rows : 640 value on diagonal : 1
+I0506 10:51:37.730422 794106 on.hpp:746] IntegratorOnExpr<ElementRange, Elem, RhsElem,  OnExpr>::onFaces() done.
+I0506 10:51:37.730463 794106 preconditionerpetsc.cpp:309] PreconditionerPetsc<T>::clear
+I0506 10:51:37.730623 794106 backendpetsc.cpp:86] call feel_petsc_pre_solve
+I0506 10:51:37.730963 794106 functionspetsc.cpp:39] mat solver package before 6
+I0506 10:51:37.730969 794106 functionspetsc.cpp:264] mat solver package is mumps

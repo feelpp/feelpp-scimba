@@ -1,0 +1,1667 @@
+{
+ "Environment": {
+  "application": {
+   "name": "feelpp_app"
+  },
+  "hardware": {
+   "gaya": {
+    "backend": "kwsys",
+    "domain_name": "gaya.math.unistra.fr",
+    "hostname": "gaya",
+    "mem": {
+     "available": {
+      "host": "1056375976",
+      "physical": "672078",
+      "proc": "1056375976",
+      "virtual": "0"
+     },
+     "total": {
+      "host": "1056375976",
+      "physical": "1031617",
+      "virtual": "0"
+     },
+     "used": {
+      "checkpoint-1": {
+       "host": "346693384",
+       "proc": "1656076"
+      },
+      "checkpoint-2": {
+       "host": "338016904",
+       "proc": "1675640"
+      },
+      "checkpoint-3": {
+       "host": "333781432",
+       "proc": "1713624"
+      },
+      "checkpoint-4": {
+       "host": "330519164",
+       "proc": "1714072"
+      },
+      "checkpoint-5": {
+       "host": "318222704",
+       "proc": "1714268"
+      },
+      "checkpoint-6": {
+       "host": "310468564",
+       "proc": "1719336"
+      }
+     }
+    },
+    "os": {
+     "is_apple": "0",
+     "is_linux": "1",
+     "is_windows": "0",
+     "name": "Linux",
+     "platform": "x86_64",
+     "release": "5.15.0-131-generic",
+     "version": "#141-Ubuntu SMP Fri Jan 10 21:18:28 UTC 2025"
+    },
+    "proc": {
+     "apic_id": "0",
+     "cache_size": "512",
+     "clock_frequency": "2195.886963",
+     "cpu_id_support": "0",
+     "extended_name": "Unknown AMD family",
+     "family_id": "23",
+     "is_64bits": "1",
+     "logical_cpu_number": "192",
+     "logical_per_physical": "2",
+     "model_id": "49",
+     "physical_cpu_number": "96",
+     "serial_number": "",
+     "stepping_code": "0",
+     "type_id": "0",
+     "vendor_id": "Advanced Micro Devices",
+     "vendor_name": "AuthenticAMD"
+    }
+   }
+  },
+  "run": {
+   "command-line": "feelpp_app",
+   "config-files": [],
+   "directories": {
+    "app": "/nvme0/csmi/sarr/feelpp-scimba/feelppdb/feelpp_cfpde/np_1",
+    "downloads": "/nvme0/csmi/sarr/feelpp-scimba/feelppdb/feelpp_cfpde/downloads",
+    "export": "/nvme0/csmi/sarr/feelpp-scimba/feelppdb/feelpp_cfpde/np_1/exports",
+    "exprs": "/nvme0/csmi/sarr/feelpp-scimba/feelppdb/feelpp_cfpde/exprs",
+    "logs": "/nvme0/csmi/sarr/feelpp-scimba/feelppdb/feelpp_cfpde/np_1/logs"
+   },
+   "number_of_processors": 1,
+   "uuid": "fb5ff5f5-7b7d-4c13-9663-a2bd7d0dc792"
+  },
+  "software": {
+   "boost": {
+    "version": "1_74"
+   },
+   "mpi": {
+    "library": {
+     "openmpi": {
+      "version": {
+       "major": 4,
+       "minor": 1,
+       "release": 2
+      }
+     }
+    },
+    "version": "3.1"
+   },
+   "petsc": {
+    "date": {
+     "release": "Mar 30, 2021",
+     "version": "Sep 29, 2021"
+    },
+    "version": {
+     "major": 3,
+     "minor": 15,
+     "release": 1,
+     "subminor": 5
+    }
+   }
+  }
+ },
+ "FunctionSpace": {
+  "object-0": {
+   "basis": {
+    "is_continuous": true,
+    "nComponents": 1,
+    "nComponents1": 1,
+    "nComponents2": 1,
+    "nLocalDof": 3,
+    "name": "lagrange",
+    "order": 1,
+    "shape": "scalar"
+   },
+   "doftable": {
+    "nDof": 411
+   },
+   "mesh": "/Mesh/object-1",
+   "nSpace": 1
+  },
+  "object-1": {
+   "basis": {
+    "is_continuous": true,
+    "nComponents": 1,
+    "nComponents1": 1,
+    "nComponents2": 1,
+    "nLocalDof": 3,
+    "name": "lagrange",
+    "order": 1,
+    "shape": "scalar"
+   },
+   "doftable": {
+    "nDof": 411
+   },
+   "mesh": "/Mesh/object-1",
+   "nSpace": 1
+  },
+  "object-10": {
+   "basis": {
+    "is_continuous": true,
+    "nComponents": 1,
+    "nComponents1": 1,
+    "nComponents2": 1,
+    "nLocalDof": 3,
+    "name": "lagrange",
+    "order": 1,
+    "shape": "scalar"
+   },
+   "doftable": {
+    "nDof": 23603
+   },
+   "mesh": "/Mesh/object-7",
+   "nSpace": 1
+  },
+  "object-11": {
+   "basis": {
+    "is_continuous": false,
+    "nComponents": 1,
+    "nComponents1": 1,
+    "nComponents2": 1,
+    "nLocalDof": 1,
+    "name": "lagrange",
+    "order": 0,
+    "shape": "scalar"
+   },
+   "doftable": {
+    "nDof": 46701
+   },
+   "mesh": "/Mesh/object-7",
+   "nSpace": 1
+  },
+  "object-2": {
+   "basis": {
+    "is_continuous": false,
+    "nComponents": 1,
+    "nComponents1": 1,
+    "nComponents2": 1,
+    "nLocalDof": 1,
+    "name": "lagrange",
+    "order": 0,
+    "shape": "scalar"
+   },
+   "doftable": {
+    "nDof": 757
+   },
+   "mesh": "/Mesh/object-1",
+   "nSpace": 1
+  },
+  "object-3": {
+   "basis": {
+    "is_continuous": true,
+    "nComponents": 1,
+    "nComponents1": 1,
+    "nComponents2": 1,
+    "nLocalDof": 3,
+    "name": "lagrange",
+    "order": 1,
+    "shape": "scalar"
+   },
+   "doftable": {
+    "nDof": 1549
+   },
+   "mesh": "/Mesh/object-3",
+   "nSpace": 1
+  },
+  "object-4": {
+   "basis": {
+    "is_continuous": true,
+    "nComponents": 1,
+    "nComponents1": 1,
+    "nComponents2": 1,
+    "nLocalDof": 3,
+    "name": "lagrange",
+    "order": 1,
+    "shape": "scalar"
+   },
+   "doftable": {
+    "nDof": 1549
+   },
+   "mesh": "/Mesh/object-3",
+   "nSpace": 1
+  },
+  "object-5": {
+   "basis": {
+    "is_continuous": false,
+    "nComponents": 1,
+    "nComponents1": 1,
+    "nComponents2": 1,
+    "nLocalDof": 1,
+    "name": "lagrange",
+    "order": 0,
+    "shape": "scalar"
+   },
+   "doftable": {
+    "nDof": 2970
+   },
+   "mesh": "/Mesh/object-3",
+   "nSpace": 1
+  },
+  "object-6": {
+   "basis": {
+    "is_continuous": true,
+    "nComponents": 1,
+    "nComponents1": 1,
+    "nComponents2": 1,
+    "nLocalDof": 3,
+    "name": "lagrange",
+    "order": 1,
+    "shape": "scalar"
+   },
+   "doftable": {
+    "nDof": 6019
+   },
+   "mesh": "/Mesh/object-5",
+   "nSpace": 1
+  },
+  "object-7": {
+   "basis": {
+    "is_continuous": true,
+    "nComponents": 1,
+    "nComponents1": 1,
+    "nComponents2": 1,
+    "nLocalDof": 3,
+    "name": "lagrange",
+    "order": 1,
+    "shape": "scalar"
+   },
+   "doftable": {
+    "nDof": 6019
+   },
+   "mesh": "/Mesh/object-5",
+   "nSpace": 1
+  },
+  "object-8": {
+   "basis": {
+    "is_continuous": false,
+    "nComponents": 1,
+    "nComponents1": 1,
+    "nComponents2": 1,
+    "nLocalDof": 1,
+    "name": "lagrange",
+    "order": 0,
+    "shape": "scalar"
+   },
+   "doftable": {
+    "nDof": 11784
+   },
+   "mesh": "/Mesh/object-5",
+   "nSpace": 1
+  },
+  "object-9": {
+   "basis": {
+    "is_continuous": true,
+    "nComponents": 1,
+    "nComponents1": 1,
+    "nComponents2": 1,
+    "nLocalDof": 3,
+    "name": "lagrange",
+    "order": 1,
+    "shape": "scalar"
+   },
+   "doftable": {
+    "nDof": 23603
+   },
+   "mesh": "/Mesh/object-7",
+   "nSpace": 1
+  }
+ },
+ "Mesh": {
+  "object-1": {
+   "dim": 2,
+   "h_average": 0.10122761076853773,
+   "h_max": 0.13492404246294323,
+   "h_min": 0.08067355772057185,
+   "n_elements": 757,
+   "n_faces": 1167,
+   "n_partition": 1,
+   "n_points": 411,
+   "order": 1,
+   "real_dim": 2,
+   "shape": "Simplex_2_1_2"
+  },
+  "object-3": {
+   "dim": 2,
+   "h_average": 0.05036493450968329,
+   "h_max": 0.06782264823863897,
+   "h_min": 0.042949255657400494,
+   "n_elements": 2970,
+   "n_faces": 4518,
+   "n_partition": 1,
+   "n_points": 1549,
+   "order": 1,
+   "real_dim": 2,
+   "shape": "Simplex_2_1_2"
+  },
+  "object-5": {
+   "dim": 2,
+   "h_average": 0.025052519931893554,
+   "h_max": 0.032579806902932065,
+   "h_min": 0.020487048850206975,
+   "n_elements": 11784,
+   "n_faces": 17802,
+   "n_partition": 1,
+   "n_points": 6019,
+   "order": 1,
+   "real_dim": 2,
+   "shape": "Simplex_2_1_2"
+  },
+  "object-7": {
+   "dim": 2,
+   "h_average": 0.012524728499859136,
+   "h_max": 0.016468529993228682,
+   "h_min": 0.00996255013431628,
+   "n_elements": 46701,
+   "n_faces": 70303,
+   "n_partition": 1,
+   "n_points": 23603,
+   "order": 1,
+   "real_dim": 2,
+   "shape": "Simplex_2_1_2"
+  }
+ },
+ "ModelPhysic": {
+  "object-0": {
+   "Generic": {
+    "modeling": "GenericPDEs",
+    "name": "cfpdes-2d-p1",
+    "subphysics": {
+     "poisson": [
+      {
+       "poisson": "/ModelPhysic/object-1"
+      }
+     ]
+    },
+    "type": "cfpdes-2d-p1"
+   }
+  },
+  "object-1": {
+   "Generic": {
+    "modeling": "GenericPDE",
+    "name": "poisson",
+    "parameters": [
+     {
+      "expr": "0.0",
+      "name": "a",
+      "shape": "scalar",
+      "symbol": "physics_poisson_poisson_a"
+     },
+     {
+      "components": [
+       {
+        "indices": [
+         0,
+         0
+        ],
+        "symbol": "physics_poisson_poisson_c_00"
+       },
+       {
+        "indices": [
+         0,
+         1
+        ],
+        "symbol": "physics_poisson_poisson_c_01"
+       },
+       {
+        "indices": [
+         1,
+         0
+        ],
+        "symbol": "physics_poisson_poisson_c_10"
+       },
+       {
+        "indices": [
+         1,
+         1
+        ],
+        "symbol": "physics_poisson_poisson_c_11"
+       }
+      ],
+      "expr": "{1,0,0,1}",
+      "name": "c",
+      "shape": "tensor2 [2x2]",
+      "symbol": "physics_poisson_poisson_c"
+     },
+     {
+      "expr": "4",
+      "name": "f",
+      "shape": "scalar",
+      "symbol": "physics_poisson_poisson_f"
+     }
+    ],
+    "type": "poisson"
+   }
+  },
+  "object-2": {
+   "Generic": {
+    "modeling": "GenericPDEs",
+    "name": "cfpdes-2d-p1",
+    "subphysics": {
+     "poisson": [
+      {
+       "poisson": "/ModelPhysic/object-3"
+      }
+     ]
+    },
+    "type": "cfpdes-2d-p1"
+   }
+  },
+  "object-3": {
+   "Generic": {
+    "modeling": "GenericPDE",
+    "name": "poisson",
+    "parameters": [
+     {
+      "expr": "0.0",
+      "name": "a",
+      "shape": "scalar",
+      "symbol": "physics_poisson_poisson_a"
+     },
+     {
+      "components": [
+       {
+        "indices": [
+         0,
+         0
+        ],
+        "symbol": "physics_poisson_poisson_c_00"
+       },
+       {
+        "indices": [
+         0,
+         1
+        ],
+        "symbol": "physics_poisson_poisson_c_01"
+       },
+       {
+        "indices": [
+         1,
+         0
+        ],
+        "symbol": "physics_poisson_poisson_c_10"
+       },
+       {
+        "indices": [
+         1,
+         1
+        ],
+        "symbol": "physics_poisson_poisson_c_11"
+       }
+      ],
+      "expr": "{1,0,0,1}",
+      "name": "c",
+      "shape": "tensor2 [2x2]",
+      "symbol": "physics_poisson_poisson_c"
+     },
+     {
+      "expr": "4",
+      "name": "f",
+      "shape": "scalar",
+      "symbol": "physics_poisson_poisson_f"
+     }
+    ],
+    "type": "poisson"
+   }
+  },
+  "object-4": {
+   "Generic": {
+    "modeling": "GenericPDEs",
+    "name": "cfpdes-2d-p1",
+    "subphysics": {
+     "poisson": [
+      {
+       "poisson": "/ModelPhysic/object-5"
+      }
+     ]
+    },
+    "type": "cfpdes-2d-p1"
+   }
+  },
+  "object-5": {
+   "Generic": {
+    "modeling": "GenericPDE",
+    "name": "poisson",
+    "parameters": [
+     {
+      "expr": "0.0",
+      "name": "a",
+      "shape": "scalar",
+      "symbol": "physics_poisson_poisson_a"
+     },
+     {
+      "components": [
+       {
+        "indices": [
+         0,
+         0
+        ],
+        "symbol": "physics_poisson_poisson_c_00"
+       },
+       {
+        "indices": [
+         0,
+         1
+        ],
+        "symbol": "physics_poisson_poisson_c_01"
+       },
+       {
+        "indices": [
+         1,
+         0
+        ],
+        "symbol": "physics_poisson_poisson_c_10"
+       },
+       {
+        "indices": [
+         1,
+         1
+        ],
+        "symbol": "physics_poisson_poisson_c_11"
+       }
+      ],
+      "expr": "{1,0,0,1}",
+      "name": "c",
+      "shape": "tensor2 [2x2]",
+      "symbol": "physics_poisson_poisson_c"
+     },
+     {
+      "expr": "4",
+      "name": "f",
+      "shape": "scalar",
+      "symbol": "physics_poisson_poisson_f"
+     }
+    ],
+    "type": "poisson"
+   }
+  },
+  "object-6": {
+   "Generic": {
+    "modeling": "GenericPDEs",
+    "name": "cfpdes-2d-p1",
+    "subphysics": {
+     "poisson": [
+      {
+       "poisson": "/ModelPhysic/object-7"
+      }
+     ]
+    },
+    "type": "cfpdes-2d-p1"
+   }
+  },
+  "object-7": {
+   "Generic": {
+    "modeling": "GenericPDE",
+    "name": "poisson",
+    "parameters": [
+     {
+      "expr": "0.0",
+      "name": "a",
+      "shape": "scalar",
+      "symbol": "physics_poisson_poisson_a"
+     },
+     {
+      "components": [
+       {
+        "indices": [
+         0,
+         0
+        ],
+        "symbol": "physics_poisson_poisson_c_00"
+       },
+       {
+        "indices": [
+         0,
+         1
+        ],
+        "symbol": "physics_poisson_poisson_c_01"
+       },
+       {
+        "indices": [
+         1,
+         0
+        ],
+        "symbol": "physics_poisson_poisson_c_10"
+       },
+       {
+        "indices": [
+         1,
+         1
+        ],
+        "symbol": "physics_poisson_poisson_c_11"
+       }
+      ],
+      "expr": "{1,0,0,1}",
+      "name": "c",
+      "shape": "tensor2 [2x2]",
+      "symbol": "physics_poisson_poisson_c"
+     },
+     {
+      "expr": "4",
+      "name": "f",
+      "shape": "scalar",
+      "symbol": "physics_poisson_poisson_f"
+     }
+    ],
+    "type": "poisson"
+   }
+  }
+ },
+ "TimerTable": {
+  "timer-0": {
+   "count": 4,
+   "max": 0.101018254,
+   "mean": 0.03338680875,
+   "message": "read msh from file",
+   "min": 0.003755564,
+   "std_dev": 0.039741031808147906,
+   "total": 0.133547235
+  },
+  "timer-1": {
+   "count": 4,
+   "max": 0.000401996,
+   "mean": 0.000123898,
+   "message": "Mesh.updateEntitiesCoDimensionOne.add_faces",
+   "min": 2.0558e-05,
+   "std_dev": 0.0001608205363316514,
+   "total": 0.000495592
+  },
+  "timer-10": {
+   "count": 4,
+   "max": 0.01421725,
+   "mean": 0.004621845,
+   "message": "[Mesh::updateMeasures] update average, min and max",
+   "min": 0.00023422,
+   "std_dev": 0.005656760989397599,
+   "total": 0.01848738
+  },
+  "timer-11": {
+   "count": 4,
+   "max": 0.048586401,
+   "mean": 0.01571040025,
+   "message": "Mesh::updateForUse update mesh measures",
+   "min": 0.001704155,
+   "std_dev": 0.019222170111394182,
+   "total": 0.062841601
+  },
+  "timer-12": {
+   "count": 4,
+   "max": 6.21e-07,
+   "mean": 3.33e-07,
+   "message": "Mesh::updateForUse check",
+   "min": 1.1e-07,
+   "std_dev": 2.2317369916726296e-07,
+   "total": 1.332e-06
+  },
+  "timer-13": {
+   "count": 4,
+   "max": 2.4e-07,
+   "mean": 1.905e-07,
+   "message": "Mesh::updateForUse update geomap cache",
+   "min": 6e-08,
+   "std_dev": 7.543374576408093e-08,
+   "total": 7.62e-07
+  },
+  "timer-14": {
+   "count": 4,
+   "max": 0.184496839,
+   "mean": 0.05445073775,
+   "message": "[Mesh::updateForUse] total time",
+   "min": 0.002773196,
+   "std_dev": 0.07555346776898277,
+   "total": 0.217802951
+  },
+  "timer-15": {
+   "count": 12,
+   "max": 8.997e-06,
+   "mean": 7.098333333333333e-06,
+   "message": "FunctionSpace dof-1",
+   "min": 4.558e-06,
+   "std_dev": 1.5983201250757695e-06,
+   "total": 8.518e-05
+  },
+  "timer-16": {
+   "count": 12,
+   "max": 4.41e-07,
+   "mean": 2.5216666666666664e-07,
+   "message": "FunctionSpace dof-2",
+   "min": 8e-08,
+   "std_dev": 9.507438608210356e-08,
+   "total": 3.026e-06
+  },
+  "timer-17": {
+   "count": 12,
+   "max": 2.81e-07,
+   "mean": 1.844166666666667e-07,
+   "message": "FunctionSpace dof-3",
+   "min": 5e-08,
+   "std_dev": 7.542596627746236e-08,
+   "total": 2.2130000000000002e-06
+  },
+  "timer-18": {
+   "count": 12,
+   "max": 6.71e-07,
+   "mean": 4.885e-07,
+   "message": "FunctionSpace dof-4",
+   "min": 1.2e-07,
+   "std_dev": 1.7539217960521124e-07,
+   "total": 5.862e-06
+  },
+  "timer-19": {
+   "count": 12,
+   "max": 0.007226522,
+   "mean": 0.0020132891666666667,
+   "message": "DofTable::init",
+   "min": 6.1616e-05,
+   "std_dev": 0.0024451145182629937,
+   "total": 0.02415947
+  },
+  "timer-2": {
+   "count": 4,
+   "max": 0.066710067,
+   "mean": 0.01962737225,
+   "message": "Mesh.updateEntitiesCoDimensionOne.add_faces_from_elements",
+   "min": 0.000682393,
+   "std_dev": 0.027375476996722537,
+   "total": 0.078509489
+  },
+  "timer-20": {
+   "count": 12,
+   "max": 2.8e-07,
+   "mean": 1.660833333333333e-07,
+   "message": "DofTable::buildPeriodicDof",
+   "min": 6e-08,
+   "std_dev": 6.177844598959162e-08,
+   "total": 1.993e-06
+  },
+  "timer-21": {
+   "count": 12,
+   "max": 1.41e-07,
+   "mean": 9.624999999999999e-08,
+   "message": "DofTable::buildLocalDiscon",
+   "min": 5.1e-08,
+   "std_dev": 3.111303317475384e-08,
+   "total": 1.155e-06
+  },
+  "timer-22": {
+   "count": 12,
+   "max": 1.7e-07,
+   "mean": 1.1091666666666667e-07,
+   "message": "DofTable buildDofMap allocation",
+   "min": 7e-08,
+   "std_dev": 3.231474981421882e-08,
+   "total": 1.331e-06
+  },
+  "timer-23": {
+   "count": 12,
+   "max": 0.090050716,
+   "mean": 0.018761954583333334,
+   "message": "DofTable buildDofMap element loop",
+   "min": 0.000112773,
+   "std_dev": 0.029822570051955617,
+   "total": 0.22514345500000002
+  },
+  "timer-24": {
+   "count": 12,
+   "max": 0.090497747,
+   "mean": 0.018970970416666667,
+   "message": "DofTable buildDofMap dof generation",
+   "min": 0.000161985,
+   "std_dev": 0.029948345103194256,
+   "total": 0.22765164499999999
+  },
+  "timer-25": {
+   "count": 12,
+   "max": 3.41e-07,
+   "mean": 1.3041666666666668e-07,
+   "message": "DofTable generateDofPoints",
+   "min": 7.1e-08,
+   "std_dev": 7.119393505691962e-08,
+   "total": 1.5650000000000003e-06
+  },
+  "timer-26": {
+   "count": 12,
+   "max": 1.693e-06,
+   "mean": 9.316666666666666e-07,
+   "message": "DofTable buildDofMap done",
+   "min": 5.01e-07,
+   "std_dev": 3.3242601516060016e-07,
+   "total": 1.118e-05
+  },
+  "timer-27": {
+   "count": 12,
+   "max": 0.09055276,
+   "mean": 0.018990994499999997,
+   "message": "DofTable::call buildDofMap",
+   "min": 0.000170921,
+   "std_dev": 0.029961158962790273,
+   "total": 0.22789193399999996
+  },
+  "timer-28": {
+   "count": 12,
+   "max": 3.21e-07,
+   "mean": 1.703333333333333e-07,
+   "message": "DofTable::checki dof element assignement",
+   "min": 6e-08,
+   "std_dev": 8.57820234988401e-08,
+   "total": 2.044e-06
+  },
+  "timer-29": {
+   "count": 12,
+   "max": 1.674e-06,
+   "mean": 5.928333333333334e-07,
+   "message": "DofTable::multi process",
+   "min": 1.5e-07,
+   "std_dev": 4.897189386667508e-07,
+   "total": 7.114e-06
+  },
+  "timer-3": {
+   "count": 4,
+   "max": 0.003679089,
+   "mean": 0.00097874075,
+   "message": "Mesh.updateEntitiesCoDimensionOne.clean_faces",
+   "min": 7.083e-06,
+   "std_dev": 0.001560565790310741,
+   "total": 0.003914963
+  },
+  "timer-30": {
+   "count": 8,
+   "max": 0.037306165,
+   "mean": 0.01149373975,
+   "message": "DofTable::buildBoundaryDofMap",
+   "min": 0.000481997,
+   "std_dev": 0.013725296977689023,
+   "total": 0.091949918
+  },
+  "timer-31": {
+   "count": 12,
+   "max": 0.037323888,
+   "mean": 0.0076675007499999994,
+   "message": "DofTable::sequential map",
+   "min": 9e-08,
+   "std_dev": 0.0124532299262848,
+   "total": 0.09201000899999999
+  },
+  "timer-32": {
+   "count": 12,
+   "max": 1.1191e-05,
+   "mean": 3.873833333333334e-06,
+   "message": "DofTable::reordering global id in doftable",
+   "min": 4.21e-07,
+   "std_dev": 3.826525487378276e-06,
+   "total": 4.648600000000001e-05
+  },
+  "timer-33": {
+   "count": 12,
+   "max": 0.012763255,
+   "mean": 0.0029249228333333333,
+   "message": "DofTable::build - locglob indices",
+   "min": 7.8859e-05,
+   "std_dev": 0.003888287698738243,
+   "total": 0.035099074
+  },
+  "timer-34": {
+   "count": 12,
+   "max": 0.136403746,
+   "mean": 0.02836329858333333,
+   "message": "DofTable::build",
+   "min": 9.3246e-05,
+   "std_dev": 0.04640036439069414,
+   "total": 0.34035958299999997
+  },
+  "timer-35": {
+   "count": 12,
+   "max": 0.143653902,
+   "mean": 0.03137393508333334,
+   "message": "FunctionSpace dof-5",
+   "min": 0.000268405,
+   "std_dev": 0.0483448874573289,
+   "total": 0.37648722100000004
+  },
+  "timer-36": {
+   "count": 12,
+   "max": 0.143656167,
+   "mean": 0.03181690683333333,
+   "message": "FunctionSpace dof table",
+   "min": 0.000338327,
+   "std_dev": 0.048192255538671,
+   "total": 0.381802882
+  },
+  "timer-37": {
+   "count": 12,
+   "max": 0.064872632,
+   "mean": 0.014262045416666667,
+   "message": "Integrator::assemble form MESH_ELEMENTS",
+   "min": 0.000946651,
+   "std_dev": 0.018791491239029404,
+   "total": 0.171144545
+  },
+  "timer-38": {
+   "count": 8,
+   "max": 1.8444e-05,
+   "mean": 4.522125000000001e-06,
+   "message": "MatrixPETSc::close",
+   "min": 8.72e-07,
+   "std_dev": 5.500115167828307e-06,
+   "total": 3.617700000000001e-05
+  },
+  "timer-39": {
+   "count": 4,
+   "max": 0.006912551,
+   "mean": 0.005744549250000001,
+   "message": "integrating over faces",
+   "min": 0.004760063,
+   "std_dev": 0.0008649028617354592,
+   "total": 0.022978197000000002
+  },
+  "timer-4": {
+   "count": 4,
+   "max": 0.103251634,
+   "mean": 0.029607943749999997,
+   "message": "Mesh::updateForUse update entities of codimension 1",
+   "min": 0.000814241,
+   "std_dev": 0.04272948732623091,
+   "total": 0.11843177499999999
+  },
+  "timer-40": {
+   "count": 4,
+   "max": 0.144368115,
+   "mean": 0.04729796975,
+   "message": "Timeset::add get scalar space nodal",
+   "min": 0.001614326,
+   "std_dev": 0.057556052356289696,
+   "total": 0.189191879
+  },
+  "timer-41": {
+   "count": 4,
+   "max": 0.04613508,
+   "mean": 0.01720066075,
+   "message": "Timeset::add functionspace element cfpdes.poisson.u",
+   "min": 0.000626869,
+   "std_dev": 0.018056627735167183,
+   "total": 0.068802643
+  },
+  "timer-42": {
+   "count": 4,
+   "max": 0.046664095,
+   "mean": 0.01761935075,
+   "message": "Timeset::add expression cfpdes.expr.grad_u_exact",
+   "min": 0.000737607,
+   "std_dev": 0.01827529374570169,
+   "total": 0.070477403
+  },
+  "timer-43": {
+   "count": 4,
+   "max": 0.023826954,
+   "mean": 0.00856291525,
+   "message": "Timeset::add expression cfpdes.expr.rhs",
+   "min": 0.000301237,
+   "std_dev": 0.009376727179448366,
+   "total": 0.034251661
+  },
+  "timer-44": {
+   "count": 4,
+   "max": 0.026528485,
+   "mean": 0.00965825275,
+   "message": "Timeset::add expression cfpdes.expr.u_exact",
+   "min": 0.00031349,
+   "std_dev": 0.010428352484598474,
+   "total": 0.038633011
+  },
+  "timer-45": {
+   "count": 4,
+   "max": 1.027e-05,
+   "mean": 5.284999999999999e-06,
+   "message": "Timeset::add get scalar space element",
+   "min": 2.975e-06,
+   "std_dev": 2.949799230456202e-06,
+   "total": 2.1139999999999997e-05
+  },
+  "timer-46": {
+   "count": 4,
+   "max": 0.030136029,
+   "mean": 0.0097321015,
+   "message": "Timeset::add functionspace element cfpdes.pid",
+   "min": 0.000588958,
+   "std_dev": 0.011964080145489551,
+   "total": 0.038928406
+  },
+  "timer-47": {
+   "count": 4,
+   "max": 0.014297431,
+   "mean": 0.0042502465,
+   "message": "ExporterEnsightGold::writeGeoFiles init cache",
+   "min": 0.000154801,
+   "std_dev": 0.005839587979113317,
+   "total": 0.017000986
+  },
+  "timer-48": {
+   "count": 4,
+   "max": 0.016345913,
+   "mean": 0.00608420325,
+   "message": "ExporterEnsightGold::save geo",
+   "min": 0.001513927,
+   "std_dev": 0.0059683311080862625,
+   "total": 0.024336813
+  },
+  "timer-49": {
+   "count": 20,
+   "max": 0.000493558,
+   "mean": 0.00027262515,
+   "message": "saveFields intro",
+   "min": 0.000215635,
+   "std_dev": 6.0695873259452306e-05,
+   "total": 0.005452503
+  },
+  "timer-5": {
+   "count": 4,
+   "max": 3.71e-07,
+   "mean": 2.8549999999999996e-07,
+   "message": "Mesh::updateForUse update entities of codimension 2",
+   "min": 2.3e-07,
+   "std_dev": 5.6349356695529383e-08,
+   "total": 1.1419999999999998e-06
+  },
+  "timer-50": {
+   "count": 20,
+   "max": 1.1412e-05,
+   "mean": 9.62425e-06,
+   "message": "saveFields part",
+   "min": 8.927e-06,
+   "std_dev": 1.0115977893906259e-06,
+   "total": 0.000192485
+  },
+  "timer-51": {
+   "count": 20,
+   "max": 0.019141922,
+   "mean": 0.0013107569499999998,
+   "message": "saveFields element loop",
+   "min": 7.234e-06,
+   "std_dev": 0.0041332952112432455,
+   "total": 0.026215139
+  },
+  "timer-52": {
+   "count": 20,
+   "max": 0.000393641,
+   "mean": 6.67287e-05,
+   "message": "saveFields write part",
+   "min": 3.056e-06,
+   "std_dev": 9.314163684953148e-05,
+   "total": 0.001334574
+  },
+  "timer-53": {
+   "count": 8,
+   "max": 0.022682591,
+   "mean": 0.0043285023749999995,
+   "message": "saveFields",
+   "min": 0.000295606,
+   "std_dev": 0.007044525831630701,
+   "total": 0.034628018999999996
+  },
+  "timer-54": {
+   "count": 4,
+   "max": 0.024736434,
+   "mean": 0.008667995000000001,
+   "message": "ExporterEnsightGold::save variables",
+   "min": 0.001769007,
+   "std_dev": 0.00934300824947562,
+   "total": 0.034671980000000005
+  },
+  "timer-55": {
+   "count": 4,
+   "max": 0.000185389,
+   "mean": 0.00014341975,
+   "message": "ExporterEnsightGold::save case",
+   "min": 6.7086e-05,
+   "std_dev": 4.522253335658563e-05,
+   "total": 0.000573679
+  },
+  "timer-56": {
+   "count": 4,
+   "max": 0.000167325,
+   "mean": 0.00013681475,
+   "message": "ExporterEnsightGold::save sos",
+   "min": 7.5141e-05,
+   "std_dev": 3.6126570432127924e-05,
+   "total": 0.000547259
+  },
+  "timer-57": {
+   "count": 4,
+   "max": 0.041424241,
+   "mean": 0.01503775525,
+   "message": "ExporterEnsightGold::save",
+   "min": 0.005110361,
+   "std_dev": 0.015283467674792071,
+   "total": 0.060151021
+  },
+  "timer-58": {
+   "count": 24,
+   "max": 0.084074817,
+   "mean": 0.013751146416666667,
+   "message": "integrating over elements",
+   "min": 0.000419139,
+   "std_dev": 0.020659496660590287,
+   "total": 0.330027514
+  },
+  "timer-59": {
+   "count": 1,
+   "max": 5.654606958,
+   "mean": 5.654606958,
+   "message": "env",
+   "min": 5.654606958,
+   "std_dev": 0.0,
+   "total": 5.654606958
+  },
+  "timer-6": {
+   "count": 4,
+   "max": 0.00837465,
+   "mean": 0.002383127,
+   "message": "Mesh::updateForUse update on boundary",
+   "min": 6.6876e-05,
+   "std_dev": 0.003476121212513813,
+   "total": 0.009532508
+  },
+  "timer-7": {
+   "count": 4,
+   "max": 0.001447382,
+   "mean": 0.00042259225000000004,
+   "message": "Mesh::updateForUse register elements associated to marked points",
+   "min": 1.4187e-05,
+   "std_dev": 0.0005963671520160106,
+   "total": 0.0016903690000000002
+  },
+  "timer-8": {
+   "count": 4,
+   "max": 0.004729035,
+   "mean": 0.0012440475,
+   "message": "Mesh::updateForUse update setMesh in elements and faces",
+   "min": 1.067e-05,
+   "std_dev": 0.002013098511495215,
+   "total": 0.00497619
+  },
+  "timer-9": {
+   "count": 4,
+   "max": 0.034337201,
+   "mean": 0.011073439499999999,
+   "message": "[Mesh::updateMeasures] update entity measures",
+   "min": 0.001463603,
+   "std_dev": 0.013563478237742385,
+   "total": 0.044293757999999996
+  }
+ },
+ "Toolboxes": {
+  "cfpdes-2d-p1": {
+   "Algebraic Solver": {
+    "Backend": {
+     "prefix": "cfpdes",
+     "type": "petsc"
+    },
+    "KSP": {
+     "atol": 1e-50,
+     "dtol": 100000.0,
+     "maxit": 1000,
+     "reuse-prec": false,
+     "rtol": 1e-08,
+     "type": "gmres"
+    },
+    "KSP in SNES": {
+     "maxit": 1000,
+     "reuse-prec": false,
+     "rtol": 1e-05
+    },
+    "PC": {
+     "mat-solver-package": "mumps",
+     "type": "lu"
+    },
+    "SNES": {
+     "atol": 1e-50,
+     "maxit": 50,
+     "reuse-jac": false,
+     "rtol": 1e-08,
+     "stol": 1e-08
+    }
+   },
+   "Coefficient Form PDE": {
+    "poisson": "/Toolboxes/poisson"
+   },
+   "Environment": {
+    "expr repository": "/nvme0/csmi/sarr/feelpp-scimba/feelppdb/feelpp_cfpde/exprs",
+    "keyword": "cfpdes-2d-p1",
+    "number of processus": 1,
+    "prefix": "cfpdes",
+    "root repository": "/nvme0/csmi/sarr/feelpp-scimba/feelppdb/feelpp_cfpde/np_1"
+   },
+   "Fields": {
+    "poisson.u": {
+     "SymbolsExpr": [
+      {
+       "expr": "idv(.)",
+       "name": "eval of u",
+       "shape": "scalar",
+       "symbol": "poisson_u"
+      },
+      {
+       "expr": "norm2(.)",
+       "name": "norm2 of u",
+       "shape": "scalar",
+       "symbol": "poisson_u_magnitude"
+      },
+      {
+       "components": [
+        {
+         "indices": [
+          0,
+          0
+         ],
+         "symbol": "poisson_grad_u_0"
+        },
+        {
+         "indices": [
+          0,
+          1
+         ],
+         "symbol": "poisson_grad_u_1"
+        }
+       ],
+       "expr": "gradv(.)",
+       "name": "grad of u",
+       "shape": "vectorial [2]",
+       "symbol": "poisson_grad_u"
+      },
+      {
+       "expr": "dnv(.)",
+       "name": "normal derivative of u",
+       "shape": "scalar",
+       "symbol": "poisson_dn_u"
+      }
+     ],
+     "base symbol": "u",
+     "function space": "/FunctionSpace/object-9",
+     "name": "u",
+     "prefix": "poisson",
+     "prefix symbol": "poisson"
+    },
+    "poisson.u_previous": {
+     "SymbolsExpr": [
+      {
+       "expr": "idv(.)",
+       "name": "eval of u_previous",
+       "shape": "scalar",
+       "symbol": "poisson_u_previous"
+      },
+      {
+       "expr": "norm2(.)",
+       "name": "norm2 of u_previous",
+       "shape": "scalar",
+       "symbol": "poisson_u_previous_magnitude"
+      },
+      {
+       "components": [
+        {
+         "indices": [
+          0,
+          0
+         ],
+         "symbol": "poisson_grad_u_previous_0"
+        },
+        {
+         "indices": [
+          0,
+          1
+         ],
+         "symbol": "poisson_grad_u_previous_1"
+        }
+       ],
+       "expr": "gradv(.)",
+       "name": "grad of u_previous",
+       "shape": "vectorial [2]",
+       "symbol": "poisson_grad_u_previous"
+      },
+      {
+       "expr": "dnv(.)",
+       "name": "normal derivative of u_previous",
+       "shape": "scalar",
+       "symbol": "poisson_dn_u_previous"
+      }
+     ],
+     "base symbol": "u_previous",
+     "function space": "/FunctionSpace/object-9",
+     "name": "u_previous",
+     "prefix": "poisson",
+     "prefix symbol": "poisson"
+    },
+    "poisson.u_remove_trial": {
+     "SymbolsExpr": [
+      {
+       "expr": "idv(.)",
+       "name": "eval of u_remove_trial",
+       "shape": "scalar",
+       "symbol": "poisson_u_rt"
+      },
+      {
+       "expr": "norm2(.)",
+       "name": "norm2 of u_remove_trial",
+       "shape": "scalar",
+       "symbol": "poisson_u_rt_magnitude"
+      },
+      {
+       "components": [
+        {
+         "indices": [
+          0,
+          0
+         ],
+         "symbol": "poisson_grad_u_rt_0"
+        },
+        {
+         "indices": [
+          0,
+          1
+         ],
+         "symbol": "poisson_grad_u_rt_1"
+        }
+       ],
+       "expr": "gradv(.)",
+       "name": "grad of u_remove_trial",
+       "shape": "vectorial [2]",
+       "symbol": "poisson_grad_u_rt"
+      },
+      {
+       "expr": "dnv(.)",
+       "name": "normal derivative of u_remove_trial",
+       "shape": "scalar",
+       "symbol": "poisson_dn_u_rt"
+      }
+     ],
+     "base symbol": "u_rt",
+     "function space": "/FunctionSpace/object-9",
+     "name": "u_remove_trial",
+     "prefix": "poisson",
+     "prefix symbol": "poisson"
+    }
+   },
+   "Materials Properties": {
+    "by_material": {
+     "Omega": []
+    },
+    "number of materials": 1
+   },
+   "Meshes": {
+    "cfpdes-2d-p1": {
+     "Discretization": "/Mesh/object-7",
+     "Fields": null,
+     "Import configuration": {
+      "generate-partitioning": false,
+      "geo-filename": "",
+      "hsize": 0.1
+     }
+    }
+   },
+   "Parameters": []
+  },
+  "poisson": {
+   "Boundary Conditions": {
+    "Dirichlet": {
+     "g": {
+      "expr": "1-y^2-x^2",
+      "markers": [
+       "Gamma_D"
+      ],
+      "method": "elimination"
+     }
+    },
+    "Neumann": {
+     "gN": {
+      "expr": "0",
+      "markers": [
+       "Gamma_D"
+      ]
+     }
+    }
+   },
+   "Environment": {
+    "expr repository": "/nvme0/csmi/sarr/feelpp-scimba/feelppdb/feelpp_cfpde/exprs",
+    "keyword": "poisson",
+    "number of processus": 1,
+    "prefix": "cfpdes.poisson",
+    "root repository": "/nvme0/csmi/sarr/feelpp-scimba/feelppdb/feelpp_cfpde/np_1"
+   },
+   "Fields": {
+    "u": {
+     "SymbolsExpr": [
+      {
+       "expr": "idv(.)",
+       "name": "eval of u",
+       "shape": "scalar",
+       "symbol": "poisson_u"
+      },
+      {
+       "expr": "norm2(.)",
+       "name": "norm2 of u",
+       "shape": "scalar",
+       "symbol": "poisson_u_magnitude"
+      },
+      {
+       "components": [
+        {
+         "indices": [
+          0,
+          0
+         ],
+         "symbol": "poisson_grad_u_0"
+        },
+        {
+         "indices": [
+          0,
+          1
+         ],
+         "symbol": "poisson_grad_u_1"
+        }
+       ],
+       "expr": "gradv(.)",
+       "name": "grad of u",
+       "shape": "vectorial [2]",
+       "symbol": "poisson_grad_u"
+      },
+      {
+       "expr": "dnv(.)",
+       "name": "normal derivative of u",
+       "shape": "scalar",
+       "symbol": "poisson_dn_u"
+      }
+     ],
+     "base symbol": "u",
+     "function space": "/FunctionSpace/object-9",
+     "name": "u",
+     "prefix symbol": "poisson"
+    },
+    "u_previous": {
+     "SymbolsExpr": [
+      {
+       "expr": "idv(.)",
+       "name": "eval of u_previous",
+       "shape": "scalar",
+       "symbol": "poisson_u_previous"
+      },
+      {
+       "expr": "norm2(.)",
+       "name": "norm2 of u_previous",
+       "shape": "scalar",
+       "symbol": "poisson_u_previous_magnitude"
+      },
+      {
+       "components": [
+        {
+         "indices": [
+          0,
+          0
+         ],
+         "symbol": "poisson_grad_u_previous_0"
+        },
+        {
+         "indices": [
+          0,
+          1
+         ],
+         "symbol": "poisson_grad_u_previous_1"
+        }
+       ],
+       "expr": "gradv(.)",
+       "name": "grad of u_previous",
+       "shape": "vectorial [2]",
+       "symbol": "poisson_grad_u_previous"
+      },
+      {
+       "expr": "dnv(.)",
+       "name": "normal derivative of u_previous",
+       "shape": "scalar",
+       "symbol": "poisson_dn_u_previous"
+      }
+     ],
+     "base symbol": "u_previous",
+     "function space": "/FunctionSpace/object-9",
+     "name": "u_previous",
+     "prefix symbol": "poisson"
+    },
+    "u_remove_trial": {
+     "SymbolsExpr": [
+      {
+       "expr": "idv(.)",
+       "name": "eval of u_remove_trial",
+       "shape": "scalar",
+       "symbol": "poisson_u_rt"
+      },
+      {
+       "expr": "norm2(.)",
+       "name": "norm2 of u_remove_trial",
+       "shape": "scalar",
+       "symbol": "poisson_u_rt_magnitude"
+      },
+      {
+       "components": [
+        {
+         "indices": [
+          0,
+          0
+         ],
+         "symbol": "poisson_grad_u_rt_0"
+        },
+        {
+         "indices": [
+          0,
+          1
+         ],
+         "symbol": "poisson_grad_u_rt_1"
+        }
+       ],
+       "expr": "gradv(.)",
+       "name": "grad of u_remove_trial",
+       "shape": "vectorial [2]",
+       "symbol": "poisson_grad_u_rt"
+      },
+      {
+       "expr": "dnv(.)",
+       "name": "normal derivative of u_remove_trial",
+       "shape": "scalar",
+       "symbol": "poisson_dn_u_rt"
+      }
+     ],
+     "base symbol": "u_rt",
+     "function space": "/FunctionSpace/object-9",
+     "name": "u_remove_trial",
+     "prefix symbol": "poisson"
+    }
+   },
+   "Function Spaces": {
+    "u": "/FunctionSpace/object-9"
+   },
+   "Meshes": {
+    "poisson": {
+     "Discretization": "/Mesh/object-7",
+     "Fields": null,
+     "Import configuration": {
+      "generate-partitioning": false,
+      "geo-filename": "",
+      "hsize": 0.1
+     }
+    }
+   },
+   "Physics": {
+    "poisson": {
+     "poisson": "/ModelPhysic/object-7"
+    }
+   }
+  }
+ },
+ "journal": {
+  "checkpoints": {
+   "checkpoint-1": {
+    "time": {
+     "gm": "Tue May  6 08:49:24 2025 GMT",
+     "local": "Tue May  6 10:49:24 2025 CEST",
+     "time_t": 1746521364
+    }
+   },
+   "checkpoint-2": {
+    "time": {
+     "gm": "Tue May  6 08:49:25 2025 GMT",
+     "local": "Tue May  6 10:49:25 2025 CEST",
+     "time_t": 1746521365
+    }
+   },
+   "checkpoint-3": {
+    "time": {
+     "gm": "Tue May  6 08:49:26 2025 GMT",
+     "local": "Tue May  6 10:49:26 2025 CEST",
+     "time_t": 1746521366
+    }
+   },
+   "checkpoint-4": {
+    "time": {
+     "gm": "Tue May  6 08:49:26 2025 GMT",
+     "local": "Tue May  6 10:49:26 2025 CEST",
+     "time_t": 1746521366
+    }
+   },
+   "checkpoint-5": {
+    "time": {
+     "gm": "Tue May  6 08:49:28 2025 GMT",
+     "local": "Tue May  6 10:49:28 2025 CEST",
+     "time_t": 1746521368
+    }
+   },
+   "checkpoint-6": {
+    "time": {
+     "gm": "Tue May  6 08:49:29 2025 GMT",
+     "local": "Tue May  6 10:49:29 2025 CEST",
+     "time_t": 1746521369
+    }
+   },
+   "number": 6
+  },
+  "time": {
+   "gm": "Tue May  6 08:49:24 2025 GMT",
+   "local": "Tue May  6 10:49:24 2025 CEST",
+   "time_t": 1746521364
+  },
+  "version": "0.1.0"
+ }
+}

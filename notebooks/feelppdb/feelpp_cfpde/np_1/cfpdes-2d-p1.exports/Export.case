@@ -1,0 +1,17 @@
+FORMAT:
+type: ensight gold
+GEOMETRY:
+model: Export.geo
+VARIABLES:
+vector per node: 5 cfpdes.expr.grad_u_exact Export.cfpdes.expr.grad_u_exact.vec.****
+scalar per node: 5 cfpdes.expr.rhs Export.cfpdes.expr.rhs.scl.****
+scalar per node: 5 cfpdes.expr.u_exact Export.cfpdes.expr.u_exact.scl.****
+scalar per node: 5 cfpdes.poisson.u Export.cfpdes.poisson.u.scl.****
+scalar per element: 5 cfpdes.pid Export.cfpdes.pid.scl.****
+TIME:
+time set:        5
+number of steps: 1
+filename start number: 1
+filename increment: 1
+time values: 0.000000e+00 
+

@@ -1,0 +1,866 @@
+:sectnums:
+
+= Toolbox::cfpdes-2d-p1 - Use Case Study 
+
+== Environment
+
+[cols="2"]
+|===
+<|prefix
+<|cfpdes
+
+<|keyword
+<|cfpdes-2d-p1
+
+<|root repository
+<|/nvme0/csmi/sarr/feelpp-scimba/feelppdb/feelpp_cfpde/np_1
+
+<|number of processus
+<|1
+|===
+
+
+== Materials Properties
+
+[cols="2"]
+|===
+<|number of materials
+<|1
+|===
+
+
+=== Material : Omega
+
+
+
+== Meshes
+
+=== Mesh : cfpdes-2d-p1
+
+[cols="2"]
+|===
+<|Discretization
+<|/Mesh/object-7
+|===
+
+
+==== Import configuration
+
+[cols="2"]
+|===
+<|geo-filename
+<|
+
+<|hsize
+<|1.000000e-01
+
+<|generate-partitioning
+<|0
+|===
+
+
+==== Discretization
+
+[cols="2"]
+|===
+<|dim
+<|2
+
+<|h_average
+<|1.252473e-02
+
+<|h_max
+<|1.646853e-02
+
+<|h_min
+<|9.962550e-03
+
+<|n_elements
+<|46701
+
+<|n_faces
+<|70303
+
+<|n_partition
+<|1
+
+<|n_points
+<|23603
+
+<|order
+<|1
+
+<|real_dim
+<|2
+
+<|shape
+<|Simplex_2_1_2
+|===
+
+
+
+==== Fields
+
+
+
+
+== Fields
+
+=== poisson.u
+
+[cols="2"]
+|===
+<|base symbol
+<|u
+
+<|function space
+<|/FunctionSpace/object-9
+
+<|name
+<|u
+
+<|prefix
+<|poisson
+
+<|prefix symbol
+<|poisson
+|===
+
+
+[cols="5",options="header"]
+|===
+<|Name
+<|Expression
+<|Symbol
+<|Shape
+<|Components
+
+<|eval of u
+<|idv(.)
+<|poisson_u
+<|scalar
+<|
+
+<|norm2 of u
+<|norm2(.)
+<|poisson_u_magnitude
+<|scalar
+<|
+
+<|grad of u
+<|gradv(.)
+<|poisson_grad_u
+<|vectorial [2]
+<a|
+[cols="2",options="header"]
+!===
+<!Symbol
+<!Indices
+
+<!poisson_grad_u_0
+<!0,0
+
+<!poisson_grad_u_1
+<!0,1
+!===
+
+
+<|normal derivative of u
+<|dnv(.)
+<|poisson_dn_u
+<|scalar
+<|
+|===
+
+
+
+=== poisson.u_previous
+
+[cols="2"]
+|===
+<|base symbol
+<|u_previous
+
+<|function space
+<|/FunctionSpace/object-9
+
+<|name
+<|u_previous
+
+<|prefix
+<|poisson
+
+<|prefix symbol
+<|poisson
+|===
+
+
+[cols="5",options="header"]
+|===
+<|Name
+<|Expression
+<|Symbol
+<|Shape
+<|Components
+
+<|eval of u_previous
+<|idv(.)
+<|poisson_u_previous
+<|scalar
+<|
+
+<|norm2 of u_previous
+<|norm2(.)
+<|poisson_u_previous_magnitude
+<|scalar
+<|
+
+<|grad of u_previous
+<|gradv(.)
+<|poisson_grad_u_previous
+<|vectorial [2]
+<a|
+[cols="2",options="header"]
+!===
+<!Symbol
+<!Indices
+
+<!poisson_grad_u_previous_0
+<!0,0
+
+<!poisson_grad_u_previous_1
+<!0,1
+!===
+
+
+<|normal derivative of u_previous
+<|dnv(.)
+<|poisson_dn_u_previous
+<|scalar
+<|
+|===
+
+
+
+=== poisson.u_remove_trial
+
+[cols="2"]
+|===
+<|base symbol
+<|u_rt
+
+<|function space
+<|/FunctionSpace/object-9
+
+<|name
+<|u_remove_trial
+
+<|prefix
+<|poisson
+
+<|prefix symbol
+<|poisson
+|===
+
+
+[cols="5",options="header"]
+|===
+<|Name
+<|Expression
+<|Symbol
+<|Shape
+<|Components
+
+<|eval of u_remove_trial
+<|idv(.)
+<|poisson_u_rt
+<|scalar
+<|
+
+<|norm2 of u_remove_trial
+<|norm2(.)
+<|poisson_u_rt_magnitude
+<|scalar
+<|
+
+<|grad of u_remove_trial
+<|gradv(.)
+<|poisson_grad_u_rt
+<|vectorial [2]
+<a|
+[cols="2",options="header"]
+!===
+<!Symbol
+<!Indices
+
+<!poisson_grad_u_rt_0
+<!0,0
+
+<!poisson_grad_u_rt_1
+<!0,1
+!===
+
+
+<|normal derivative of u_remove_trial
+<|dnv(.)
+<|poisson_dn_u_rt
+<|scalar
+<|
+|===
+
+
+
+
+== Parameters
+
+
+== Algebraic Solver
+
+=== Backend
+
+[cols="2"]
+|===
+<|prefix
+<|cfpdes
+
+<|type
+<|petsc
+|===
+
+
+=== KSP
+
+[cols="2"]
+|===
+<|atol
+<|1.000000e-50
+
+<|dtol
+<|1.000000e+05
+
+<|maxit
+<|1000
+
+<|reuse-prec
+<|0
+
+<|rtol
+<|1.000000e-08
+
+<|type
+<|gmres
+|===
+
+
+=== SNES
+
+[cols="2"]
+|===
+<|atol
+<|1.000000e-50
+
+<|maxit
+<|50
+
+<|reuse-jac
+<|0
+
+<|rtol
+<|1.000000e-08
+
+<|stol
+<|1.000000e-08
+|===
+
+
+=== KSP in SNES
+
+[cols="2"]
+|===
+<|maxit
+<|1000
+
+<|reuse-prec
+<|0
+
+<|rtol
+<|1.000000e-05
+|===
+
+
+=== PC
+
+[cols="2"]
+|===
+<|mat-solver-package
+<|mumps
+
+<|type
+<|lu
+|===
+
+
+
+== Toolbox Coefficient Form PDE : poisson
+
+=== Environment
+
+[cols="2"]
+|===
+<|prefix
+<|cfpdes.poisson
+
+<|keyword
+<|poisson
+
+<|root repository
+<|/nvme0/csmi/sarr/feelpp-scimba/feelppdb/feelpp_cfpde/np_1
+
+<|number of processus
+<|1
+|===
+
+
+=== Physics
+
+==== poisson
+
+===== poisson
+
+[cols="2"]
+|===
+<|modeling
+<|GenericPDE
+
+<|type
+<|poisson
+
+<|name
+<|poisson
+|===
+
+
+====== Parameters
+
+[cols="5",options="header"]
+|===
+<|Name
+<|Expression
+<|Symbol
+<|Shape
+<|Components
+
+<|a
+<|0.0
+<|physics_poisson_poisson_a
+<|scalar
+<|
+
+<|c
+<|{1,0,0,1}
+<|physics_poisson_poisson_c
+<|tensor2 [2x2]
+<a|
+[cols="2",options="header"]
+!===
+<!Symbol
+<!Indices
+
+<!physics_poisson_poisson_c_00
+<!0,0
+
+<!physics_poisson_poisson_c_01
+<!0,1
+
+<!physics_poisson_poisson_c_10
+<!1,0
+
+<!physics_poisson_poisson_c_11
+<!1,1
+!===
+
+
+<|f
+<|4
+<|physics_poisson_poisson_f
+<|scalar
+<|
+|===
+
+
+
+
+
+=== Meshes
+
+==== Mesh : poisson
+
+[cols="2"]
+|===
+<|Discretization
+<|/Mesh/object-7
+|===
+
+
+===== Import configuration
+
+[cols="2"]
+|===
+<|geo-filename
+<|
+
+<|hsize
+<|1.000000e-01
+
+<|generate-partitioning
+<|0
+|===
+
+
+===== Discretization
+
+[cols="2"]
+|===
+<|dim
+<|2
+
+<|h_average
+<|1.252473e-02
+
+<|h_max
+<|1.646853e-02
+
+<|h_min
+<|9.962550e-03
+
+<|n_elements
+<|46701
+
+<|n_faces
+<|70303
+
+<|n_partition
+<|1
+
+<|n_points
+<|23603
+
+<|order
+<|1
+
+<|real_dim
+<|2
+
+<|shape
+<|Simplex_2_1_2
+|===
+
+
+
+===== Fields
+
+
+
+
+=== Boundary Conditions
+
+==== Dirichlet
+
+===== g
+
+[cols="2"]
+|===
+<|method
+<|elimination
+
+<|expr
+<|1-y^2-x^2
+
+<|markers
+<a|
+[cols="1"]
+!===
+<!Gamma_D
+!===
+
+|===
+
+
+
+==== Neumann
+
+===== gN
+
+[cols="2"]
+|===
+<|expr
+<|0
+
+<|markers
+<a|
+[cols="1"]
+!===
+<!Gamma_D
+!===
+
+|===
+
+
+
+
+=== Function Spaces
+
+==== u
+
+[cols="2"]
+|===
+<|mesh
+<|/Mesh/object-7
+
+<|nSpace
+<|1
+|===
+
+
+===== Basis
+
+[cols="2"]
+|===
+<|is_continuous
+<|1
+
+<|nComponents
+<|1
+
+<|nComponents1
+<|1
+
+<|nComponents2
+<|1
+
+<|nLocalDof
+<|3
+
+<|name
+<|lagrange
+
+<|order
+<|1
+
+<|shape
+<|scalar
+|===
+
+
+===== Dof Table
+
+[cols="2"]
+|===
+<|nDof
+<|23603
+|===
+
+
+
+
+
+=== Fields
+
+==== u
+
+[cols="2"]
+|===
+<|base symbol
+<|u
+
+<|function space
+<|/FunctionSpace/object-9
+
+<|name
+<|u
+
+<|prefix symbol
+<|poisson
+|===
+
+
+[cols="5",options="header"]
+|===
+<|Name
+<|Expression
+<|Symbol
+<|Shape
+<|Components
+
+<|eval of u
+<|idv(.)
+<|poisson_u
+<|scalar
+<|
+
+<|norm2 of u
+<|norm2(.)
+<|poisson_u_magnitude
+<|scalar
+<|
+
+<|grad of u
+<|gradv(.)
+<|poisson_grad_u
+<|vectorial [2]
+<a|
+[cols="2",options="header"]
+!===
+<!Symbol
+<!Indices
+
+<!poisson_grad_u_0
+<!0,0
+
+<!poisson_grad_u_1
+<!0,1
+!===
+
+
+<|normal derivative of u
+<|dnv(.)
+<|poisson_dn_u
+<|scalar
+<|
+|===
+
+
+
+==== u_previous
+
+[cols="2"]
+|===
+<|base symbol
+<|u_previous
+
+<|function space
+<|/FunctionSpace/object-9
+
+<|name
+<|u_previous
+
+<|prefix symbol
+<|poisson
+|===
+
+
+[cols="5",options="header"]
+|===
+<|Name
+<|Expression
+<|Symbol
+<|Shape
+<|Components
+
+<|eval of u_previous
+<|idv(.)
+<|poisson_u_previous
+<|scalar
+<|
+
+<|norm2 of u_previous
+<|norm2(.)
+<|poisson_u_previous_magnitude
+<|scalar
+<|
+
+<|grad of u_previous
+<|gradv(.)
+<|poisson_grad_u_previous
+<|vectorial [2]
+<a|
+[cols="2",options="header"]
+!===
+<!Symbol
+<!Indices
+
+<!poisson_grad_u_previous_0
+<!0,0
+
+<!poisson_grad_u_previous_1
+<!0,1
+!===
+
+
+<|normal derivative of u_previous
+<|dnv(.)
+<|poisson_dn_u_previous
+<|scalar
+<|
+|===
+
+
+
+==== u_remove_trial
+
+[cols="2"]
+|===
+<|base symbol
+<|u_rt
+
+<|function space
+<|/FunctionSpace/object-9
+
+<|name
+<|u_remove_trial
+
+<|prefix symbol
+<|poisson
+|===
+
+
+[cols="5",options="header"]
+|===
+<|Name
+<|Expression
+<|Symbol
+<|Shape
+<|Components
+
+<|eval of u_remove_trial
+<|idv(.)
+<|poisson_u_rt
+<|scalar
+<|
+
+<|norm2 of u_remove_trial
+<|norm2(.)
+<|poisson_u_rt_magnitude
+<|scalar
+<|
+
+<|grad of u_remove_trial
+<|gradv(.)
+<|poisson_grad_u_rt
+<|vectorial [2]
+<a|
+[cols="2",options="header"]
+!===
+<!Symbol
+<!Indices
+
+<!poisson_grad_u_rt_0
+<!0,0
+
+<!poisson_grad_u_rt_1
+<!0,1
+!===
+
+
+<|normal derivative of u_remove_trial
+<|dnv(.)
+<|poisson_dn_u_rt
+<|scalar
+<|
+|===
+
+
+
+
+
+
