@@ -109,7 +109,7 @@ class Poisson:
   
 ##______________________________________________________________________________________________
 
-  def scimba_solver(self, h,nb_coll, shape='Rectangle', dim = 2, verbose=False):
+  def scimba_solver(self, h,nb_coll=5000, shape='Rectangle', dim = 2, verbose=False):
     if verbose:
       print(f"Solving a Poisson problem for h = {h}...")    
     
@@ -141,12 +141,13 @@ class Poisson:
                plot=1,                                      # plot the solution
                solver='feelpp',                             # solver 
                u_exact='sin(2 * pi * x) * sin(2 * pi * y)',
-               grad_u_exact = '{2*pi*cos(2*pi*x)*sin(2*pi*y),2*pi*sin(2*pi*x)*cos(2*pi*y)}' 
+               grad_u_exact = '{2*pi*cos(2*pi*x)*sin(2*pi*y),2*pi*sin(2*pi*x)*cos(2*pi*y)}' ,
+               nb_coll=5000
                ):
     """
     Solves the problem where :
     - h is the mesh size
-    - order the polynomial order
+    - oRUder the polynomial order
     - rhs is the expression of the right-hand side f(x,y)
     """
     a = 0.0
