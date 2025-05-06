@@ -633,6 +633,21 @@ def plot_convergence(P, df,dim,orders=[1]):
           height=900,
       )
   return fig
+
+def plot_scimba_convergence(P, df):
+    fig  =  px.line(df, x="h", y="Scimba_L2_error", markers=True)
+    fig.update_xaxes(title_text="h",type="log")
+    fig.update_yaxes(title_text="Error",type="log")
+    last_rate = df['convergence_rate'].iloc[-1]
+    fig.update_traces(name=f"ScimBa - L2 error - rate {last_rate:.2f}")
+
+    fig.update_layout(
+            title=f"Convergence rate for the 2D Poisson problem",
+            autosize=False,
+            width=900,
+            height=900,
+        )
+    return fig
 #______________________________________________________________________________________________
 
 # Définir les couleurs du bas au haut de la colormap de l'image
