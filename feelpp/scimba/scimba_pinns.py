@@ -229,7 +229,7 @@ class PoissonDisk2D(pdes.AbstractPDEx):
     
 #___________________________________________________________________________________________________________
 
-def Run_Poisson2D(pde, epoch=200, bc_loss_bool=True, w_bc=10, w_res=10,n_coll=5000):
+def Run_Poisson2D(pde, epoch=200,nb_coll=1000, bc_loss_bool=True, w_bc=10, w_res=10):
    
     # Initialize samplers
     x_sampler = sampling_pde.XSampler(pde=pde)
