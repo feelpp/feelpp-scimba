@@ -635,9 +635,9 @@ def plot_convergence(P, df,dim,orders=[1]):
       )
   return fig
 
-def plot_scimba_convergence(P, df):
-    fig  =  px.line(df, x="h", y="Scimba_L2_error", markers=True)
-    fig.update_xaxes(title_text="h",type="log")
+def plot_scimba_convergence(df):
+    fig  =  px.line(df, x="nb_coll", y="Scimba_L2_error", markers=True)
+    fig.update_xaxes(title_text="nb_coll",type="log")
     fig.update_yaxes(title_text="Error",type="log")
     last_rate = df['convergence_rate'].iloc[-1]
     fig.update_traces(name=f"ScimBa - L2 error - rate {last_rate:.2f}")
