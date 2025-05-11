@@ -249,8 +249,8 @@ def Run_Poisson2D(pde, epoch=200,nb_coll=1000, bc_loss_bool=True, w_bc=10, w_res
         ).unlink(missing_ok=True)
 
     # Define network architecture and losses
-    tlayers = [20, 20, 20, 20, 20]
-    network = pinn_x.MLP_x(pde=pde, layer_sizes=tlayers) #, activation_type="sine")
+    tlayers = [40, 40, 40, 40, 40]
+    network = pinn_x.MLP_x(pde=pde, layer_sizes=tlayers , activation_type="sine")
     pinn = pinn_x.PINNx(network, pde)
     losses = pinn_losses.PinnLossesData(
         bc_loss_bool=bc_loss_bool, w_res=w_res, w_bc=w_bc
@@ -271,11 +271,11 @@ def Run_Poisson2D(pde, epoch=200,nb_coll=1000, bc_loss_bool=True, w_bc=10, w_res
     # Perform training
     if not bc_loss_bool:
         if new_training:
-            trainer.train(epochs=epoch, n_collocation=5000, n_data=0)
+            trainer.train(epochs=epoch, n_collocation=nb_coll, n_data=0)
     else:
         if new_training:
             trainer.train(
-                epochs=epoch, n_collocation=5000, n_bc_collocation=1000, n_data=0
+                epochs=epoch, n_collocation=nb_coll, n_bc_collocation=nb_coll, n_data=0
             )
 
     # Plot and print the coordinates and values of u

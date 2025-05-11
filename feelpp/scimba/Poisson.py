@@ -122,7 +122,7 @@ class Poisson:
       xdomain = domain.SpaceDomain(2, domain.SquareDomain(2, [[0.0, 1.0], [0.0, 1.0]]))
     
     pde = Poisson_2D(xdomain, rhs=self.rhs, diff=diff, g=self.g, u_exact=self.u_exact)
-    u , pinn = Run_Poisson2D(pde, epoch=1000,nb_coll=nb_coll)
+    u , pinn = Run_Poisson2D(pde, epoch=int(nb_coll*0.1),nb_coll=nb_coll)
 
     return u
 
@@ -151,6 +151,7 @@ class Poisson:
     - rhs is the expression of the right-hand side f(x,y)
     """
     a = 0.0
+    self.nb_coll = nb_coll
     self.h = h
     self.measures = dict()
     self.rhs = rhs
@@ -370,7 +371,7 @@ class Poisson:
       import pyvista as pv
       import torch
 
-      u_scimba = self.scimba_solver( h=h, shape=shape, dim=self.dim, verbose=True)
+      u_scimba = self.scimba_solver( h=h,nb_coll=self.nb_coll, shape=shape, dim=self.dim, verbose=True)
       
       # File path to the .case file
       file_path = 'cfpdes-2d-p1.exports/Export.case'

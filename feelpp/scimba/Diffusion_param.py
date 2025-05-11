@@ -153,6 +153,7 @@ class ParametricDiffusion:
         self.mu_value = mu # Stockage de la valeur de mu
 
         # Définition du coefficient de diffusion dépendant de mu # MODIFICATION IMPORTANTE
+
         diffusion_coefficient = self.diff.format(mu=mu) # Permet d'utiliser {mu} dans la chaîne diff
 
         self.pb = cfpdes(dim=self.dim, keyword=f"cfpdes-{self.dim}d-p{self.order}")
