@@ -159,7 +159,7 @@ class ParametricDiffusion:
         self.pb = cfpdes(dim=self.dim, keyword=f"cfpdes-{self.dim}d-p{self.order}")
         self.model = lambda order,dim=2,name="u": {
             "Name": "ParametricDiffusion", # Nom du modèle modifié
-            "ShortName": "ParamDiff",      # Nom court modifié
+            "ShortName": "ParamDiff",      
             "Models":
             {
                 f"cfpdes-{self.dim}d-p{self.order}":
