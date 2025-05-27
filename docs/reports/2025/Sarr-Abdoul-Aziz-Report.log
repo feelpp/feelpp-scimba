@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2025.5.12)  26 MAY 2025 22:09
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2025.5.12)  27 MAY 2025 11:39
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -213,29 +213,30 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2]
-Overfull \hbox (368.99377pt too wide) in paragraph at lines 134--134
-[]\OT1/cmtt/m/n/10 from feelpp.scimba.Poisson import Poisson, runLaplacianPk, r
-unConvergenceAnalysis, plot_convergence,plot_scimba_convergence, custom_cmap[] 
-
- []
-
-
-Overfull \hbox (80.24629pt too wide) in paragraph at lines 134--134
-[]                    \OT1/cmtt/m/n/10 opts=tb.toolboxes_options("coefficient-f
-orm-pdes", "cfpdes"),[] 
- []
-
-
-Overfull \hbox (59.24648pt too wide) in paragraph at lines 134--134
+Overfull \hbox (59.24648pt too wide) in paragraph at lines 136--136
 []\OT1/cmtt/m/n/10 # ----------------------------------------------------------
 --------------- #[] 
  []
 
-
-Overfull \hbox (74.99634pt too wide) in paragraph at lines 150--150
-[]  \OT1/cmtt/m/n/10 P(h, rhs=rhs, g='0', plot=None ,  u_exact = u_exact,grad_u
-_exact=grad_u_exact)[] 
+[3]
+Overfull \hbox (69.74638pt too wide) in paragraph at lines 152--152
+[]  \OT1/cmtt/m/n/10 P(h, rhs=rhs, g='0', plot=None, u_exact = u_exact, grad_u_
+exact=grad_u_exact)[] 
  []
 
-[3]
-Overfull \hbox (190.49533pt too
+
+Overfull \hbox (6.74693pt too wide) in paragraph at lines 152--152
+[]\OT1/cmtt/m/n/10 df= runConvergenceAnalysis(P, json=poisson_json, measures=me
+asures,[] 
+ []
+
+
+Overfull \hbox (145.0834pt too wide) in paragraph at lines 160--168
+ [][] 
+ []
+
+<conv_Feel.png, id=24, 903.375pt x 903.375pt>
+File: conv_Feel.png Graphic file (type png)
+<use conv_Feel.png>
+Package pdftex.def Info: conv_Feel.png  used on input line 178.
+(pdftex.def)             Requ
