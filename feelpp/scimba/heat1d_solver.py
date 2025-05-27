@@ -1,9 +1,15 @@
+import sys
+from pathlib import Path
+
+root_dir = Path.cwd().parent
+sys.path.insert(0, str(root_dir))
+
 import numpy as np
 import matplotlib.pyplot as plt
 import pyvista as pv
 
-from heat1d_fem import FemSolver
-from heat1d_pinn import PinnSolver
+from feelpp.scimba.heat1d_fem import FemSolver
+from feelpp.scimba.heat1d_pinn import PinnSolver
 
 # --- Interface Data Manager ---
 class InterfaceData:
