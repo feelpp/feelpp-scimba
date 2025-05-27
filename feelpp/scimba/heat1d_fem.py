@@ -35,8 +35,8 @@ def _make_json(order: int, alpha: float, expr_q: str | None):
     return {
         "Name": "Heat1D",
         "Models": {
-            "cfpdes-2d": {"equations": "AdvDiff"},
-            "AdvDiff": {
+            "cfpdes-2d": {"equations": "ParamHeat"},
+            "ParamHeat": {
                 "setup": {
                     "unknown":   {"basis": f"Pch{order}", "name": "u", "symbol": "u"},
                     "coefficients": {
@@ -49,10 +49,10 @@ def _make_json(order: int, alpha: float, expr_q: str | None):
         },
         "Materials":   {"Omega": {"markers": ["Omega"]}},
         "BoundaryConditions": {
-            "AdvDiff": {"Dirichlet": dirichlet, "Neumann": neumann}
+            "ParamHeat": {"Dirichlet": dirichlet, "Neumann": neumann}
         },
         "InitialConditions": {
-            "AdvDiff": {
+            "ParamHeat": {
                 "u": {
                     "Expression": {
                         "initial": {"markers": ["Omega"], "expr": "sin(pi*x):x:y"}
@@ -84,7 +84,7 @@ case.dimensions=2
 pc-type=gamg
 reuse-prec=1
 
-[cfpdes.AdvDiff.bdf]
+[cfpdes.ParamHeat.bdf]
 order=1
 
 [ts]
