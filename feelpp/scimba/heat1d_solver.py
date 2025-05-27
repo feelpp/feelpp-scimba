@@ -1,3 +1,5 @@
+# heat1d_solver.py
+
 import sys
 from pathlib import Path
 

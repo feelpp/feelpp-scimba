@@ -1,3 +1,5 @@
+# heat1d_pinn.py
+
 import torch
 from scimba.equations.domain import SpaceDomain, SquareDomain, SpaceTensor
 from scimba.equations.pdes import AbstractPDEtx
