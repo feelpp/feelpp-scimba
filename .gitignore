@@ -28,3 +28,6 @@ docs/raports/2025/*.lot
 docs/raports/2025/*.out
 docs/raports/2025/*.fls
 docs/raports/2025/*.fdb_latexmk
+docs/raports/2025/*.bbl
+docs/raports/2025/*.Synctex.gz
+docs/raports/2025/*.toc
