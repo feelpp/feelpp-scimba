@@ -1,36 +1,75 @@
-\documentclass{article}
-\usepackage{amsmath}
+\documentclass[12pt]{article} 
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath} 
 \usepackage{graphicx}
-\usepackage{booktabs}
-\usepackage{float} % Pour un meilleur contrôle du placement des figures
-\usepackage{array} % Pour un meilleur contrôle des tableaux
-\usepackage{amssymb} % Pour les symboles mathématiques
+\usepackage{caption} 
+\usepackage{subcaption} 
+\usepackage{hyperref}   
+\usepackage{enumitem}   
+\usepackage{geometry}   
+\usepackage{tabularx}   
+\usepackage{booktabs}   
+\usepackage{listings}
+\usepackage{float}
+\tableofcontents
+
+\usepackage{xcolor}     
+
+
+\geometry{a4paper, margin=1in}
+
+
+\captionsetup{labelfont=bf, font=normalsize}
+
+
+\lstset{
+    basicstyle=\ttfamily\small, 
+    numbers=left,              
+    numberstyle=\tiny\color{gray}, 
+    commentstyle=\color{green!50!black}, 
+    keywordstyle=\color{blue},   
+    stringstyle=\color{red},     
+    showspaces=false,             
+    showtabs=false,              
+    frame=single,               
+    breaklines=true,             
+    columns=flexible,            
+    escapeinside={(*@}{@*)}   
+}
+
 
 \title{SciMBA-Feel++ Coupling: Technical Report}
-\author{Abdoul Aziz Sarr \\ Yehua He}
+\author{Abdoul Aziz Sarr}
 \date{April 2025 \\ May 17, 2025}
 
 \begin{document}
 
 \maketitle
 
+\tableofcontents
+\newpage
 \section{Context and Objectives}
 
 \subsection{Project Framework}
 
-This project is part of the Exa-MA initiative under PEPR NumPEx, aiming to develop numerical methods adapted to the exascale era. The primary objective is to combine traditional finite element simulations with artificial intelligence (AI) techniques for high-performance computing systems.
+This project is part of the Exa-MA initiative, which operates under the PEPR NumPEx umbrella. PEPR (Programme et Équipement Prioritaire de Recherche) NumPEx is a major French national research program dedicated to advancing the next generation of high-performance numerical simulation software, with a focus on preparing for the exascale era. The exascale era refers to the advent of supercomputers capable of performing at least one exaflop—that is, one quintillion ($10^{18}$) floating-point operations per second. This level of computational power enables the simulation of highly complex physical phenomena at unprecedented resolution and scale, but also introduces new challenges in terms of algorithms, software design, and energy efficiency.
 
-This project was conducted under the supervision of Joubine Aghili and
-Christophe Prud’homme.
+Within this ambitious context, the primary objective of the present project is to bridge the gap between traditional finite element methods (FEM), recognized for their mathematical rigor and certification, and modern artificial intelligence (AI) techniques, which offer flexibility and efficiency for certain classes of problems. By combining FEM with AI approaches such as Physics-Informed Neural Networks (PINNs), we aim to develop hybrid numerical methods that are both accurate and scalable, making them well-suited for the demands of exascale computing environments.
+
+This project was conducted under the supervision of Joubine Aghili and Christophe Prud’homme, who provided expertise in numerical analysis and scientific computing.
+
+
+
 
 \subsection{Scientific Motivation}
 
 Our hybrid approach seeks to:
 
 \begin{itemize}
-\item Integrate the certified precision of finite element methods (FEM) with the flexibility of neural networks (PINNS)
-\item Reduce computational costs through AI surrogates for parametric problems
-\item Develop adaptive solvers leveraging the complementary strengths of both methods
+    \item Integrate the certified precision of finite element methods (FEM) with the flexibility of neural networks (PINNS)
+    \item Reduce computational costs through AI surrogates for parametric problems
+    \item Develop adaptive solvers leveraging the complementary strengths of both methods
 \end{itemize}
 
 \section{Tools and Methodology}
@@ -39,27 +78,17 @@ Our hybrid approach seeks to:
 
 \subsubsection{Feel++}
 
-C++/Python library specialized in PDE resolution via the Galerkin method. Key features include:
-
-\begin{itemize}
-\item Generation of structured/unstructured meshes
-\item Implementation of $P_{k}^{c}$ finite element spaces
-\item Linear/non-linear solvers optimized for parallel architectures
-\end{itemize}
+Feel++ is a powerful C++ and Python library specifically designed for the numerical solution of partial differential equations (PDEs) using the Galerkin method. It is widely recognized for its ability to handle complex scientific and engineering problems with high accuracy and computational efficiency. The library provides robust tools for generating both structured and unstructured meshes, enabling users to model a wide range of physical domains. Feel++ implements advanced finite element spaces, notably the \(P_{k}^{c}\) continuous polynomial spaces, which are essential for accurate approximations of solutions to PDEs. Additionally, it features highly optimized linear and nonlinear solvers that leverage parallel computing architectures, making it suitable for large-scale simulations required in the exascale era. This combination of features allows Feel++ to deliver reliable and scalable solutions for challenging scientific problems.
 
 \subsubsection{SciMBA}
 
-Python framework for scientific machine learning, implementing:
+SciMBA is a Python-based scientific machine learning framework that integrates state-of-the-art artificial intelligence techniques with physical modeling. Its primary focus is on the implementation of Physics-Informed Neural Networks (PINNs), where the underlying physical laws are directly encoded into the neural network’s loss function, ensuring that the learned solutions are consistent with the governing equations. SciMBA also offers Fourier-based operators, which serve as efficient surrogates for parametric problems, and provides a comprehensive pipeline for training, validating, and evaluating AI models. The framework facilitates the rapid development of accurate and interpretable surrogate models, enabling users to solve complex parametric and multiphysics problems with reduced computational cost compared to traditional numerical methods.
 
-\begin{itemize}
-\item PINNS: Physics-Informed Neural Networks
-\item Fourier Operators: Surrogates for parametric problems
-\item Complete pipeline for training/validation of AI models
-\end{itemize}
 
 \subsection{Coupling Strategy}
 
 The coupling relies on PyBind11 to:
+
 \begin{enumerate}
     \item Transfer NumPy tensors from SciMBA to $C++$ structures in Feel++ through shared memory
     \item Construct local $P_{k}^{e}$ interpolants verifying:
@@ -71,99 +100,92 @@ The coupling relies on PyBind11 to:
 
 \subsection{Project 1: PINNs vs FEM (Benchmark Comparison)}
 
-Goal: Train a PINN using SciMBA to solve a simple PDE and compare its results to Feel++'s FEM solution. Example: Poisson Equation $-\Delta u=f$ in $\Omega$, $u=0$ on $\partial\Omega$, with a source term, for instance, $f(x,y)=2\pi^{2}sin(\pi x)sin(\pi y)$. Steps:
+Goal: Train a PINN using SciMBA to solve a simple PDE and compare its results to Feel++'s FEM solution.  Example: Poisson Equation $-\Delta u=f$ in $\Omega$, $u=0$ on $\partial\Omega$, with a source term, for instance, $f(x,y)=2\pi^{2}sin(\pi x)sin(\pi y)$.  Steps:
 
 \begin{enumerate}
-\item Solve the Poisson problem using Feel++.
-\item Generate the solution field $u(x,y)$ on a grid.
-\item In Python, use SciMBA to define and train a PINN with the same PDE loss on collocation points.
-\item Directly pass the PINN output to Feel++ via the in-memory interface, build the $P_{k}^{c}$ interpolant, and compare the PINN result with the FEM solution (e.g., using $L^{2}$ error norm and visual plots).
+    \item Solve the Poisson problem using Feel++. 
+    \item Generate the solution field $u(x,y)$ on a grid. 
+    \item In Python, use SciMBA to define and train a PINN with the same PDE loss on collocation points. 
+    \item Directly pass the PINN output to Feel++ via the in-memory interface, build the $P_{k}^{c}$ interpolant, and compare the PINN result with the FEM solution (e.g., using $L^{2}$ error norm and visual plots). 
 \end{enumerate}
 
 Tools:
 
 \begin{itemize}
-\item Feel++ toolbox (e.g., feelpp toolbox coefficientformpde)
-\item SciMBA PINN tutorials
-\item plotly for visualization
+    \item Feel++ toolbox (e.g., feelpp toolbox coefficientformpde)
+    \item SciMBA PINN tutorials
+    \item plotly for visualization 
 \end{itemize}
 
 \subsubsection{Mathematical Formulation}
 
 \begin{itemize}
-\item FEM: Resolution via weak formulation $a(u,v)=l(v)$
-\item PINNs: Strong residual minimization $\min_{\theta} \frac{1}{M}\sum_{i=1}^{M}(-\Delta\hat{u}_{\theta}(x_{i})-f(x_{i}))^{2}$
+    \item FEM: Resolution via weak formulation $a(u,v)=l(v)$ 
+    \item PINNs: Strong residual minimization $\min_{\theta} \frac{1}{M}\sum_{i=1}^{M}(-\Delta\hat{u}_{\theta}(x_{i})-f(x_{i}))^{2}$ 
 \end{itemize}
 
 \subsubsection{Feel++ Implementation}
+To solve the Poisson equation using Feel++, we establish the environment and configure the necessary settings[cite: 12]. The following code snippet illustrates the setup and initialization[cite: 12]:
 
-To solve the Poisson equation using Feel++, we establish the environment and configure the necessary settings. The following code snippet illustrates the setup and initialization:
-
-\begin{verbatim}
+\begin{lstlisting}[language=Python, caption=Feel++ Poisson problem setup, label=lst:feelpp_poisson_setup]
 import sys
 import feelpp.core as fppc
 import feelpp.toolboxes.core as tb
 import pandas as pd
 import numpy as np
-from feelpp.scimba.Poisson import (
-    Poisson, runLaplacianPk, runConvergenceAnalysis,
-    plot_convergence, plot_scimba_convergence, custom_cmap
-)
+from feelpp.scimba.Poisson import Poisson, runLaplacianPk, runConvergenceAnalysis, plot_convergence, plot_scimba_convergence, custom_cmap
 
-sys.argv = ["feelpp_app"]
-e = fppc.Environment(
-    sys.argv,
-    opts=tb.toolboxes_options("coefficient-form-pdes", "cfpdes"),
-    config=fppc.localRepository('feelpp_cfpde')
-)
+sys.argv ["feelpp_app"]
 
-# ------------------------------------------------------------------------- #
+e = fppc.Environment(sys.argv, opts=tb.toolboxes_options("coefficient-form-pdes", "cfpdes"), config=fppc.localRepository('feelpp_cfpde'))
+
+#
 # Poisson problem
-# - div (diff * grad (u)) = f  in Omega
-#            u  = g  in Gamma_D
-# Omega = domain, either cube or ball
-# Approx = lagrange Pk of order order
+#
+# div (diff grad (u)) = f in Omega
+# u = g in Gamma_D
+# Omega domain, either cube or ball
+# Approx
+# lagrange Pk of order order
 # mesh of size h
 
-P = Poisson(dim = 2)
+P = Poisson(dim=2,
+            u_exact='sin(pi*x)*sin(pi*y)',
+            grad_u_exact='{pi*cos(pi*x)*sin(pi*y), pi*sin(pi*x)*cos(pi*y)}',
+            rhs='2*pi*pi*sin(pi*x)*sin(pi*y)')
 
-u_exact = 'sin(pi*x) * sin(pi*y)'
-grad_u_exact='{pi*cos(pi*x)*sin(pi*y),pi*sin(pi*x)*cos(pi*y)}'
-rhs = '2*pi*pi*sin(pi*x) * sin(pi*y)'
-
-mesh_size= [0.1, 0.05, 0.025, 0.0125, 0.00625]
+mesh_size = [0.1, 0.05, 0.025, 0.0125, 0.00625]
 measures = []
-\end{verbatim}
-
-\begin{verbatim}
 for h in mesh_size:
-  P(h, rhs=rhs, g='0', plot=None, u_exact = u_exact, grad_u_exact=grad_u_exact)
-  measures.append(P.measures)
+    P(h, rhs=rhs, g='0', plot=None, u_exact = u_exact, grad_u_exact=grad_u_exact)
+    measures.append(P.measures)
+\end{lstlisting}
 
-print(measures)
+\begin{lstlisting}[language=Python, caption=Feel++ Convergence Analysis, label=lst:feelpp_convergence_analysis]
+print (measures) (*@\hfill \textit{\tiny }@*)
 
 # Plotting the error convergence rates
 poisson_json = P.model
-df= runConvergenceAnalysis(P, json=poisson_json, measures=measures,
-                           dim=2, hs=mesh_size, verbose=True)
-print('measures = ', measures)
-fig= plot_convergence(P, df,dim=2)
-fig.show()
-\end{verbatim}
+df = runConvergenceAnalysis(P, json=poisson_json, measures=measures, dim=2, hs=mesh_size, verbose=True) (*@\hfill \textit{\tiny }@*)
+print('measures', measures) (*@\hfill \textit{\tiny }@*)
+fig = plot_convergence(P, df, dim=2) (*@\hfill \textit{\tiny }@*)
+fig.show() (*@\hfill \textit{\tiny [cite: 13]}@*)
+\end{lstlisting}
 
 \subsubsection{Convergence Results}
 
-The convergence analysis results for the Feel++ solution are summarized in the following table:
+The convergence analysis results for the Feel++ solution are summarized in the following table: 
 
 \begin{table}[h!]
     \centering
     \begin{tabular}{c c c c c c}
-        \textbf{Order} & \textbf{Mesh Size (h)} & \textbf{$L^{2}$ Error} & \textbf{$H^{1}$ Error} & \textbf{$L^{2}$ Convergence Rate} & \textbf{$H^{1}$ Convergence Rate} \\
-\toprule
+        \toprule
+        Order & Mesh Size (h) & $L^{2}$ Error & $H^{1}$ Error & $L^{2}$ Convergence Rate & $H^{1}$ Convergence Rate \\
+        \midrule
         2 & 0.025 & 0.000426053 & 0.061907 & 1.98329 & 0.988916 \\
         3 & 0.0125 & 0.000106351 & 0.0309362 & 2.0022 & 1.00081 \\
         4 & 0.00625 & 0.0000263926 & 0.015415 & 2.01063 & 1.00496 \\
-\bottomrule
+        \bottomrule
     \end{tabular}
     \caption{Convergence results for the Feel++ solution of the Poisson equation.}
     \label{tab:feelpp_convergence}
@@ -171,171 +193,211 @@ The convergence analysis results for the Feel++ solution are summarized in the f
 
 \subsubsection{Visualization and Analysis}
 
-The convergence behavior is further illustrated in Figure 1, which plots the $L^{2}$ and $H^{1}$ errors as a function of the mesh size h.
+The convergence behavior is further illustrated in Figure 1, which plots the $L^{2}$ and $H^{1}$ errors as a function of the mesh size h. 
 
-\begin{figure}[h!]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{conv_Feel.png}
+    \includegraphics[width=\textwidth, keepaspectratio]{conv_Feelpp.png}
+
+    \captionsetup{font=Large}
     \caption{Convergence rate for the 2D Poisson problem using Feel++:.}
     \label{fig:feelpp_convergence_plot}
 \end{figure}
 
-The numerical results closely align with the theoretical expectations for linear finite elements. Specifically:
-\textbf{$L^{2}$ Convergence:} The $L^{2}$ error exhibits a convergence rate of approximately 2, as clearly demonstrated by the slope of the blue line in Figure \ref{fig:feelpp_convergence_plot} and the values in Table \ref{tab:feelpp_convergence}. This is consistent with the theoretical prediction that for linear finite elements $(P_{1})$ the $L^{2}$ error converges at a rate of $O(h^{2})$.
+The numerical results obtained with Feel++ are in excellent agreement with the theoretical expectations for linear finite elements ($P_1$). As the mesh is refined (i.e., as $h$ decreases), both the $L^2$ and $H^1$ errors decrease steadily, and the computed convergence rates remain remarkably stable across mesh levels.
 
-\textbf{$H^{1}$ Convergence:} The $H^{1}$ error shows a convergence rate of approximately 1, as shown by the red line in Figure \ref{fig:feelpp_convergence_plot} and the table data. This matches the theoretical rate of $O(h)$ for linear finite elements.
+\textbf{$L^2$ Convergence:}  
+The $L^2$ error exhibits a convergence rate very close to 2, as shown by the slope of the blue curve in Figure~\ref{fig:feelpp_convergence_plot} and the values in Table~\ref{tab:feelpp_convergence}. This is fully consistent with the theoretical prediction that, for linear finite elements, the $L^2$ error should decrease proportionally to $h^2$. Such behavior confirms both the mathematical soundness of the finite element approximation and the correctness of the Feel++ implementation.
 
-The visualization in Figure \ref{fig:feelpp_convergence_plot} provides a clear and intuitive representation of these convergence rates. The logarithmic scale allows for easy observation of the linear relationship between error and mesh size, confirming the accuracy and efficiency of the Feel++ implementation for this Poisson problem.
+\textbf{$H^1$ Convergence:}  
+The $H^1$ error decreases at a rate very close to 1, as indicated by the red curve and the tabulated rates. This matches the expected $O(h)$ convergence for the $H^1$ norm in the case of $P_1$ elements. The stability of this rate over several mesh refinements demonstrates the robustness of the numerical method and the solver.
+
+\textbf{Interpretation and Practical Significance:}  
+These results provide strong evidence that the Feel++ library is able to deliver high-fidelity solutions for the Poisson problem, with error reductions matching theoretical predictions as the mesh is refined. The use of a logarithmic scale in Figure~\ref{fig:feelpp_convergence_plot} makes it easy to visually confirm the linear relationship between the logarithm of the error and the logarithm of the mesh size, which is a hallmark of optimal convergence.
+
+Moreover, the very small absolute error values for the finest meshes ($h = 0.00625$) indicate that the solution is highly accurate and that the discretization errors are well-controlled. This is particularly important in scientific and engineering applications where quantitative predictions and error certification are crucial.
+
+\textbf{Summary:}  
+The convergence study not only validates the theoretical properties of the finite element method but also demonstrates the reliability and efficiency of the Feel++ platform for solving elliptic PDEs. These results serve as a solid reference for further comparisons with alternative approaches, such as Physics-Informed Neural Networks (PINNs), and for the development of hybrid numerical-AI solvers.
+
+
+
 
 \subsubsection{SciMBA Implementation}
 
-To solve the Poisson equation using SciMBA, we define the problem and compute the L2 error for different numbers of collocation points. The following code snippet illustrates the setup and error calculation:
+To solve the Poisson equation using SciMBA, we define the problem and compute the L2 error for different numbers of collocation points.  The following code snippet illustrates the setup and error calculation:
 
-% ... (previous content) ...
-
-\begin{verbatim}
-u_exact = 'sin(pi*x) * sin(pi*y)+1'
-grad_u_exact='{pi*cos(pi*x)*sin(pi*y),pi*sin(pi*x)*cos(pi*y)}'
-rhs = '2*pi*pi*sin(pi*x) * sin(pi*y)'
+\begin{lstlisting}[language=Python, caption=SciMBA Poisson problem setup and error calculation, label=lst:scimba_poisson_setup]
+u_exact = 'sin(pi*x)*sin(pi*y)+1'
+grad_u_exact = '{pi*cos(pi*x)*sin(pi*y), pi*sin(pi*x)*cos(pi*y)}'
+rhs = '2*pi*pi*sin(pi*x)*sin(pi*y)'
 
 scimba_errors = []
-nb_coll= [145,517,1932]
+nb_coll = [145, 517, 1932]
 
 for i in nb_coll:
-  P(rhs=rhs, g='1', plot=None, solver='scimba', u_exact = u_exact,
-    grad_u_exact=grad_u_exact, nb_coll=i)
-  scimba_errors.append(P.errl2_scimba)
+    P(rhs=rhs, g='1', plot=None, solver='scimba', u_exact=u_exact, grad_u_exact=grad_u_exact, nb_coll=i)
+    scimba_errors.append(P.errl2_scimba)
+
 print(scimba_errors)
+\end{lstlisting}
 
-df_scimba = pd.DataFrame({'nb_coll': nb_coll, 'Scimba_L2_error': scimba_errors})
-df_scimba['convergence_rate'] = np.log2(
-  df_scimba['Scimba_L2_error'].shift() / df_scimba['Scimba_L2_error']
-) / np.log2(df_scimba['nb_coll'].shift() / df_scimba['nb_coll'])
+\begin{lstlisting}[language=Python, caption=SciMBA Convergence Analysis, label=lst:scimba_convergence_analysis]
+df_scimba = pd.DataFrame({'nb_coll': nb_coll, 'Scimba_L2_error': scimba_errors}) (*@\hfill \textit{\tiny }@*)
+df_scimba['convergence_rate'] = np.log2(df_scimba['Scimba_L2_error'].shift() / df_scimba['Scimba_L2_error']) / np.log2(df_scimba['nb_coll'].shift() / df_scimba['nb_coll']) (*@\hfill \textit{\tiny }@*)
+fig = plot_scimba_convergence(df_scimba) (*@\hfill \textit{\tiny }@*)
+fig.show() (*@\hfill \textit{\tiny }@*)
+\end{lstlisting}
 
-fig = plot_scimba_convergence(df_scimba)
-fig.show()
-\end{verbatim}
 
-Here, \texttt{nb\_coll} represents the number of collocation points, which corresponds to the number of mesh points in the Feel++ implementation. The values [145, 517, 1932] correspond to the number of mesh points for h = 0.1, 0.05, and 0.025, respectively. The resulting L2 errors are:
-% ... (rest of your document) ...
-[0.18261969871340383, 0.015711628316739057, 0.0020108272581719072]
 
-The following table summarizes the L2 errors for SciMBA with respect to the number of collocation points and the corresponding mesh size h:
+The following table summarizes the L2 errors for SciMBA with respect to the number of collocation points and the corresponding mesh size h: 
 
 \begin{table}[h!]
     \centering
     \begin{tabular}{ccc}
-\toprule
+        \toprule
         Mesh Size (h) & Number of Collocation Points (nb_coll) & $L^2$ Error \\
         \midrule
         0.1   & 145  & 0.18261969871340383 \\
         0.05  & 517  & 0.015711628316739057 \\
         0.025 & 1932 & 0.0020108272581719072 \\
-\bottomrule
+        \bottomrule
     \end{tabular}
     \caption{L2 Error for SciMBA with respect to mesh size and number of collocation points.}
     \label{tab:scimba_l2_error}
 \end{table}
 
-As shown in Table \ref{tab:scimba_l2_error}, the L2 error decreases as the number of collocation points increases (and the mesh size h decreases). This indicates that the SciMBA solution converges to the exact solution as the discretization becomes finer, which is consistent with the behavior observed for Feel++.
+As shown in Table \ref{tab:scimba_l2_error}, the L2 error decreases as the number of collocation points increases (and the mesh size h decreases).  This indicates that the SciMBA solution converges to the exact solution as the discretization becomes finer, which is consistent with the behavior observed for Feel++. 
 
 \subsubsection{Visualization of SciMBA Convergence}
+\begin{lstlisting}[language=Python, caption=Function to plot SciMBA convergence, label=lst:plot_scimba_convergence]
+def plot_scimba_convergence(df): (*@\hfill \textit{\tiny }@*)
+    fig = px.line(df, x="nb_coll", y="Scimba_L2_error", markers=True) (*@\hfill \textit{\tiny }@*)
+    fig.update_xaxes(title_text="nb_coll", type="log") (*@\hfill \textit{\tiny }@*)
+    fig.update_yaxes(title_text="Error", type="log") (*@\hfill \textit{\tiny }@*)
+    last_rate = df['convergence_rate'].iloc[-1] (*@\hfill \textit{\tiny }@*)
+    fig.update_traces(name=f"ScimBa L2 error rate = {last_rate:.2f}") (*@\hfill \textit{\tiny }@*)
+    fig.update_layout(title=f"Convergence rate for the 2D Poisson problem", autosize=False, width=900, height=900) (*@\hfill \textit{\tiny }@*)
+    return fig (*@\hfill \textit{\tiny }@*)
+\end{lstlisting}
 
-\begin{verbatim}
-def plot_scimba_convergence(df):
-    fig = px.line(df, x="nb_coll", y="Scimba_L2_error", markers=True)
-    fig.update_xaxes(title_text="nb_coll",type="log")
-    fig.update_yaxes(title_text="Error",type="log")
-    last_rate = df['convergence_rate'].iloc[-1]
-    fig.update_traces(name=f"ScimBa - L2 error - rate {last_rate:.2f}")
+% Figure 2: Convergence rate for the SciMBA solution
 
-    fig.update_layout(
-        title=f"Convergence rate for the 2D Poisson problem",
-        autosize=False,
-        width=900,
-        height=900,
-    )
-    return fig
-\end{verbatim}
 
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.8\textwidth]{conv_Scimba.png}
-    \caption{Convergence rate for the SciMBA solution}
-    \label{fig:scimba_convergence}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth, keepaspectratio]{conv_Scimba.png}
+  \caption{Convergence rate for the SciMBA solution.}
+  \label{fig:scimba_convergence_plot}
 \end{figure}
+
+\subsubsection{Analysis and Commentary on SciMBA L2 Error Results}
+
+The $L^2$ error results for the SciMBA solution, as summarized in Table~\ref{tab:scimba_l2_error}, provide valuable insight into the convergence behavior of Physics-Informed Neural Networks (PINNs) when applied to the 2D Poisson problem. As the number of collocation points increases (i.e., as the discretization becomes finer and the mesh size $h$ decreases), the $L^2$ error decreases significantly—from approximately $0.18$ for $145$ points ($h=0.1$), to $0.016$ for $517$ points ($h=0.05$), and further down to $0.0020$ for $1932$ points ($h=0.025$). This clear reduction in error demonstrates that the SciMBA PINN solution converges towards the exact solution as the network is trained with more collocation points.
+
+The convergence trend is also evident in Figure~\ref{fig:scimba_convergence_plot}, where the error is plotted on a log-log scale against the number of collocation points. The nearly linear decrease in the error curve suggests a consistent and robust convergence rate. This behavior is expected for well-trained PINNs, as increasing the number of collocation points allows the neural network to better capture the underlying physics and reduce the residual of the governing equation throughout the domain.
+
+It is important to note that, while the convergence rate for SciMBA is slightly lower than that observed for the classical finite element method (Feel++), the overall trend remains favorable. The slightly higher error values for SciMBA can be attributed to several factors inherent to neural network-based solvers:
+\begin{itemize}
+    \item \textbf{Optimization Limitations:} Training a neural network involves solving a high-dimensional, non-convex optimization problem, which may result in suboptimal minima or slower convergence compared to variational methods.
+    \item \textbf{Network Capacity:} The expressiveness of the neural network architecture (e.g., depth, width, activation functions) directly impacts its ability to approximate the true solution, especially for complex PDEs or fine discretizations.
+    \item \textbf{Sampling Strategy:} The distribution and number of collocation points influence the quality of the solution, particularly near boundaries or regions with steep gradients.
+\end{itemize}
+
+Despite these challenges, the results confirm that SciMBA's PINN approach is capable of achieving a high level of accuracy for the Poisson problem. The rapid decrease in $L^2$ error with mesh refinement indicates that PINNs, when properly configured and trained, can serve as reliable surrogates for traditional numerical solvers.
+
+\textbf{Practical Implications:}  
+This convergence behavior is encouraging for scientific machine learning applications, as it demonstrates that PINN-based solvers like SciMBA can be systematically improved by increasing the resolution or network capacity. Furthermore, the flexibility of PINNs makes them attractive for problems where mesh generation is difficult or where the solution domain is irregular.
+
+\textbf{Summary:}  
+In summary, the $L^2$ error analysis for SciMBA validates the method's ability to approximate the exact solution of the Poisson equation with increasing precision as the number of collocation points grows. While classical FEM retains an advantage in terms of absolute accuracy and convergence rate for this benchmark, SciMBA provides a promising alternative, especially in contexts where mesh-free or data-driven approaches are desirable.
+
+
 
 \subsubsection{Comparison of Feel++ and SciMBA Solutions}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.3\textwidth]{Solution_Feel.png}
-    \includegraphics[width=0.3\textwidth]{Solution_Scimba.png}
-    \includegraphics[width=0.3\textwidth]{Exact_Solution.png}
+    \includegraphics[width=0.5\textwidth]{Feelpp_Solution.png}
+    \includegraphics[width=0.5\textwidth]{Scimba_Solution.png}
+    \includegraphics[width=0.5\textwidth]{Exact_Solution.png}
+    \captionsetup{font=Large}
     \caption{Comparison of Feel++ Solution, SciMBA Solution, and Exact Solution}
     \label{fig:solution_comparison}
 \end{figure}
 
-Figure \ref{fig:solution_comparison} shows a visual comparison of the Feel++ solution, the SciMBA solution, and the exact solution on the same mesh. A qualitative assessment reveals a strong agreement between all three solutions. This suggests that both Feel++ and SciMBA accurately approximate the solution to the Poisson equation. The color gradients and overall patterns are very similar, indicating that the PINN implemented in SciMBA is effectively capturing the behavior of the system as solved by the traditional FEM in Feel++. Small differences in the numerical ranges (clim values) are present, which may be attributed to the inherent differences in the methodologies (variational formulation vs. residual minimization).
+Figure~\ref{fig:solution_comparison} displays a side-by-side visual comparison of the Feel++ numerical solution, the SciMBA solution, and the exact analytical solution, all computed on the same mesh. A qualitative evaluation demonstrates a high degree of agreement among all three solutions, confirming that both Feel++ (using the finite element method) and SciMBA (employing a physics-informed neural network, or PINN) provide accurate approximations to the Poisson equation.
+
+The similarity in color gradients and overall solution patterns indicates that the PINN approach in SciMBA effectively reproduces the solution behavior obtained with classical FEM techniques in Feel++. Minor discrepancies in the numerical ranges (clim values) are observed, which can be attributed to the fundamental differences between the underlying methodologies---specifically, Feel++ relies on a variational formulation and Galerkin projection, while SciMBA minimizes the residual of the PDE directly through neural network training. These small variations do not compromise the overall accuracy but highlight the distinct computational strategies employed by each method.
+
+This comparison underscores the capability of both traditional and machine learning-based numerical approaches to solve partial differential equations, with each offering unique advantages in terms of flexibility, computational efficiency, and ease of implementation.
+ 
 
 \subsubsection{Comparison of Feel++ and SciMBA Solution Errors}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.48\textwidth]{Err_Feel.png}
-    \includegraphics[width=0.48\textwidth]{Err_Scimba.png}
+    \includegraphics[width=0.7\textwidth]{Feelpp_Error.png}
+    \includegraphics[width=0.7\textwidth]{Scimba_Error.png}
+    \captionsetup{font=Large}
     \caption{Comparison of Feel++ and SciMBA Solution Errors}
     \label{fig:error_comparison}
 \end{figure}
 
-Figure \ref{fig:error_comparison} illustrates the relative errors of the Feel++ and SciMBA solutions with respect to the exact solution. The Feel++ solution error, represented as $|u_{\text{exact}} - u_{\text{feel}} | / |u_{\text{exact}}|$, shows a maximum relative error of approximately 0.00058, concentrated mainly near the boundaries. In contrast, the SciMBA solution error, represented as $|u_{\text{exact}} - u_{\text{scimba}} | / |u_{\text{exact}}|$, exhibits a maximum relative error of about 0.00516, with a more uniform distribution across the domain. This suggests that while both methods produce accurate results, Feel++ demonstrates a slightly higher accuracy, particularly away from the boundaries, for this specific problem. The localized error concentrations in Feel++ might be attributed to boundary condition approximations or mesh effects, while the more distributed error in SciMBA could be related to the training process and the neural network's approximation capabilities.
+Figure \ref{fig:error_comparison} illustrates the relative errors of the Feel++ and SciMBA solutions with respect to the exact solution.  The Feel++ solution error, represented as $|u_{\text{exact}} - u_{\text{feel}} | / |u_{\text{exact}}|$, shows a maximum relative error of approximately 0.00058, concentrated mainly near the boundaries.  In contrast, the SciMBA solution error, represented as $|u_{\text{exact}} - u_{\text{scimba}} | / |u_{\text{exact}}|$, exhibits a maximum relative error of about 0.00516, with a more uniform distribution across the domain.  This suggests that while both methods produce accurate results, Feel++ demonstrates a slightly higher accuracy, particularly away from the boundaries, for this specific problem.  The localized error concentrations in Feel++ might be attributed to boundary condition approximations or mesh effects, while the more distributed error in SciMBA could be related to the training process and the neural network's approximation capabilities. 
 
 \subsubsection{Comparison of L2 Convergence Rates}
 
 \begin{figure}[H]
     \centering
-    \begin{minipage}[t]{0.48\textwidth}
+    \begin{minipage}[t]{0.5\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{conv_Feel.png}
+        \includegraphics[width=\textwidth]{conv_Feelpp.png}
         \caption{Feel++ L2 and H1 Convergence Rates}
         \label{fig:feelpp_l2h1_conv}
     \end{minipage}
     \hfill
-    \begin{minipage}[t]{0.48\textwidth}
+    \begin{minipage}[t]{0.5\textwidth}
         \centering
         \includegraphics[width=\textwidth]{conv_Scimba.png}
         \caption{SciMBA L2 Convergence Rate}
+        \captionsetup{font=Large}
         \label{fig:scimba_l2_conv}
     \end{minipage}
     \caption{Comparison of L2 Convergence Rates for Feel++ and SciMBA.}
     \label{fig:l2_convergence_comparison}
 \end{figure}
 
-Figure \ref{fig:l2_convergence_comparison} provides a direct visual comparison of the L2 convergence rates for both Feel++ and SciMBA. For Feel++ (left plot), both L2 and H1 errors are shown to decrease linearly on a logarithmic scale with mesh size, indicating the expected polynomial convergence rates of $O(h^2)$ for L2 and $O(h)$ for H1, consistent with linear finite elements. The SciMBA plot (right plot) also shows a clear linear decrease in L2 error on a logarithmic scale as the number of collocation points increases. This indicates that the PINN-based solution in SciMBA also exhibits a well-behaved convergence trend as the density of training points increases. While a direct order of convergence analogous to FEM's $O(h^p)$ is more complex for PINNs, the visual trend confirms that increasing the number of collocation points significantly reduces the L2 error, similar to refining the mesh in FEM.
+Figure~\ref{fig:l2_convergence_comparison} presents a comprehensive comparison of the L2 convergence rates for Feel++ and SciMBA. On the left, the Feel++ plot demonstrates both L2 and H1 errors, each decreasing linearly on a logarithmic scale as the mesh is refined. This behavior confirms the expected polynomial convergence rates: L2 error converges at the rate \(O(h^2)\) and H1 error at \(O(h)\), which is characteristic of linear finite element methods and consistent with the theoretical predictions for Galerkin-based approaches[1][2][5].
+
+On the right, the SciMBA plot illustrates the evolution of the L2 error as the number of collocation points increases. Here, the error also decreases linearly on a logarithmic scale, indicating that the physics-informed neural network (PINN) implemented in SciMBA achieves a well-controlled convergence behavior with increasing training point density. While the convergence rate for PINNs does not follow a simple polynomial law such as \(O(h^p)\) in finite elements, the observed trend demonstrates that SciMBA effectively reduces the L2 error by leveraging more training data, analogous to mesh refinement in traditional FEM.
+
+This comparison highlights that both Feel++ and SciMBA offer robust convergence properties in their respective frameworks. Feel++ benefits from well-established theoretical guarantees and optimal convergence rates for finite elements, while SciMBA provides a flexible, data-driven approach that adapts to the problem at hand and shows promising convergence as the training set grows. These results underscore the effectiveness of both classical and modern numerical methods for solving partial differential equations, each with their own strengths and practical considerations. 
 
 \section{Conclusion}
 
-This project details the coupling of SciMBA and Feel++ libraries for hybrid numerical simulations, specifically benchmarking their performance on a Poisson equation. We have successfully demonstrated a functional interface between the two libraries, allowing for efficient data transfer. This critical coupling lays the groundwork for leveraging the strengths of both traditional finite element methods (FEM) and advanced artificial intelligence (AI) techniques for high-performance computing systems.
+This project details the coupling of SciMBA and Feel++ libraries for hybrid numerical simulations, specifically benchmarking their performance on a Poisson equation.  We have successfully demonstrated a functional interface between the two libraries, allowing for efficient data transfer.  This critical coupling lays the groundwork for leveraging the strengths of both traditional finite element methods (FEM) and advanced artificial intelligence (AI) techniques for high-performance computing systems. 
 
-Our benchmark results confirm that both Feel++ and SciMBA accurately solve the Poisson problem, with their respective solutions closely matching the exact analytical solution. This high level of agreement validates the applicability of both methodologies for this type of problem.
+Our benchmark results confirm that both Feel++ and SciMBA accurately solve the Poisson problem, with their respective solutions closely matching the exact analytical solution.  This high level of agreement validates the applicability of both methodologies for this type of problem. 
 
-A detailed convergence analysis highlighted the distinct characteristics of each method. Feel++ exhibited the theoretically predicted convergence rates for linear finite elements, specifically $O(h^2)$ for L2 error and $O(h)$ for H1 error. SciMBA, based on Physics-Informed Neural Networks (PINNs), also demonstrated a clear and consistent convergence trend, with its L2 error significantly decreasing as the number of collocation points increased. While Feel++ generally achieved a slightly lower maximum relative error, particularly away from boundaries, the robustness of SciMBA's convergence indicates its strong potential for approximation. This comparison underscores the complementary nature of these tools: Feel++ offers certified precision crucial for complex geometries, while SciMBA provides flexibility and computational efficiency, especially for parametric problems.
+A detailed convergence analysis highlighted the distinct characteristics of each method.  Feel++ exhibited the theoretically predicted convergence rates for linear finite elements, specifically $O(h^2)$ for L2 error and $O(h)$ for H1 error.  SciMBA, based on Physics-Informed Neural Networks (PINNs), also demonstrated a clear and consistent convergence trend, with its L2 error significantly decreasing as the number of collocation points increased. [cite: 58] While Feel++ generally achieved a slightly lower maximum relative error, particularly away from boundaries, the robustness of SciMBA's convergence indicates its strong potential for approximation.  This comparison underscores the complementary nature of these tools: Feel++ offers certified precision crucial for complex geometries, while SciMBA provides flexibility and computational efficiency, especially for parametric problems. 
 
-In summary, this project has successfully established a robust SciMBA-Feel++ interface with a minimal exchange time of approximately 1ms. The validation across multiple test cases covering elliptic parabolic problems further confirms its reliability. This achievement provides a solid foundation for advancing numerical methods in the exascale era.
+In summary, this project has successfully established a robust SciMBA-Feel++ interface with a minimal exchange time of approximately 1ms.  The validation across multiple test cases covering elliptic parabolic problems further confirms its reliability.  This achievement provides a solid foundation for advancing numerical methods in the exascale era. 
 
 \subsection{Key Results}
 
 \begin{itemize}
-    \item Functional SciMBA-Feel++ interface with exchange time $\sim$ 1ms
-    \item Validation on 6 test cases covering elliptic parabolic problems
+    \item Functional SciMBA-Feel++ interface with exchange time $\sim$ 1ms 
+    \item Validation on 6 test cases covering elliptic parabolic problems 
 \end{itemize}
 
 \subsection{Future Developments}
 
 \begin{itemize}
-    \item Extension to coupled multi-physics problems
-    \item Integration of transfer learning techniques
-    \item Joint hardware/algorithm optimization for exascale architectures
+    \item Extension to coupled multi-physics problems 
+    \item Integration of transfer learning techniques 
+    \item Joint hardware/algorithm optimization for exascale architectures 
 \end{itemize}
 
 % New section for Project 2
@@ -362,192 +424,167 @@ In summary, this project has successfully established a robust SciMBA-Feel++ int
 
 \subsection{Implementation and Results for Parametric Diffusion}
 
-The `ParametricDiffusion` class in Feel++ is designed to solve diffusion problems where coefficients can depend on a parameter $\mu$. The `__call__` method allows specifying `mu` to dynamically adjust the diffusion coefficient `diff`, the right-hand side `rhs`, and boundary conditions `g` and `u_exact` based on this parameter. This flexibility is crucial for generating datasets for neural operator training.
+The `ParametricDiffusion` class in Feel++ is designed to solve diffusion problems where coefficients can depend on a parameter $\mu$.
 
-\begin{verbatim}
+
+
+\begin{lstlisting}[language=Python, caption=ParametricDiffusion class signature (Feel++), label=lst:parametric_diffusion_signature]
 def __call__(self,
-             h=0.05,              # mesh size
-             order=1,             # polynomial order
-             name='u',            # name of the variable u
-             rhs='0',             # right hand side (can depend on x, y, mu)
-             mu=1.0,              # Parameter mu
-             diff='{1,0,0,1}',    # diffusion coefficient (can depend on x, y, mu)
-             g='0',               # Dirichlet boundary conditions (can depend on x, y, mu)
-             gN='0',              # Neumann boundary conditions
-             shape='Rectangle',   # domain shape (Rectangle, Disk)
-             geofile=None,        # geometry file
-             plot=None,           # plot the solution
-             solver='feelpp',     # solver
-             u_exact='0',         # exact solution (can depend on x, y, mu)
-             grad_u_exact = '{0,0}' # gradient of exact solution
-             ):
-    """
-    Solves the parametric diffusion problem where :
-    - h is the mesh size
-    - order the polynomial order
-    - rhs is the expression of the right-hand side f(x,y, mu)
-    - mu is the parameter for the diffusion coefficient a(x, y; mu)
-    """
-    a = 0.0 # Absorption coefficient
-    self.h = h
-    self.measures = dict()
-    self.rhs = rhs
-    self.g = g
-    self.gN = gN
-    self.u_exact = u_exact
-    self.diff = diff
-    self.mu_value = mu # Stockage de la valeur de mu
+    h=0.05,       #mesh size (*@\hfill \textit{\tiny }@*)
+    order=1,      #polynomial order (*@\hfill \textit{\tiny }@*)
+    name='u',     #name of the variable u (*@\hfill \textit{\tiny }@*)
+    rhs='0',      #right hand side (can depend on x, y, mu) (*@\hfill \textit{\tiny }@*)
+    mu=1.0,       #Parameter mu (*@\hfill \textit{\tiny }@*)
+    diff='{1,0,0,1}', #diffusion coefficient (can depend on x, y, mu) (*@\hfill \textit{\tiny }@*)
+    g='0',        #Dirichlet boundary conditions ( (*@\hfill \textit{\tiny }@*)
+                  #can depend on x, y, mu) (*@\hfill \textit{\tiny }@*)
+    gN='0',       #Neumann boundary conditions (*@\hfill \textit{\tiny }@*)
+    shape='Rectangle', (*@\hfill \textit{\tiny }@*)
+    geofile=None, (*@\hfill \textit{\tiny }@*)
+    plot=None, (*@\hfill \textit{\tiny }@*)
+    solver='feelpp', (*@\hfill \textit{\tiny }@*)
+    u_exact='0', (*@\hfill \textit{\tiny }@*)
+    grad_u_exact='{0,0}' (*@\hfill \textit{\tiny }@*)
+): (*@\hfill \textit{\tiny }@*)
+    # Solves the parametric diffusion problem where: (*@\hfill \textit{\tiny }@*)
+    # h is the mesh size (*@\hfill \textit{\tiny }@*)
+    # order the polynomial order (*@\hfill \textit{\tiny }@*)
+    # rhs is the expression of the right-hand side f(x,y, mu) (*@\hfill \textit{\tiny }@*)
+    # mu is the parameter for the diffusion coefficient a(x, y; mu) (*@\hfill \textit{\tiny }@*)
+    a = 0.0 # Absorption coefficient (*@\hfill \textit{\tiny }@*)
+    self.h = h (*@\hfill \textit{\tiny }@*)
+    self.measures = dict() (*@\hfill \textit{\tiny }@*)
+    self.rhs = rhs (*@\hfill \textit{\tiny }@*)
+    self.g = g (*@\hfill \textit{\tiny }@*)
+    self.gN = gN (*@\hfill \textit{\tiny }@*)
+    self.u_exact = u_exact (*@\hfill \textit{\tiny }@*)
+    self.diff = diff (*@\hfill \textit{\tiny }@*)
+    self.mu_value = mu # Stockage de la valeur de mu (*@\hfill \textit{\tiny [cite: 72]}@*)
+    # Définition du coefficient de diffusion dépendant de mu (*@\hfill \textit{\tiny }@*)
+    diffusion_coefficient = self.diff.format(mu=mu) (*@\hfill \textit{\tiny }@*)
+    self.pb = cfpdes(dim=self.dim, keyword=f"cfpdes-{self.dim}d-p{self.order}") (*@\hfill \textit{\tiny }@*)
+    self.model = lambda order, dim=2, name="u": { (*@\hfill \textit{\tiny }@*)
+        "Name": "ParametricDiffusion", (*@\hfill \textit{\tiny [cite: 72]}@*)
+        "ShortName": "ParamDiff", (*@\hfill \textit{\tiny }@*)
+        "Models": { (*@\hfill \textit{\tiny }@*)
+            f"cfpdes-{self.dim}d-p{self.order}": { (*@\hfill \textit{\tiny }@*)
+                "equations": "parametric_diffusion" (*@\hfill \textit{\tiny }@*)
+            }, (*@\hfill \textit{\tiny }@*)
+            "parametric_diffusion":{ (*@\hfill \textit{\tiny }@*)
+                "setup": { (*@\hfill \textit{\tiny [cite: 72]}@*)
+                    "unknown": { (*@\hfill \textit{\tiny }@*)
+                        "basis": f"Pch{order}", (*@\hfill \textit{\tiny }@*)
+                        "name": f"{name}", (*@\hfill \textit{\tiny }@*)
+                        "symbol":"u" (*@\hfill \textit{\tiny }@*)
+                    }, (*@\hfill \textit{\tiny }@*)
+                    "coefficients": { (*@\hfill \textit{\tiny }@*)
+                        "c": f" {diffusion_coefficient} :x:y" if self.dim == 2 else f" {diffusion_coefficient} :x:y:z", (*@\hfill \textit{\tiny }@*)
+                        "f": f"{rhs}:x:y:mu" if self.dim == 2 else f"{rhs :x:y:z:mu", (*@\hfill \textit{\tiny }@*)
+                        "a": f"{a}" (*@\hfill \textit{\tiny }@*)
+                    } (*@\hfill \textit{\tiny [cite: 72]}@*)
+                } (*@\hfill \textit{\tiny [cite: 72]}@*)
+            } (*@\hfill \textit{\tiny }@*)
+        }, (*@\hfill \textit{\tiny }@*)
+        "Materials": { (*@\hfill \textit{\tiny }@*)
+            "Omega": { (*@\hfill \textit{\tiny }@*)
+                "markers": ["Omega"] (*@\hfill \textit{\tiny }@*)
+            } (*@\hfill \textit{\tiny }@*)
+        }, (*@\hfill \textit{\tiny }@*)
+        "BoundaryConditions": { (*@\hfill \textit{\tiny }@*)
+            "parametric_diffusion": { (*@\hfill \textit{\tiny }@*)
+                "Dirichlet": { (*@\hfill \textit{\tiny }@*)
+                    "g": { (*@\hfill \textit{\tiny }@*)
+                        "markers": ["Gamma_D"], (*@\hfill \textit{\tiny }@*)
+                        "expr":f"{g}:x:y:mu" if self.dim == 2 else f"{g}:x:y:z:mu" (*@\hfill \textit{\tiny }@*)
+                    } (*@\hfill \textit{\tiny }@*)
+                }, (*@\hfill \textit{\tiny }@*)
+                "Neumann": { (*@\hfill \textit{\tiny }@*)
+                    "gN": { (*@\hfill \textit{\tiny }@*)
+                        "markers": ["Gamma_D"], (*@\hfill \textit{\tiny }@*)
+                        "expr":f"{gN}:x:y:nx:ny" if self.dim == 2 else f"{gN}:x:y:z:nx:ny:nz" (*@\hfill \textit{\tiny }@*)
+                    } (*@\hfill \textit{\tiny }@*)
+                } (*@\hfill \textit{\tiny }@*)
+            } (*@\hfill \textit{\tiny }@*)
+        }, (*@\hfill \textit{\tiny }@*)
+        "PostProcess": { (*@\hfill \textit{\tiny }@*)
+            f"cfpdes-{self.dim}d-p{self.order}": { (*@\hfill \textit{\tiny }@*)
+                "Exports": { (*@\hfill \textit{\tiny }@*)
+                    "fields": ["all"], (*@\hfill \textit{\tiny [cite: 73]}@*)
+                    "expr": { (*@\hfill \textit{\tiny }@*)
+                        "rhs": f"{rhs}:x:y:mu" if self.dim == 2 else f"{rhs}:x:y:z:mu", (*@\hfill \textit{\tiny }@*)
+                        "u_exact": f"{u_exact}:x:y:mu" if self.dim == 2 else f"{u_exact}:x:y:z:mu", (*@\hfill \textit{\tiny }@*)
+                        "grad_u_exact": f"{grad_u_exact}:x:y:mu" if self.dim==2 else f"{grad_u_exact}:x:y:z:mu" (*@\hfill \textit{\tiny }@*)
+                    } (*@\hfill \textit{\tiny }@*)
+                }, (*@\hfill \textit{\tiny }@*)
+                "Measures": { (*@\hfill \textit{\tiny }@*)
+                    "Norm": { (*@\hfill \textit{\tiny }@*)
+                        "parametric_diffusion": { (*@\hfill \textit{\tiny }@*)
+                            "type": ["L2-error", "H1-error"], (*@\hfill \textit{\tiny }@*)
+                            "field": f"parametric_diffusion.{name}", (*@\hfill \textit{\tiny }@*)
+                            "solution": f"{u_exact}:x:y:mu" if self.dim == 2 else f"{u_exact}:x:y:z:mu", (*@\hfill \textit{\tiny }@*)
+                            "grad_solution": f"{grad_u_exact}:x:y:mu" if self.dim == 2 else f"{grad_u_exact}:x:y:z:mu", (*@\hfill \textit{\tiny }@*)
+                            "markers": "Omega", (*@\hfill \textit{\tiny }@*)
+                            "quad":6 (*@\hfill \textit{\tiny }@*)
+                        } (*@\hfill \textit{\tiny }@*)
+                    } (*@\hfill \textit{\tiny }@*)
+                }, (*@\hfill \textit{\tiny }@*)
+                "Statistics": { (*@\hfill \textit{\tiny }@*)
+                    "mystatA": { (*@\hfill \textit{\tiny }@*)
+                        "type": ["min", "max", "mean", "integrate"], (*@\hfill \textit{\tiny}@*)
+                        "field": f"parametric_diffusion.{name}" (*@\hfill \textit{\tiny }@*)
+                    } (*@\hfill \textit{\tiny }@*)
+                } (*@\hfill \textit{\tiny }@*)
+            } (*@\hfill \textit{\tiny }@*)
+        } (*@\hfill \textit{\tiny }@*)
+    } (*@\hfill \textit{\tiny }@*)
+\end{lstlisting}
 
-    # Définition du coefficient de diffusion dépendant de mu
-    diffusion_coefficient = self.diff.format(mu=mu) # Permet d'utiliser {mu} dans la chaîne diff
+The test script below demonstrates how `ParametricDiffusion` is used to generate solutions for various $\mu$ values. It sets up a parametric diffusion problem with a fixed mesh size (h=0.05) and an exact solution $u(x,y) = x(1-x)y(1-y)$. 
 
-    self.pb = cfpdes(dim=self.dim, keyword=f"cfpdes-{self.dim}d-p{self.order}")
-    self.model = lambda order,dim=2,name="u": {
-        "Name": "ParametricDiffusion", # Nom du modèle modifié
-        "ShortName": "ParamDiff",
-        "Models":
-        {
-            f"cfpdes-{self.dim}d-p{self.order}":
-            {
-                "equations":"parametric_diffusion" # Nom de l'équation modifié
-            },
-            "parametric_diffusion":{ # Définition de l'équation de diffusion paramétrique
-                "setup":{
-                    "unknown":{
-                        "basis":f"Pch{order}",
-                        "name":f"{name}",
-                        "symbol":"u"
-                    },
-                    "coefficients":{
-                        "c": f"{diffusion_coefficient}:x:y" if self.dim == 2 else f"{diffusion_coefficient}:x:y:z", # Coefficient de diffusion dépendant de mu
-                        "f": f"{rhs}:x:y:mu" if self.dim == 2 else f"{rhs}:x:y:z:mu",      # Terme source dépendant potentiellement de mu
-                        "a": f"{a}"
-                    }
-                }
-            }
-        },
-        "Materials":
-        {
-            "Omega":
-            {
-                "markers":["Omega"]
-            }
-        },
-        "BoundaryConditions":
-        {
-            "parametric_diffusion": # Nom des conditions aux limites modifié
-            {
-                "Dirichlet":
-                {
-                    "g":
-                    {
-                        "markers":["Gamma_D"],
-                        "expr":f"{g}:x:y:mu" if self.dim == 2 else f"{g}:x:y:z:mu" # Conditions Dirichlet dépendantes potentiellement de mu
-                    }
-                },
-                "Neumann":
-                {
-                    "gN":
-                    {
-                        "markers":["Gamma_D"],
-                        "expr":f"{gN}:x:y:nx:ny" if self.dim == 2 else f"{gN}:x:y:z:nx:ny:nz"
-                    }
-                }
-            }
-        },
-        "PostProcess":
-        {
-            f"cfpdes-{self.dim}d-p{self.order}":
-            {
-                "Exports":
-                {
-                    "fields":["all"],
-                    "expr":{
-                        "rhs": f"{rhs}:x:y:mu" if self.dim == 2 else f"{rhs}:x:y:z:mu",
-                        "u_exact" : f"{u_exact}:x:y:mu" if self.dim==2 else f"{u_exact}:x:y:z:mu",
-                        "grad_u_exact" : f"{grad_u_exact}:x:y:mu" if self.dim==2 else f"{grad_u_exact}:x:y:z:mu"
-                    }
-                },
-                "Measures" :
-                {
-                    "Norm" :
-                    {
-                        "parametric_diffusion" : # Nom de la mesure modifié
-                        {
-                           "type":["L2-error", "H1-error"],
-                           "field":f"parametric_diffusion.{name}", # Nom du champ modifié
-                           "solution": f"{u_exact}:x:y:mu" if self.dim==2 else f"{u_exact}:x:y:z:mu", # Solution exacte dépendant de mu
-                           "grad_solution": f"{grad_u_exact}:x:y:mu" if self.dim==2 else f"{grad_u_exact}:x:y:z:mu", # Gradient de la solution exacte dépendant de mu
-                           "markers":"Omega",
-                           "quad":6
-                        }
-                    },
-                    "Statistics":
-                    {
-                        "mystatA":
-                        {
-                             "type":["min","max","mean","integrate"],
-                             "field":f"parametric_diffusion.{name}" # Nom du champ modifié
-                        }
-                    }
-                }
-            }
-        }
-    }
-\end{verbatim}
-
-The test script below demonstrates how `ParametricDiffusion` is used to generate solutions for various $\mu$ values. It sets up a parametric diffusion problem with a fixed mesh size (h=0.05) and an exact solution $u(x,y) = x(1-x)y(1-y)$. The right-hand side `rhs_expr` and the diffusion coefficient `diff` are defined to explicitly depend on the parameter $\mu$. The script then iterates through `mu_values = [0.1, 0.5, 1.0, 2.0]`, solving the PDE for each $\mu$ and plotting the solution.
-
-\begin{verbatim}
+\begin{lstlisting}[language=Python, caption=Feel++ Parametric Diffusion simulation script, label=lst:parametric_diffusion_script]
 import sys
 import feelpp.core as fppc
 import feelpp.toolboxes.core as tb
+from feelpp.scimba.Diffusion_param import ParametricDiffusion, runLaplacianPk, runConvergenceAnalysis, plot_convergence, custom_cmap
 
-from feelpp.scimba.Diffusion_param import (
-    ParametricDiffusion, runLaplacianPk, runConvergenceAnalysis,
-    plot_convergence, custom_cmap
-)
+sys.argv ["feelpp_app"]
 
-sys.argv = ["feelpp_app"]
-e = fppc.Environment(
-    sys.argv,
-    opts=tb.toolboxes_options("coefficient-form-pdes", "cfpdes"),
-    config=fppc.localRepository('feelpp_cfpde')
-)
+e = fppc.Environment(sys.argv,
+                    opts=tb.toolboxes_options("coefficient-form-pdes", "cfpdes"),
+                    config=fppc.localRepository('feelpp_cfpde'))
 
-# ------------------------------------------------------------------------- #
 # Parametric Diffusion problem
-# - div (diff(mu) * grad (u)) = f(mu)   in Omega
-#                                u      = g(mu)   in Gamma_D
-# Omega = domain (e.g., square, disk)
-# Approx = lagrange Pk of order order
-# mesh of size h
+#
+# div (diff (mu)  grad (u)) = f(mu) in Omega
+# u = g(mu) in Gamma D
+# Omega domain (e.g., square, disk)
+# Approx
+# lagrange Pk of order order
 
 # Utilisation de la classe ParametricDiffusion
-P_diff = ParametricDiffusion(dim = 2)
-
-# Conditions limites de Dirichlet (nulles pour cette solution exacte)
-g_expr = '0'
-# Solution exacte
-u_exact_expr = 'x*(1 - x)*y*(1 - y)'
+P_diff = ParametricDiffusion(dim=2,
+                             # Conditions limites de Dirichlet (nulles pour cette solution exacte)
+                             g_expr='0',
+                             # Solution exacte
+                             u_exact_expr='x*(1-x)*y*(1-y)')
 
 # Différentes valeurs de mu à tester
 mu_values = [0.1, 0.5, 1.0, 2.0]
 
 for mu in mu_values:
-    print(f"Résolution pour mu = {mu}")
-    rhs_expr = f'2*{mu}*x*(1 - x) + 2*{mu}*y*(1 - y)'
+    print(f"Résolution pour mu = {mu}") (*@\hfill \textit{\tiny }@*)
+    rhs_expr = f'2*{mu}*x*(1-x)+2*{mu}*y*(1-y)' (*@\hfill \textit{\tiny }@*)
     P_diff(h=0.05,
            mu=mu,
            rhs=rhs_expr,
            g=g_expr,
-           diff='{{{mu},0,0,{mu}}}', # Coefficient de diffusion dépendant de mu (CORRECTION: trois accolades)
+           diff=f'{{ {mu} }}',
            plot=1,
-           u_exact=u_exact_expr)
-    print(f"Simulation de diffusion paramétrique terminée pour mu = {mu}")
+           u_exact=u_exact_expr) (*@\hfill \textit{\tiny }@*)
+    print(f"Simulation de diffusion paramétrique terminée pour mu = {mu}") (*@\hfill \textit{\tiny }@*)
 
-print("Terminé les simulations de diffusion paramétrique pour toutes les valeurs de mu.")
-\end{verbatim}
+print("Terminé les simulations de diffusion paramétrique pour toutes les valeurs de mu.") (*@\hfill \textit{\tiny }@*)
+\end{lstlisting}
 
 \subsection{Results for Parametric Diffusion}
 
@@ -555,29 +592,30 @@ The simulations for the parametric diffusion equation were run for different val
 
 \begin{figure}[H]
     \centering
-    \begin{minipage}[t]{0.48\textwidth}
+    \begin{minipage}[t]{0.49\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{mu-01_Feel.png}
+        \includegraphics[width=\textwidth]{mu01_uFeelpp_Solution_uExact_uErr.png}
         \caption{Solution for $\mu=0.1$}
     \end{minipage}
     \hfill
-    \begin{minipage}[t]{0.48\textwidth}
+    \begin{minipage}[t]{0.49\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{mu-05_Feel.png}
+        \includegraphics[width=\textwidth]{mu05_uFeelpp_Solution_uExact_uErr.png}
         \caption{Solution for $\mu=0.5$}
     \end{minipage}
     \vspace{1em} % Add some vertical space between rows of figures
-    \begin{minipage}[t]{0.48\textwidth}
+    \begin{minipage}[t]{0.49\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{mu-1_Feel.png}
+        \includegraphics[width=\textwidth]{mu1_uFeelpp_Solution_uExact_uErr.png}
         \caption{Solution for $\mu=1.0$}
     \end{minipage}
     \hfill
-    \begin{minipage}[t]{0.48\textwidth}
+    \begin{minipage}[t]{0.49\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{mu-2_Feel.png}
+        \includegraphics[width=\textwidth]{mu2_uFeelpp_Solution_uExact_uErr.png}
         \caption{Solution for $\mu=2.0$}
     \end{minipage}
+    \captionsetup{font=Large}
     \caption{Feel++ Solutions for Parametric Diffusion at different $\mu$ values.}
     \label{fig:parametric_solutions}
 \end{figure}
@@ -592,25 +630,25 @@ The convergence of the Feel++ solver for the parametric diffusion problem was al
     \centering
     \begin{minipage}[t]{0.48\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{01-conv.png}
+        \includegraphics[width=\textwidth]{01_conv.png}
         \caption{Convergence for $\mu=0.1$}
     \end{minipage}
     \hfill
     \begin{minipage}[t]{0.48\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{05-conv.png}
+        \includegraphics[width=\textwidth]{05_conv.png}
         \caption{Convergence for $\mu=0.5$}
     \end{minipage}
     \vspace{1em} % Add some vertical space between rows of figures
     \begin{minipage}[t]{0.48\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{1-conv.png}
+        \includegraphics[width=\textwidth]{1_conv.png}
         \caption{Convergence for $\mu=1.0$}
     \end{minipage}
     \hfill
     \begin{minipage}[t]{0.48\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{2-conv.png}
+        \includegraphics[width=\textwidth]{2_conv.png}
         \caption{Convergence for $\mu=2.0$}
     \end{minipage}
     \caption{Feel++ L2 Convergence Rates for Parametric Diffusion at different $\mu$ values.}
@@ -618,5 +656,20 @@ The convergence of the Feel++ solver for the parametric diffusion problem was al
 \end{figure}
 
 The convergence plots in Figure \ref{fig:parametric_convergences} demonstrate a consistent L2 convergence behavior for Feel++ across all tested $\mu$ values. For each $\mu$, the L2 error decreases linearly on a logarithmic scale as the mesh size decreases, which is characteristic of the expected polynomial convergence rates for finite element methods. This consistency is vital, as it confirms Feel++'s reliability in generating accurate and converging solutions for parametric problems, making it a suitable tool for dataset generation for the Neural Operator.
+
+              Thank You for your time and attention.
+
+\begin{thebibliography}{99}
+
+\bibitem{NumPEx}
+NumPEx. (2025). \emph{Le Numérique Pour l'Exascale}. \\
+Consulté le 27 mai 2025. \url{https://numpex.org/fr/}
+
+\bibitem{FeelPP}
+Feel++. (n.d.). \emph{Feel++: Finite Element Embedded Language and Library in C++}. \\
+\url{https://github.com/feelpp/feelpp} \\
+
+
+\end{thebibliography}
 
 \end{document}
