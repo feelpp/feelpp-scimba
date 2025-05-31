@@ -12,7 +12,7 @@
 \usepackage{booktabs}   
 \usepackage{listings}
 \usepackage{float}
-\tableofcontents
+
 
 \usepackage{xcolor}     
 
@@ -197,7 +197,7 @@ The convergence behavior is further illustrated in Figure 1, which plots the $L^
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth, keepaspectratio]{conv_Feelpp.png}
+    \includegraphics[width=\textwidth, keepaspectratio]{conv_Feel.png}
 
     \captionsetup{font=Large}
     \caption{Convergence rate for the 2D Poisson problem using Feel++:.}
@@ -319,8 +319,8 @@ In summary, the $L^2$ error analysis for SciMBA validates the method's ability t
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{Feelpp_Solution.png}
-    \includegraphics[width=0.5\textwidth]{Scimba_Solution.png}
+    \includegraphics[width=0.5\textwidth]{Solution_Feel.png}
+    \includegraphics[width=0.5\textwidth]{Solution_Scimba.png}
     \includegraphics[width=0.5\textwidth]{Exact_Solution.png}
     \captionsetup{font=Large}
     \caption{Comparison of Feel++ Solution, SciMBA Solution, and Exact Solution}
@@ -338,8 +338,8 @@ This comparison underscores the capability of both traditional and machine learn
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{Feelpp_Error.png}
-    \includegraphics[width=0.7\textwidth]{Scimba_Error.png}
+    \includegraphics[width=0.7\textwidth]{Err_Feel.png}
+    \includegraphics[width=0.7\textwidth]{Err_Scimba.png}
     \captionsetup{font=Large}
     \caption{Comparison of Feel++ and SciMBA Solution Errors}
     \label{fig:error_comparison}
@@ -353,7 +353,7 @@ Figure \ref{fig:error_comparison} illustrates the relative errors of the Feel++ 
     \centering
     \begin{minipage}[t]{0.5\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{conv_Feelpp.png}
+        \includegraphics[width=\textwidth]{conv_Feel.png}
         \caption{Feel++ L2 and H1 Convergence Rates}
         \label{fig:feelpp_l2h1_conv}
     \end{minipage}
@@ -594,25 +594,25 @@ The simulations for the parametric diffusion equation were run for different val
     \centering
     \begin{minipage}[t]{0.49\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{mu01_uFeelpp_Solution_uExact_uErr.png}
+        \includegraphics[width=\textwidth]{mu-01_Feel.png}
         \caption{Solution for $\mu=0.1$}
     \end{minipage}
     \hfill
     \begin{minipage}[t]{0.49\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{mu05_uFeelpp_Solution_uExact_uErr.png}
+        \includegraphics[width=\textwidth]{mu-05_Feel.png}
         \caption{Solution for $\mu=0.5$}
     \end{minipage}
     \vspace{1em} % Add some vertical space between rows of figures
     \begin{minipage}[t]{0.49\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{mu1_uFeelpp_Solution_uExact_uErr.png}
+        \includegraphics[width=\textwidth]{mu-1_Feel.png}
         \caption{Solution for $\mu=1.0$}
     \end{minipage}
     \hfill
     \begin{minipage}[t]{0.49\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{mu2_uFeelpp_Solution_uExact_uErr.png}
+        \includegraphics[width=\textwidth]{mu-2_Feel.png}
         \caption{Solution for $\mu=2.0$}
     \end{minipage}
     \captionsetup{font=Large}
@@ -630,25 +630,25 @@ The convergence of the Feel++ solver for the parametric diffusion problem was al
     \centering
     \begin{minipage}[t]{0.48\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{01_conv.png}
+        \includegraphics[width=\textwidth]{01-conv.png}
         \caption{Convergence for $\mu=0.1$}
     \end{minipage}
     \hfill
     \begin{minipage}[t]{0.48\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{05_conv.png}
+        \includegraphics[width=\textwidth]{05-conv.png}
         \caption{Convergence for $\mu=0.5$}
     \end{minipage}
     \vspace{1em} % Add some vertical space between rows of figures
     \begin{minipage}[t]{0.48\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{1_conv.png}
+        \includegraphics[width=\textwidth]{1-conv.png}
         \caption{Convergence for $\mu=1.0$}
     \end{minipage}
     \hfill
     \begin{minipage}[t]{0.48\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{2_conv.png}
+        \includegraphics[width=\textwidth]{2-conv.png}
         \caption{Convergence for $\mu=2.0$}
     \end{minipage}
     \caption{Feel++ L2 Convergence Rates for Parametric Diffusion at different $\mu$ values.}

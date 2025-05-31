@@ -20,3 +20,11 @@ __pycache__
 #docs/reports/2025/Solution_Feel.png
 
 #docs/reports/2025/Sarr-Presentation.tex
+docs/raports/2025/*.log
+docs/raports/2025/*.aux
+docs/raports/2025/*.toc
+docs/raports/2025/*.lof
+docs/raports/2025/*.lot
+docs/raports/2025/*.out
+docs/raports/2025/*.fls
+docs/raports/2025/*.fdb_latexmk
