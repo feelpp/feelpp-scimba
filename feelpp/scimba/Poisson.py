@@ -109,7 +109,7 @@ class Poisson:
   
 ##______________________________________________________________________________________________
 
-  def scimba_solver(self, h, shape='Rectangle', dim = 2, verbose=False):
+  def scimba_solver(self, h,nb_coll=5000, shape='Rectangle', dim = 2, verbose=False):
     if verbose:
       print(f"Solving a Poisson problem for h = {h}...")    
     
@@ -122,7 +122,7 @@ class Poisson:
       xdomain = domain.SpaceDomain(2, domain.SquareDomain(2, [[0.0, 1.0], [0.0, 1.0]]))
     
     pde = Poisson_2D(xdomain, rhs=self.rhs, diff=diff, g=self.g, u_exact=self.u_exact)
-    u , pinn = Run_Poisson2D(pde, epoch=1000)
+    u , pinn = Run_Poisson2D(pde, epoch=int(nb_coll*0.1),nb_coll=nb_coll)
 
     return u
 
@@ -141,15 +141,17 @@ class Poisson:
                plot=1,                                      # plot the solution
                solver='feelpp',                             # solver 
                u_exact='sin(2 * pi * x) * sin(2 * pi * y)',
-               grad_u_exact = '{2*pi*cos(2*pi*x)*sin(2*pi*y),2*pi*sin(2*pi*x)*cos(2*pi*y)}' 
+               grad_u_exact = '{2*pi*cos(2*pi*x)*sin(2*pi*y),2*pi*sin(2*pi*x)*cos(2*pi*y)}' ,
+               nb_coll=5000
                ):
     """
     Solves the problem where :
     - h is the mesh size
-    - order the polynomial order
+    - oRUder the polynomial order
     - rhs is the expression of the right-hand side f(x,y)
     """
     a = 0.0
+    self.nb_coll = nb_coll
     self.h = h
     self.measures = dict()
     self.rhs = rhs
@@ -369,7 +371,7 @@ class Poisson:
       import pyvista as pv
       import torch
 
-      u_scimba = self.scimba_solver( h=h, shape=shape, dim=self.dim, verbose=True)
+      u_scimba = self.scimba_solver( h=h,nb_coll=self.nb_coll, shape=shape, dim=self.dim, verbose=True)
       
       # File path to the .case file
       file_path = 'cfpdes-2d-p1.exports/Export.case'
@@ -449,6 +451,9 @@ class Poisson:
       # Error plots
       err_feel = np.abs(u_ex - feel_solution) / np.abs(u_ex)
       err_scimba = np.abs(u_ex - scimba_solution) / np.abs(u_ex)
+      self.errl2_scimba = np.sqrt(np.sum((scimba_solution - u_ex)**2) / np.sum(u_ex**2))
+      print('L2 error of scimba',self.errl2_scimba)
+
       clim_err = [np.min(err_feel), np.max(err_feel)]
       print('clim err_feel = |u_feel - u_exact|/|u_exact| ∈ ', clim_err)
 
@@ -631,7 +636,23 @@ def plot_convergence(P, df,dim,orders=[1]):
           height=900,
       )
   return fig
+
+def plot_scimba_convergence(df):
+    fig  =  px.line(df, x="nb_coll", y="Scimba_L2_error", markers=True)
+    fig.update_xaxes(title_text="nb_coll",type="log")
+    fig.update_yaxes(title_text="Error",type="log")
+    last_rate = df['convergence_rate'].iloc[-1]
+    fig.update_traces(name=f"ScimBa - L2 error - rate {last_rate:.2f}")
+
+    fig.update_layout(
+            title=f"Convergence rate for the 2D Poisson problem",
+            autosize=False,
+            width=900,
+            height=900,
+        )
+    return fig
 #______________________________________________________________________________________________
+
 
 # Définir les couleurs du bas au haut de la colormap de l'image
 colors = [
