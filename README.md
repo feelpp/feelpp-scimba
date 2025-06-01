@@ -83,9 +83,9 @@ Inside the container you’ll have Feel++, ScimBa, and all Python dependencies r
 
 # report and image
 
-you can find the report and images at docs/reports/2025, in this directory we have:
+you can find the report and images at **docs/reports/2025**, in this directory we have:
 
--the report.tex named CSMI-M1-2025-Feelpp-Scimba-Sarr.tex,
+-the report.tex named **CSMI-M1-2025-Feelpp-Scimba-Sarr.tex**,
 
 -the compiled pdf file and
 
@@ -98,11 +98,11 @@ For codes
 
 -notebooks can be found in the notebooks directory(**notebooks**),n which I've added two notebooks: 
 
-   -project1.ipynb (for project 1),
+   -**project1.ipynb** (for project 1),
    
-   -project2.ipynb (for project 2).
+   -**project2.ipynb** (for project 2).
 
--you'll find the implementation files (.py) in the feelpp/scimba directory.
+-you'll find the implementation files (.py) in the **feelpp/scimba** directory.
 
 
 
