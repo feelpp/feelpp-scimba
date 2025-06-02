@@ -177,7 +177,7 @@ class PinnSolver:
         # loss weights
         losses = pinn_losses.PinnLossesData(
             w_res=1.0, init_loss_bool=True,
-            w_init=10.0, w_bc=5.0, bc_loss_bool=True
+            w_init=1.0, w_bc=1.0, bc_loss_bool=True
         )
 
         # optimizer settings
