@@ -123,12 +123,7 @@ P(
 
 This script demonstrates the use of our mixed FEM–PINN Schwarz solver to compute the solution of the one-dimensional heat conduction equation:
 
-$$
-\frac{\partial u(x,t)}{\partial t}
-- \alpha\,\frac{\partial^2 u(x,t)}{\partial x^2}
-= 0,\quad
-x \in [0,1],\; t \in [0,T],
-$$
+$\frac{\partial u(x,t)}{\partial t} - \alpha\,\frac{\partial^2 u(x,t)}{\partial x^2} = 0,\quad x \in [0,1],\; t \in [0,T],$
 subject to
 - **Dirichlet boundary conditions**: $u(0,t)=0$, $u(1,t)=0$,
 - **Initial condition**: $u(x,0)=\sin(\pi x)$.
