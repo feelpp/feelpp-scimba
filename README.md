@@ -6,12 +6,15 @@ Integration of [ScimBa](https://pypi.org/project/scimba/) and [Feel++](https://d
 
 ## Table of Contents
 
-1. [Prerequisites](#prerequisites)  
-2. [Installation with uv](#installation-with-uv)  
-3. [Using the Docker Image](#using-the-docker-image)  
-4. [Quickstart Example](#quickstart-example)  
-5. [Project Status](#project-status)  
-6. [Contact](#contact)  
+- [feelpp-scimba](#feelpp-scimba)
+  - [Table of Contents](#table-of-contents)
+  - [Prerequisites](#prerequisites)
+  - [Installation with uv](#installation-with-uv)
+  - [Using the Docker Image](#using-the-docker-image)
+  - [Quickstart Example](#quickstart-example)
+  - [Mixed FEM–PINN Schwarz solver](#mixed-fempinn-schwarz-solver)
+  - [Project Status](#project-status)
+  - [Contact](#contact)
 
 ---
 
@@ -112,6 +115,50 @@ P(
     u_exact="sin(2*pi*x)*sin(2*pi*y)",
     grad_u_exact="{2*pi*cos(2*pi*x)*sin(2*pi*y),2*pi*sin(2*pi*x)*cos(2*pi*y)}"
 )
+```
+
+---
+
+## Mixed FEM–PINN Schwarz solver
+
+This script demonstrates the use of our mixed FEM–PINN Schwarz solver to compute the solution of the one-dimensional heat conduction equation:
+
+$\frac{\partial u(x,t)}{\partial t} - \alpha\,\frac{\partial^2 u(x,t)}{\partial x^2} = 0,\quad x \in [0,1],\; t \in [0,T],$
+subject to
+- **Dirichlet boundary conditions**: $u(0,t)=0$, $u(1,t)=0$,
+- **Initial condition**: $u(x,0)=\sin(\pi x)$.
+
+The domain $[0,1]$ is split at an interface $x_m$:
+- **Left subdomain** $[0, x_m]$: solved by a FEM (Feel++) solver.
+- **Right subdomain** $[x_m, 1]$: solved by a PINN (SciMBA) solver.
+
+These two solvers are coupled via a Neumann–Dirichlet Schwarz iteration.
+
+**Key Parameters**
+
+| Parameter  | Description                                                                                               |
+|------------|-----------------------------------------------------------------------------------------------------------|
+| `xm`       | Interface location $x_m$ dividing the domain: FEM on $[0,x_m]$, PINN on $[x_m,1]$.                  |
+| `ω`        | Relaxation factor ($0<\omega<1$) used to stabilize and accelerate the Schwarz iteration.               |
+| `max_iter` | Maximum number of Schwarz iterations to perform before stopping.                                          |
+| `tol`      | Convergence tolerance: stops when $\frac{\|u_I^{(k+1)} - u_I^{(k)}\|_{L^2}}{\|u_I^{(k)}\|_{L^2}} < \text{tol}$.                    |
+| `alpha`    | Thermal diffusivity $\alpha$ in the heat conduction equation.                                           |
+
+```python
+import sys
+import feelpp.core as fppc
+import feelpp.toolboxes.core as tb
+from feelpp.scimba.heat1d_solver import FEM_PINN_Solver
+
+sys.argv = ["Heat1D"]
+env = fppc.Environment(
+    sys.argv, 
+    opts=tb.toolboxes_options("coefficient-form-pdes", "cfpdes"), 
+    config=fppc.localRepository("Heat1D-repo")
+)
+
+solver = FEM_PINN_Solver(xm=0.4, ω=0.8, max_iter=5, tol=1e-4, alpha=0.5)
+t, u = solver.solve()
 ```
 
 ---
